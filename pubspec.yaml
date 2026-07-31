@@ -1,0 +1,91 @@
+name: nexora_khata
+description: নেক্সোরা খাতা - একটি আধুনিক হিসাব সংরক্ষণ অ্যাপ্লিকেশন
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.12.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State Management
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+
+  # Routing
+  go_router: ^14.8.1
+
+  # Database
+  sqflite: ^2.4.1
+  path: ^1.9.1
+  path_provider: ^2.1.5
+
+  # Dependency Injection
+  get_it: ^8.0.3
+  injectable: ^2.5.1
+
+  # Utilities
+  intl: ^0.20.2
+  collection: ^1.19.1
+  equatable: ^2.0.7
+  dartz: ^0.10.1
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  uuid: ^4.5.1
+
+  # Connectivity
+  connectivity_plus: ^6.1.2
+
+  # UI
+  flutter_animate: ^4.5.2
+  shimmer: ^3.0.0
+  cached_network_image: ^3.4.1
+  flutter_svg: ^2.0.17
+  percent_indicator: ^4.2.3
+  fl_chart: ^0.70.2
+
+  # Image Picker
+  image_picker: ^1.1.2
+
+  # Utilities
+  logger: ^2.5.0
+  url_launcher: ^6.3.1
+  share_plus: ^10.1.4
+  package_info_plus: ^8.1.3
+  file_picker: ^8.1.7
+  device_info_plus: ^11.3.3
+  clipboard: ^0.1.3
+  pdf: ^3.11.3
+  printing: ^5.14.2
+  excel: ^4.0.6
+  sqflite_common_ffi: ^2.4.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.14
+  freezed: ^2.5.8
+  json_serializable: ^6.9.4
+  riverpod_generator: ^2.6.3
+  injectable_generator: ^2.6.2
+  mockito: ^5.4.6
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/fonts/
+    - assets/images/
+    - assets/icons/
+
+  fonts:
+    - family: NotoSansBengali
+      fonts:
+        - asset: assets/fonts/NotoSansBengali.ttf
+          weight: 400
