@@ -5,6 +5,7 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
@@ -44,28 +45,28 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('ব্যয়ের তালিকা', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.expListTitle, style: AppTypography.subtitle1),
         centerTitle: true,
         bottom: TabBar(
           controller: _tabController,
           labelColor: AppColors.primary,
           unselectedLabelColor: AppColors.textSecondary,
           indicatorColor: AppColors.primary,
-          tabs: const [
-            Tab(text: 'দৈনিক'),
-            Tab(text: 'মাসিক'),
+          tabs: [
+            Tab(text: AppStrings.s.expDailyTab),
+            Tab(text: AppStrings.s.expMonthlyTab),
           ],
         ),
         actions: [
           IconButton(
             icon: Icon(Icons.bar_chart_rounded),
             onPressed: () => context.push(RouteNames.expenseMonthlyReport),
-            tooltip: 'মাসিক রিপোর্ট',
+            tooltip: AppStrings.s.expMonthlyReportTooltip,
           ),
           IconButton(
             icon: Icon(Icons.category_rounded),
             onPressed: () => context.push(RouteNames.expenseCategories),
-            tooltip: 'ক্যাটাগরি',
+            tooltip: AppStrings.s.expCategoryTooltip,
           ),
         ],
       ),
@@ -86,7 +87,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         icon: Icon(Icons.add_rounded),
-        label: Text('নতুন ব্যয়'),
+        label: Text(AppStrings.s.expAdd),
       ),
     );
   }
@@ -96,8 +97,8 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
       children: [
         AppSpacing.boxSM,
         TransactionFilterBar(
-          searchHint: 'ব্যয় অনুসন্ধান করুন...',
-          completedLabel: 'পরিশোধিত',
+          searchHint: AppStrings.s.expSearchHint,
+          completedLabel: AppStrings.s.statusPaid,
           searchProvider: expenseSearchProvider,
           statusProvider: expenseStatusFilterProvider,
           refreshProvider: expenseRefreshProvider,
@@ -105,7 +106,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
         AppSpacing.boxSM,
         Expanded(
           child: expensesAsync.when(
-            loading: () => AppLoading(message: 'ব্যয় লোড হচ্ছে...'),
+            loading: () => AppLoading(message: AppStrings.s.expLoading),
             error: (e, _) => AppErrorWidget(
               message: e.toString(),
               onRetry: () => ref.invalidate(expenseFilteredListProvider),
@@ -114,8 +115,8 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
               if (expenses.isEmpty) {
                 return AppEmptyState(
                   icon: Icons.account_balance_wallet_rounded,
-                  title: 'কোনো ব্যয় নেই',
-                  subtitle: 'নতুন ব্যয় যোগ করতে নিচের বাটনে ক্লিক করুন',
+                  title: AppStrings.s.expEmpty,
+                  subtitle: AppStrings.s.expEmptySubtitle,
                 );
               }
               return RefreshIndicator(
@@ -137,7 +138,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
                       iconColor: AppColors.error,
                       icon: Icons.arrow_upward_rounded,
                       amountColor: AppColors.error,
-                      completedStatusText: 'পরিশোধিত',
+                      completedStatusText: AppStrings.s.statusPaid,
                       onTap: () => context.push('${RouteNames.expenseDetail}/${expense.id}'),
                     );
                   },
@@ -158,8 +159,8 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
         if (report.isEmpty) {
           return AppEmptyState(
             icon: Icons.bar_chart_rounded,
-            title: 'কোনো তথ্য নেই',
-            subtitle: 'এই বছরের জন্য কোনো ব্যয় পাওয়া যায়নি',
+            title: AppStrings.s.incNoData,
+            subtitle: AppStrings.s.expEmptyDaySubtitle,
           );
         }
         return ListView.separated(
@@ -199,7 +200,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(monthName, style: AppTypography.subtitle2),
-                        Text('$count টি লেনদেন', style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
+                        Text(AppStrings.s.expCount(count), style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
                       ],
                     ),
                   ),
@@ -219,7 +220,21 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
   }
 
   String _monthName(int month) {
-    const names = ['', 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+    final names = [
+      '',
+      AppStrings.s.monthJanuary,
+      AppStrings.s.monthFebruary,
+      AppStrings.s.monthMarch,
+      AppStrings.s.monthApril,
+      AppStrings.s.monthMay,
+      AppStrings.s.monthJune,
+      AppStrings.s.monthJuly,
+      AppStrings.s.monthAugust,
+      AppStrings.s.monthSeptember,
+      AppStrings.s.monthOctober,
+      AppStrings.s.monthNovember,
+      AppStrings.s.monthDecember,
+    ];
     return month >= 1 && month <= 12 ? names[month] : '';
   }
 }

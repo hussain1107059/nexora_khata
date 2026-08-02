@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 
 abstract final class AppNumberUtils {
   AppNumberUtils._();
@@ -43,14 +44,15 @@ abstract final class AppNumberUtils {
   }
 
   static String formatCompactBn(double number) {
+    final s = AppStrings.s;
     if (number.abs() >= 10000000) {
-      return '${(number / 10000000).toStringAsFixed(2)} কোটি';
+      return s.numCrore((number / 10000000).toStringAsFixed(2));
     }
     if (number.abs() >= 100000) {
-      return '${(number / 100000).toStringAsFixed(1)} লাখ';
+      return s.numLakh((number / 100000).toStringAsFixed(1));
     }
     if (number.abs() >= 1000) {
-      return '${(number / 1000).toStringAsFixed(1)} হাজার';
+      return s.numThousand((number / 1000).toStringAsFixed(1));
     }
     return number.toStringAsFixed(0);
   }
@@ -75,23 +77,23 @@ abstract final class AppNumberUtils {
   }
 
   static String formatPaymentMethod(String method) {
+    final s = AppStrings.s;
     switch (method.toLowerCase()) {
       case 'cash':
-        return 'নগদ';
+        return s.payCash;
       case 'bank':
-        return 'ব্যাংক';
-      case 'bKash':
+        return s.payBank;
       case 'bkash':
-        return 'বিকাশ';
+        return s.payBkash;
       case 'nagad':
-        return 'নগদ (Nagad)';
+        return s.payNagad;
       case 'rocket':
-        return 'রকেট';
+        return s.payRocket;
       case 'card':
-        return 'কার্ড';
+        return s.payCard;
       case 'check':
       case 'cheque':
-        return 'চেক';
+        return s.payCheck;
       default:
         return method;
     }

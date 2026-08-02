@@ -5,6 +5,7 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
@@ -23,18 +24,18 @@ class LoanListPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('ঋণ', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.loanTitle, style: AppTypography.subtitle1),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(loanDashboardProvider),
-            tooltip: 'রিফ্রেশ',
+            tooltip: AppStrings.s.commonRefresh,
           ),
         ],
       ),
       body: dashboardAsync.when(
-        loading: () => const AppLoading(message: 'ঋণের হিসাব লোড হচ্ছে...'),
+        loading: () => AppLoading(message: AppStrings.s.loanLoading),
         error: (e, _) => AppErrorWidget(
           message: e.toString(),
           onRetry: () => ref.invalidate(loanDashboardProvider),
@@ -51,7 +52,7 @@ class LoanListPage extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('নতুন হিসাব'),
+        label: Text(AppStrings.s.loanNew),
       ),
     );
   }
@@ -67,9 +68,9 @@ class _LoanContent extends ConsumerWidget {
     if (dashboard.contacts.isEmpty) {
       return AppEmptyState(
         icon: Icons.currency_exchange_rounded,
-        title: 'কোনো হিসাব নেই',
-        subtitle: 'বন্ধু বা পরিচিতজনের কাছ থেকে টাকা নেওয়া বা দেওয়ার হিসাব রাখতে নতুন হিসাব যোগ করুন',
-        actionLabel: 'নতুন হিসাব',
+        title: AppStrings.s.loanEmpty,
+        subtitle: AppStrings.s.loanEmptySubtitle,
+        actionLabel: AppStrings.s.loanNew,
         onAction: () => context.push(RouteNames.loanContactAdd),
       );
     }
@@ -86,7 +87,7 @@ class _LoanContent extends ConsumerWidget {
           Padding(
             padding: AppSpacing.paddingHSm,
             child: Text(
-              'সব হিসাব',
+              AppStrings.s.loanAll,
               style: AppTypography.subtitle2.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w600,

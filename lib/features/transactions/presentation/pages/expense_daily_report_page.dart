@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
@@ -50,7 +51,7 @@ class _ExpenseDailyReportPageState extends ConsumerState<ExpenseDailyReportPage>
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('দৈনিক ব্যয় রিপোর্ট', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.expDailyReport, style: AppTypography.subtitle1),
         centerTitle: true,
       ),
       body: Column(
@@ -69,8 +70,8 @@ class _ExpenseDailyReportPageState extends ConsumerState<ExpenseDailyReportPage>
                 if (expenses.isEmpty) {
                   return AppEmptyState(
                     icon: Icons.account_balance_wallet_rounded,
-                    title: 'কোনো ব্যয় নেই',
-                    subtitle: 'এই তারিখে কোনো ব্যয় পাওয়া যায়নি',
+                    title: AppStrings.s.expEmptyDay,
+                    subtitle: AppStrings.s.expEmptyDaySubtitle,
                   );
                 }
                 return RefreshIndicator(
@@ -93,7 +94,7 @@ class _ExpenseDailyReportPageState extends ConsumerState<ExpenseDailyReportPage>
                         iconColor: AppColors.error,
                         icon: Icons.arrow_upward_rounded,
                         amountColor: AppColors.error,
-                        completedStatusText: 'পরিশোধিত',
+                        completedStatusText: AppStrings.s.statusPaid,
                       );
                     },
                   ),
@@ -153,7 +154,7 @@ class _ExpenseDailyReportPageState extends ConsumerState<ExpenseDailyReportPage>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('মোট ব্যয়', style: AppTypography.caption.copyWith(color: Colors.white70)),
+                Text(AppStrings.s.expTotal, style: AppTypography.caption.copyWith(color: Colors.white70)),
                 AppSpacing.boxXS,
                 Text(AppNumberUtils.formatCurrency(total), style: AppTypography.heading3.copyWith(
                   color: AppColors.white, fontWeight: FontWeight.w700)),
@@ -169,7 +170,7 @@ class _ExpenseDailyReportPageState extends ConsumerState<ExpenseDailyReportPage>
             child: Column(
               children: [
                 Text('$count', style: AppTypography.subtitle1.copyWith(color: AppColors.white, fontWeight: FontWeight.w700)),
-                Text('টি', style: AppTypography.caption.copyWith(color: Colors.white70)),
+                Text(AppStrings.s.incUnit, style: AppTypography.caption.copyWith(color: Colors.white70)),
               ],
             ),
           ),
@@ -179,7 +180,21 @@ class _ExpenseDailyReportPageState extends ConsumerState<ExpenseDailyReportPage>
   }
 
   String _monthName(int month) {
-    const names = ['', 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+    final names = [
+      '',
+      AppStrings.s.monthJanuary,
+      AppStrings.s.monthFebruary,
+      AppStrings.s.monthMarch,
+      AppStrings.s.monthApril,
+      AppStrings.s.monthMay,
+      AppStrings.s.monthJune,
+      AppStrings.s.monthJuly,
+      AppStrings.s.monthAugust,
+      AppStrings.s.monthSeptember,
+      AppStrings.s.monthOctober,
+      AppStrings.s.monthNovember,
+      AppStrings.s.monthDecember,
+    ];
     return month >= 1 && month <= 12 ? names[month] : '';
   }
 }

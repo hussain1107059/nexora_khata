@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
@@ -157,7 +158,7 @@ class StatCardLarge extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    'আজ',
+                    AppStrings.s.dashboardToday,
                     style: AppTypography.labelMedium.copyWith(
                       color: AppColors.white,
                       fontWeight: FontWeight.w600,

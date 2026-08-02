@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/income_category_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_categories_page.dart';
 
@@ -11,7 +12,7 @@ class IncomeCategoriesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return TransactionCategoriesPage(
-      title: 'আয়ের ক্যাটাগরি',
+      title: AppStrings.s.incCategoryTitle,
       addRoute: RouteNames.incomeCategoryAdd,
       editRoute: RouteNames.incomeCategoryEdit,
       avatarBackground: AppColors.primaryLight,

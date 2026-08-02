@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/di/injection_container.dart';
 import 'package:nexora_khata/features/categories/domain/entities/expense_category.dart';
@@ -24,7 +25,7 @@ class ExpenseFormPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text(expense != null ? 'ব্যয় সম্পাদনা' : 'নতুন ব্যয়', style: AppTypography.subtitle1),
+        title: Text(expense != null ? AppStrings.s.expEdit : AppStrings.s.expNew, style: AppTypography.subtitle1),
         centerTitle: true,
       ),
       body: TransactionFormFields(
@@ -36,7 +37,7 @@ class ExpenseFormPage extends ConsumerWidget {
         initialImagePath: expense?.imagePath,
         initialPaymentMethod: expense?.paymentMethod ?? 'cash',
         initialStatus: expense?.status ?? 'completed',
-        completedStatusLabel: 'পরিশোধিত',
+        completedStatusLabel: AppStrings.s.statusPaid,
         categoriesLoading: categoriesAsync.isLoading,
         categories: categoriesAsync.valueOrNull
             ?.map((c) => CategoryOption(c.id, c.name))
@@ -99,7 +100,7 @@ class ExpenseFormPage extends ConsumerWidget {
             error: (e, _) => AppSnackBar.error(context, e.toString()),
           );
           if (state is AsyncData) {
-            AppSnackBar.success(context, editing ? 'ব্যয় আপডেট হয়েছে' : 'নতুন ব্যয় যোগ হয়েছে');
+            AppSnackBar.success(context, editing ? AppStrings.s.expUpdated : AppStrings.s.expAdded);
             ref.invalidate(expenseFilteredListProvider);
             ref.invalidate(expenseRefreshProvider);
             ref.invalidate(dashboardProvider);

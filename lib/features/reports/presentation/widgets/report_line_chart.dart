@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/core_card.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
@@ -23,11 +24,11 @@ class ReportLineChart extends StatelessWidget {
 
     return CoreCard(
       title: title,
-      trailing: const Row(
+      trailing: Row(
         children: [
-          ChartLegend(color: AppColors.info, label: 'ক্যাশ'),
+          ChartLegend(color: AppColors.info, label: AppStrings.s.rptCash),
           AppSpacing.boxWSM,
-          ChartLegend(color: AppColors.success, label: 'ব্যাংক'),
+          ChartLegend(color: AppColors.success, label: AppStrings.s.rptBank),
         ],
       ),
       child: SizedBox(
@@ -41,7 +42,7 @@ class ReportLineChart extends StatelessWidget {
                       getTooltipItems: (touchedSpots) {
                         return touchedSpots.map((spot) {
                           final isCash = spot.barIndex == 0;
-                          final label = isCash ? 'ক্যাশ' : 'ব্যাংক';
+                          final label = isCash ? AppStrings.s.rptCash : AppStrings.s.rptBank;
                           final day = spot.x.toInt();
                           final dateLabel = day < data.length
                               ? _formatDateLabel(data[day].date)

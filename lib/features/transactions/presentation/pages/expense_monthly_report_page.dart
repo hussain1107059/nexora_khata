@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/csv_export_service.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
@@ -29,13 +30,13 @@ class _ExpenseMonthlyReportPageState extends ConsumerState<ExpenseMonthlyReportP
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('মাসিক ব্যয় রিপোর্ট', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.expMonthlyReport, style: AppTypography.subtitle1),
         centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.share_rounded),
             onPressed: () => _exportCSV(reportAsync.valueOrNull ?? []),
-            tooltip: 'এক্সপোর্ট',
+            tooltip: AppStrings.s.incExportCsv,
           ),
         ],
       ),
@@ -50,8 +51,8 @@ class _ExpenseMonthlyReportPageState extends ConsumerState<ExpenseMonthlyReportP
                 if (report.isEmpty) {
                   return AppEmptyState(
                     icon: Icons.bar_chart_rounded,
-                    title: 'কোনো তথ্য নেই',
-                    subtitle: 'এই বছরের জন্য কোনো ব্যয় পাওয়া যায়নি',
+                    title: AppStrings.s.incNoData,
+                    subtitle: AppStrings.s.expEmptyDaySubtitle,
                   );
                 }
                 return ListView.separated(
@@ -91,7 +92,7 @@ class _ExpenseMonthlyReportPageState extends ConsumerState<ExpenseMonthlyReportP
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(monthName, style: AppTypography.subtitle2),
-                                Text('$count টি লেনদেন', style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
+                                Text(AppStrings.s.expCount(count), style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
                               ],
                             ),
                           ),
@@ -133,7 +134,7 @@ class _ExpenseMonthlyReportPageState extends ConsumerState<ExpenseMonthlyReportP
           ),
           Spacer(),
           AppButton.outlined(
-            'এক্সপোর্ট CSV',
+            AppStrings.s.incExportCsv,
             icon: Icons.download_rounded,
             onPressed: () => _exportCSV(ref.read(expenseMonthlyReportProvider(_selectedYear)).valueOrNull ?? []),
           ),
@@ -144,7 +145,7 @@ class _ExpenseMonthlyReportPageState extends ConsumerState<ExpenseMonthlyReportP
 
   Future<void> _exportCSV(List<Map<String, dynamic>> data) async {
     if (data.isEmpty) {
-      AppSnackBar.warning(context, 'এক্সপোর্ট করার মতো কোনো তথ্য নেই');
+      AppSnackBar.warning(context, AppStrings.s.incExportEmpty);
       return;
     }
 
@@ -154,17 +155,31 @@ class _ExpenseMonthlyReportPageState extends ConsumerState<ExpenseMonthlyReportP
         year: _selectedYear,
         fileName: 'expense_report_$_selectedYear.csv',
         header: 'মাস,লেনদেন সংখ্যা,মোট ব্যয়',
-        shareText: 'ব্যয়ের মাসিক রিপোর্ট $_selectedYear',
+        shareText: '${AppStrings.s.expMonthlyReport} $_selectedYear',
         monthName: _monthName,
       );
     } catch (e) {
       if (!mounted) return;
-      AppSnackBar.error(context, 'এক্সপোর্ট করতে সমস্যা: $e');
+      AppSnackBar.error(context, AppStrings.s.incExportError(e));
     }
   }
 
   String _monthName(int month) {
-    const names = ['', 'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন', 'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'];
+    final names = [
+      '',
+      AppStrings.s.monthJanuary,
+      AppStrings.s.monthFebruary,
+      AppStrings.s.monthMarch,
+      AppStrings.s.monthApril,
+      AppStrings.s.monthMay,
+      AppStrings.s.monthJune,
+      AppStrings.s.monthJuly,
+      AppStrings.s.monthAugust,
+      AppStrings.s.monthSeptember,
+      AppStrings.s.monthOctober,
+      AppStrings.s.monthNovember,
+      AppStrings.s.monthDecember,
+    ];
     return month >= 1 && month <= 12 ? names[month] : '';
   }
 }

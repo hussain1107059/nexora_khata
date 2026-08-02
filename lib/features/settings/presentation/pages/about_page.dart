@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
+import '../../../../core/services/app_strings.dart';
 import '../../../../core/widgets/app_text.dart';
 
 class AboutPage extends ConsumerWidget {
@@ -12,7 +13,7 @@ class AboutPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       appBar: AppBar(
-        title: const AppText('সম্পর্কে', type: AppTextType.subtitle2),
+        title: AppText(AppStrings.s.aboutTitle, type: AppTextType.subtitle2),
         centerTitle: true,
       ),
       body: FutureBuilder<PackageInfo>(
@@ -48,14 +49,14 @@ class AboutPage extends ConsumerWidget {
                   ),
                 ),
                 AppSpacing.boxLG,
-                const AppText(
-                  'নেক্সোরা খাতা',
+                AppText(
+                  AppStrings.s.appTitle,
                   type: AppTextType.heading3,
                   textAlign: TextAlign.center,
                 ),
                 AppSpacing.boxSM,
-                const AppText(
-                  'একটি আধুনিক হিসাব সংরক্ষণ অ্যাপ্লিকেশন',
+                AppText(
+                  AppStrings.s.aboutSubtitle,
                   type: AppTextType.body2,
                   color: AppColors.textSecondary,
                   textAlign: TextAlign.center,
@@ -80,10 +81,10 @@ class AboutPage extends ConsumerWidget {
                     padding: AppSpacing.paddingLg,
                     child: Column(
                       children: [
-                        _InfoRow(label: 'অ্যাপ সংস্করণ', value: versionStr),
-                        const _InfoRow(label: 'ডেভেলপার', value: 'BadhonByte'),
-                        const _InfoRow(label: 'ইমেইল', value: 'badhonbyte@email.com'),
-                        const _InfoRow(label: 'ওয়েবসাইট', value: 'https://badhonbyte.com'),
+                        _InfoRow(label: AppStrings.s.aboutVersion, value: versionStr),
+                        _InfoRow(label: AppStrings.s.aboutDeveloper, value: 'BadhonByte'),
+                        _InfoRow(label: AppStrings.s.aboutEmail, value: 'badhonbyte@email.com'),
+                        _InfoRow(label: AppStrings.s.aboutWebsite, value: 'https://badhonbyte.com'),
                       ],
                     ),
                   ),
@@ -91,8 +92,8 @@ class AboutPage extends ConsumerWidget {
                 AppSpacing.boxXXL,
                 const Divider(),
                 AppSpacing.boxLG,
-                const AppText(
-                  '© 2026 BadhonByte. সর্বস্বত্ব সংরক্ষিত।',
+                AppText(
+                  AppStrings.s.aboutRights,
                   type: AppTextType.caption,
                   color: AppColors.textSecondary,
                   textAlign: TextAlign.center,

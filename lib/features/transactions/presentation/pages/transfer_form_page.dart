@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
@@ -108,7 +109,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
       );
       return;
     }
-    AppSnackBar.success(context, 'টাকা ট্রান্সফার করা হয়েছে');
+    AppSnackBar.success(context, AppStrings.s.trfSuccess);
     ref.invalidate(transferListProvider);
     ref.invalidate(transferAccountOptionsProvider);
     ref.invalidate(transferRefreshProvider);
@@ -161,7 +162,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
         );
       }).toList(),
       onChanged: onChanged,
-      validator: (v) => v == null ? '$label নির্বাচন করুন' : null,
+      validator: (v) => v == null ? AppStrings.s.valSelectField(label) : null,
     );
   }
 
@@ -173,7 +174,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('ট্রান্সফার', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.trfTitle, style: AppTypography.subtitle1),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -196,7 +197,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
                     AppSpacing.boxMD,
                     Expanded(
                       child: Text(
-                        'নগদ বা ব্যাংক হিসাব থেকে টাকা স্থানান্তর করুন',
+                        AppStrings.s.trfSubtitle,
                         style: AppTypography.bodyText2.copyWith(
                           color: AppColors.textPrimary,
                         ),
@@ -212,7 +213,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildAccountDropdown(
-                          label: 'হিসাব থেকে',
+                          label: AppStrings.s.trfFrom,
                           value: _fromKey,
                           accounts: accounts,
                           onChanged: (v) {
@@ -224,7 +225,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
                         ),
                         AppSpacing.boxLG,
                         _buildAccountDropdown(
-                          label: 'হিসাবে',
+                          label: AppStrings.s.trfTo,
                           value: _toKey,
                           accounts: accounts,
                           excludeKey: _fromKey,
@@ -234,8 +235,8 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
                     ),
               AppSpacing.boxXL,
               AppTextField(
-                label: 'পরিমাণ',
-                hint: '০.০০',
+                label: AppStrings.s.formAmount,
+                hint: AppStrings.s.formAmountHint,
                 controller: _amountCtrl,
                 keyboardType: TextInputType.number,
                 prefix: Text(
@@ -245,15 +246,15 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
                   ),
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'পরিমাণ লিখুন';
+                  if (v == null || v.isEmpty) return AppStrings.s.valEnterAmount;
                   final n = double.tryParse(v);
-                  if (n == null || n <= 0) return 'সঠিক পরিমাণ লিখুন';
+                  if (n == null || n <= 0) return AppStrings.s.valEnterValidAmount;
                   return null;
                 },
               ),
               AppSpacing.boxLG,
               AppTextField(
-                label: 'তারিখ',
+                label: AppStrings.s.formDate,
                 controller: _dateCtrl,
                 readOnly: true,
                 onTap: _pickDate,
@@ -264,8 +265,8 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
               ),
               AppSpacing.boxLG,
               AppTextField(
-                label: 'নোট',
-                hint: 'কেন ট্রান্সফার হলো (ঐচ্ছিক)',
+                label: AppStrings.s.formNote,
+                hint: AppStrings.s.trfNoteHint,
                 controller: _noteCtrl,
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
@@ -275,7 +276,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
                 builder: (context, ref, _) {
                   final state = ref.watch(transferFormProvider);
                   return AppButton(
-                    text: 'সংরক্ষণ করুন',
+                    text: AppStrings.s.trfSave,
                     icon: Icons.check_rounded,
                     isLoading: state.isLoading,
                     onPressed: _save,

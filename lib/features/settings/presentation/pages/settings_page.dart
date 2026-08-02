@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_text.dart';
 import 'package:nexora_khata/features/settings/presentation/providers/settings_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -20,54 +21,54 @@ class SettingsPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const AppText('সেটিংস', type: AppTextType.heading4),
+        title: AppText(AppStrings.s.setTitle, type: AppTextType.heading4),
       ),
       body: ListView(
         children: [
-          const _SectionHeader(title: 'পছন্দসমূহ'),
+          _SectionHeader(title: AppStrings.s.setPreferences),
           SwitchListTile(
             secondary: Icon(
               isDarkMode ? Icons.dark_mode : Icons.light_mode,
               color: AppColors.primary,
             ),
-            title: const AppText('ডার্ক মোড', type: AppTextType.body2),
+            title: AppText(AppStrings.s.setDarkMode, type: AppTextType.body2),
             value: isDarkMode,
             onChanged: (_) => ref.read(darkModeProvider.notifier).toggle(),
           ),
           const _LanguageTile(),
           const Divider(height: 1),
-          const _SectionHeader(title: 'ডেটাবেস'),
+          _SectionHeader(title: AppStrings.s.setDatabase),
           ListTile(
             leading: const Icon(Icons.backup, color: AppColors.primary),
-            title: const AppText('ব্যাকআপ', type: AppTextType.body2),
-            subtitle: const AppText('ব্যাকআপ নিন', type: AppTextType.caption),
+            title: AppText(AppStrings.s.setBackup, type: AppTextType.body2),
+            subtitle: AppText(AppStrings.s.setBackupTake, type: AppTextType.caption),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings/backup'),
           ),
           ListTile(
             leading: const Icon(Icons.backup, color: AppColors.primary),
-            title: const AppText('ব্যাকআপ ও পুনরুদ্ধার', type: AppTextType.body2),
-            subtitle: const AppText('ব্যাকআপ, পুনরুদ্ধার, এক্সপোর্ট ও ইম্পোর্ট', type: AppTextType.caption),
+            title: AppText(AppStrings.s.setBackupRestore, type: AppTextType.body2),
+            subtitle: AppText(AppStrings.s.setBackupRestoreSub, type: AppTextType.caption),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings/backup'),
           ),
           const Divider(height: 1),
-          const _SectionHeader(title: 'অন্যান্য'),
+          _SectionHeader(title: AppStrings.s.setOther),
           ListTile(
             leading: const Icon(Icons.info_outline, color: AppColors.primary),
-            title: const AppText('সম্পর্কে', type: AppTextType.body2),
+            title: AppText(AppStrings.s.setAbout, type: AppTextType.body2),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings/about'),
           ),
           ListTile(
             leading: const Icon(Icons.shield_outlined, color: AppColors.primary),
-            title: const AppText('গোপনীয়তা নীতি', type: AppTextType.body2),
+            title: AppText(AppStrings.s.setPrivacy, type: AppTextType.body2),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings/privacy'),
           ),
           ListTile(
             leading: const Icon(Icons.article_outlined, color: AppColors.primary),
-            title: const AppText('শর্তাবলী', type: AppTextType.body2),
+            title: AppText(AppStrings.s.setTerms, type: AppTextType.body2),
             trailing: const Icon(Icons.chevron_right),
             onTap: () => context.push('/settings/terms'),
           ),
@@ -106,7 +107,7 @@ class _LanguageTile extends ConsumerWidget {
 
     return ListTile(
       leading: const Icon(Icons.language, color: AppColors.primary),
-      title: const AppText('ভাষা', type: AppTextType.body2),
+      title: AppText(AppStrings.s.setLanguage, type: AppTextType.body2),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -128,7 +129,7 @@ class _LanguageTile extends ConsumerWidget {
     await showDialog<void>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const AppText('ভাষা নির্বাচন করুন', type: AppTextType.heading4),
+        title: AppText(AppStrings.s.setSelectLanguage, type: AppTextType.heading4),
         content: RadioGroup<Locale>(
           groupValue: currentLocale,
           onChanged: (locale) {
@@ -165,7 +166,7 @@ class _AppVersionTile extends ConsumerWidget {
 
     return ListTile(
       leading: const Icon(Icons.info_outline, color: AppColors.primary),
-      title: const AppText('অ্যাপ সংস্করণ', type: AppTextType.body2),
+      title: AppText(AppStrings.s.setAppVersion, type: AppTextType.body2),
       trailing: packageInfo.when(
         data: (info) => AppText(
           '${info.version}+${info.buildNumber}',

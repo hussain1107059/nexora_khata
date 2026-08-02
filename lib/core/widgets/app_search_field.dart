@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../config/theme/app_colors.dart';
 import '../config/theme/app_spacing.dart';
 import '../config/theme/app_typography.dart';
@@ -34,7 +35,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
       onChanged: _onChanged,
       textInputAction: TextInputAction.search,
       decoration: InputDecoration(
-        hintText: widget.hintText ?? 'অনুসন্ধান করুন...',
+        hintText: widget.hintText ?? AppStrings.s.commonSearchHint,
         hintStyle: AppTypography.bodyText2.copyWith(color: AppColors.textHint),
         prefixIcon: const Icon(Icons.search_rounded, color: AppColors.textHint, size: 22),
         suffixIcon: _controller.text.isNotEmpty
@@ -44,7 +45,7 @@ class _AppSearchFieldState extends State<AppSearchField> {
                   _onChanged('');
                 },
                 icon: const Icon(Icons.close_rounded, size: 18, color: AppColors.textHint),
-                tooltip: 'মুছে ফেলুন',
+                tooltip: AppStrings.s.commonClear,
               )
             : null,
         filled: true,

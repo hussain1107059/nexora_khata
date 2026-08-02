@@ -1,25 +1,30 @@
+import 'package:nexora_khata/core/services/app_strings.dart';
+
 abstract final class AppValidators {
   AppValidators._();
 
-  static String? required(String? value, [String fieldName = 'এই ক্ষেত্রটি']) {
+  static String? required(String? value, [String fieldName = '']) {
     if (value == null || value.trim().isEmpty) {
-      return '$fieldName আবশ্যক';
+      final name = fieldName.isEmpty ? AppStrings.s.valThisField : fieldName;
+      return AppStrings.s.valRequired(name);
     }
     return null;
   }
 
   static String? minLength(String? value, int minLength,
-      [String fieldName = 'মান']) {
+      [String fieldName = '']) {
     if (value == null || value.trim().length < minLength) {
-      return '$fieldName কমপক্ষে $minLength অক্ষর হতে হবে';
+      final name = fieldName.isEmpty ? AppStrings.s.valValue : fieldName;
+      return AppStrings.s.valMinLength(name, minLength);
     }
     return null;
   }
 
   static String? maxLength(String? value, int maxLength,
-      [String fieldName = 'মান']) {
+      [String fieldName = '']) {
     if (value != null && value.trim().length > maxLength) {
-      return '$fieldName সর্বোচ্চ $maxLength অক্ষর হতে পারে';
+      final name = fieldName.isEmpty ? AppStrings.s.valValue : fieldName;
+      return AppStrings.s.valMaxLength(name, maxLength);
     }
     return null;
   }
@@ -30,7 +35,7 @@ abstract final class AppValidators {
       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
     );
     if (!emailRegex.hasMatch(value.trim())) {
-      return 'বৈধ ইমেইল ঠিকানা দিন';
+      return AppStrings.s.valEmail;
     }
     return null;
   }
@@ -39,29 +44,29 @@ abstract final class AppValidators {
     if (value == null || value.trim().isEmpty) return null;
     final phoneRegex = RegExp(r'^01[3-9]\d{8}$');
     if (!phoneRegex.hasMatch(value.trim())) {
-      return 'বৈধ মোবাইল নম্বর দিন (যেমন: 01XXXXXXXXX)';
+      return AppStrings.s.valPhone;
     }
     return null;
   }
 
   static String? amount(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'পরিমাণ আবশ্যক';
+      return AppStrings.s.valAmountRequired;
     }
     final amount = double.tryParse(value.trim());
     if (amount == null || amount <= 0) {
-      return 'বৈধ পরিমাণ দিন (০-এর বেশি)';
+      return AppStrings.s.valAmountInvalid;
     }
     return null;
   }
 
   static String? positiveNumber(String? value) {
     if (value == null || value.trim().isEmpty) {
-      return 'সংখ্যা আবশ্যক';
+      return AppStrings.s.valNumberRequired;
     }
     final number = double.tryParse(value.trim());
     if (number == null || number < 0) {
-      return 'বৈধ ধনাত্মক সংখ্যা দিন';
+      return AppStrings.s.valNumberPositive;
     }
     return null;
   }
@@ -72,15 +77,16 @@ abstract final class AppValidators {
       r'^https?:\/\/[\w\-]+(\.[\w\-]+)+[/#?]?.*$',
     );
     if (!urlRegex.hasMatch(value.trim())) {
-      return 'বৈধ URL দিন';
+      return AppStrings.s.valUrl;
     }
     return null;
   }
 
   static String? match(String? value, String matchValue,
-      [String fieldName = 'মান']) {
+      [String fieldName = '']) {
     if (value != matchValue) {
-      return '$fieldName মেলে না';
+      final name = fieldName.isEmpty ? AppStrings.s.valValue : fieldName;
+      return AppStrings.s.valMismatch(name);
     }
     return null;
   }
@@ -91,7 +97,7 @@ abstract final class AppValidators {
       DateTime.parse(value.trim());
       return null;
     } catch (_) {
-      return 'বৈধ তারিখ দিন';
+      return AppStrings.s.valDate;
     }
   }
 }

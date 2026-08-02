@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/features/categories/domain/entities/income_category.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/income_category_provider.dart';
@@ -17,7 +18,7 @@ class IncomeCategoryFormPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text(category != null ? 'ক্যাটাগরি সম্পাদনা' : 'নতুন ক্যাটাগরি', style: AppTypography.subtitle1),
+        title: Text(category != null ? AppStrings.s.commonEdit : AppStrings.s.formNewCategory, style: AppTypography.subtitle1),
         centerTitle: true,
       ),
       body: TransactionCategoryFormFields(

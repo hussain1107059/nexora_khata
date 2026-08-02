@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/database_helper.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
@@ -360,7 +361,7 @@ class ReportDataSource {
       final loanCount = (loanRows.first['count'] as int);
       if (loanAmount > 0) {
         result.add({
-          'category': 'লোন (নেওয়া)',
+          'category': AppStrings.s.rptLoanTaken,
           'amount': loanAmount,
           'count': loanCount,
         });
@@ -441,7 +442,7 @@ class ReportDataSource {
       final loanCount = (loanRows.first['count'] as int);
       if (loanAmount > 0) {
         result.add({
-          'category': 'লোন (দেওয়া)',
+          'category': AppStrings.s.rptLoanGiven,
           'amount': loanAmount,
           'count': loanCount,
         });

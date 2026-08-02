@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/logger.dart';
 import 'package:nexora_khata/core/widgets/app_dialog.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
@@ -56,7 +57,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
     return Scaffold(
       appBar: AppBar(
-        title: const AppText('ব্যাকআপ ও পুনরুদ্ধার', type: AppTextType.subtitle2),
+        title: AppText(AppStrings.s.setBackupRestore, type: AppTextType.subtitle2),
         centerTitle: true,
       ),
       body: ListView(
@@ -88,7 +89,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
               children: [
                 const Icon(Icons.schedule_rounded, color: AppColors.info, size: 20),
                 AppSpacing.boxWSM,
-                const AppText('স্বয়ংক্রিয় ব্যাকআপ', type: AppTextType.subtitle2),
+                AppText(AppStrings.s.setAutoBackup, type: AppTextType.subtitle2),
                 const Spacer(),
                 Switch(
                   value: autoEnabled,
@@ -106,7 +107,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
             ),
             if (autoEnabled) ...[
               AppSpacing.boxMD,
-              const AppText('ব্যাকআপ ফ্রিকোয়েন্সি', type: AppTextType.caption, color: AppColors.textSecondary),
+              AppText(AppStrings.s.setBackupFreq, type: AppTextType.caption, color: AppColors.textSecondary),
               AppSpacing.boxSM,
               _buildFrequencySelector(),
               AppSpacing.boxSM,
@@ -116,12 +117,12 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                   color: AppColors.infoLight,
                   borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
                 ),
-                child: const Row(
+                child: Row(
                   children: [
-                    Icon(Icons.info_outline, size: 14, color: AppColors.info),
+                    const Icon(Icons.info_outline, size: 14, color: AppColors.info),
                     AppSpacing.boxWSM,
                     Expanded(child: AppText(
-                      'অ্যাপ চালু থাকাকালীন স্বয়ংক্রিয় ব্যাকআপ নেওয়া হবে',
+                      AppStrings.s.setAutoBackupDesc,
                       type: AppTextType.caption, color: AppColors.info,
                     )),
                   ],
@@ -140,10 +141,10 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       spacing: AppSpacing.sm,
       runSpacing: AppSpacing.sm,
       children: [
-        _freqChip('প্রতি ঘন্টা', 'hourly', freq),
-        _freqChip('দৈনিক', 'daily', freq),
-        _freqChip('সাপ্তাহিক', 'weekly', freq),
-        _freqChip('মাসিক', 'monthly', freq),
+        _freqChip(AppStrings.s.setHourly, 'hourly', freq),
+        _freqChip(AppStrings.s.setDaily, 'daily', freq),
+        _freqChip(AppStrings.s.setWeekly, 'weekly', freq),
+        _freqChip(AppStrings.s.setMonthly, 'monthly', freq),
       ],
     );
   }
@@ -174,15 +175,15 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.cloud_upload_outlined, color: AppColors.primary, size: 20),
+                const Icon(Icons.cloud_upload_outlined, color: AppColors.primary, size: 20),
                 AppSpacing.boxWSM,
-                AppText('ম্যানুয়াল ব্যাকআপ', type: AppTextType.subtitle2),
+                AppText(AppStrings.s.setManualBackup, type: AppTextType.subtitle2),
               ],
             ),
             AppSpacing.boxMD,
-            const AppText('বর্তমান ডেটাবেসের একটি ব্যাকআপ কপি তৈরি করুন', type: AppTextType.body2, color: AppColors.textSecondary),
+            AppText(AppStrings.s.setManualBackupDesc, type: AppTextType.body2, color: AppColors.textSecondary),
             AppSpacing.boxLG,
             SizedBox(
               width: double.infinity, height: 44,
@@ -191,7 +192,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                 icon: _isBackingUp
                     ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
                     : const Icon(Icons.download_rounded, size: 20),
-                label: const AppText('ব্যাকআপ নিন', type: AppTextType.button, color: AppColors.white),
+                label: AppText(AppStrings.s.setTakeBackup, type: AppTextType.button, color: AppColors.white),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
@@ -211,11 +212,11 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.restore_outlined, color: AppColors.warning, size: 20),
+                const Icon(Icons.restore_outlined, color: AppColors.warning, size: 20),
                 AppSpacing.boxWSM,
-                AppText('পুনরুদ্ধার', type: AppTextType.subtitle2),
+                AppText(AppStrings.s.setRestore, type: AppTextType.subtitle2),
               ],
             ),
             AppSpacing.boxMD,
@@ -226,8 +227,8 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                 color: AppColors.warningLight,
                 borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
               ),
-              child: const AppText(
-                'পুনরুদ্ধার করলে বর্তমান ডেটা মুছে যাবে এবং ব্যাকআপ ফাইল থেকে প্রতিস্থাপিত হবে',
+              child: AppText(
+                AppStrings.s.setRestoreWarning,
                 type: AppTextType.body2, color: AppColors.warning,
               ),
             ),
@@ -242,7 +243,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                       icon: _isRestoring
                           ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
                           : const Icon(Icons.history_rounded, size: 20),
-                      label: const AppText('ইতিহাস থেকে', type: AppTextType.button, color: AppColors.white),
+                      label: AppText(AppStrings.s.setRestoreFromHistory, type: AppTextType.button, color: AppColors.white),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.warning,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
@@ -259,7 +260,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                       icon: _isRestoring
                           ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))
                           : const Icon(Icons.file_open_rounded, size: 20),
-                      label: const AppText('ফাইল থেকে', type: AppTextType.button),
+                      label: AppText(AppStrings.s.setRestoreFromFile, type: AppTextType.button),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.error,
                         side: const BorderSide(color: AppColors.error),
@@ -283,11 +284,11 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.share_outlined, color: AppColors.secondary, size: 20),
+                const Icon(Icons.share_outlined, color: AppColors.secondary, size: 20),
                 AppSpacing.boxWSM,
-                AppText('এক্সপোর্ট / ইম্পোর্ট', type: AppTextType.subtitle2),
+                AppText(AppStrings.s.setExportImport, type: AppTextType.subtitle2),
               ],
             ),
             AppSpacing.boxMD,
@@ -301,7 +302,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                       icon: _isExporting
                           ? const SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2, color: AppColors.white))
                           : const Icon(Icons.share_rounded, size: 20),
-                      label: const AppText('শেয়ার', type: AppTextType.button, color: AppColors.white),
+                      label: AppText(AppStrings.s.setShare, type: AppTextType.button, color: AppColors.white),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColors.secondary,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusSm)),
@@ -316,7 +317,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                     child: OutlinedButton.icon(
                       onPressed: _importDb,
                       icon: const Icon(Icons.file_upload_outlined, size: 20),
-                      label: const AppText('ইম্পোর্ট', type: AppTextType.button),
+                      label: AppText(AppStrings.s.setImport, type: AppTextType.button),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.success,
                         side: const BorderSide(color: AppColors.success),
@@ -344,11 +345,11 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
               children: [
                 const Icon(Icons.history_rounded, color: AppColors.textPrimary, size: 20),
                 AppSpacing.boxWSM,
-                const AppText('ব্যাকআপ ইতিহাস', type: AppTextType.subtitle2),
+                AppText(AppStrings.s.setBackupHistory, type: AppTextType.subtitle2),
                 const Spacer(),
                 countAsync.when(
                   data: (c) => sizeAsync.when(
-                    data: (s) => AppText('$cটি | ${_fmtSize(s)}', type: AppTextType.caption, color: AppColors.textSecondary),
+                    data: (s) => AppText(AppStrings.s.setBackupCount('$c', _fmtSize(s)), type: AppTextType.caption, color: AppColors.textSecondary),
                     loading: () => const SizedBox.shrink(),
                     error: (_, _) => const SizedBox.shrink(),
                   ),
@@ -363,17 +364,17 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                 padding: EdgeInsets.all(24),
                 child: CircularProgressIndicator(strokeWidth: 2),
               )),
-              error: (e, _) => AppText('ত্রুটি: $e', type: AppTextType.body2, color: AppColors.error),
+              error: (e, _) => AppText(AppStrings.s.setErrorPrefix(e), type: AppTextType.body2, color: AppColors.error),
               data: (list) {
                 if (list.isEmpty) {
                   return           Container(
                     padding: AppSpacing.paddingXl,
-                    child: const Column(
+                    child: Column(
                       children: [
-                        Icon(Icons.inbox_outlined, size: 40, color: AppColors.textHint),
+                        const Icon(Icons.inbox_outlined, size: 40, color: AppColors.textHint),
                         AppSpacing.boxSM,
-                        AppText('কোনো ব্যাকআপ নেই', type: AppTextType.body2, color: AppColors.textSecondary),
-                        AppText('প্রথম ব্যাকআপ নিন', type: AppTextType.caption, color: AppColors.textHint),
+                        AppText(AppStrings.s.setNoBackup, type: AppTextType.body2, color: AppColors.textSecondary),
+                        AppText(AppStrings.s.setFirstBackup, type: AppTextType.caption, color: AppColors.textHint),
                       ],
                     ),
                   );
@@ -413,22 +414,22 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
         onSelected: (v) => _handleBackupAction(v, entry),
         itemBuilder: (_) => [
           if (entry.filePath != null) ...[
-            const PopupMenuItem(value: 'share', child: ListTile(
-              leading: Icon(Icons.share_rounded, size: 18), title: AppText('শেয়ার', type: AppTextType.body2),
+            PopupMenuItem(value: 'share', child: ListTile(
+              leading: const Icon(Icons.share_rounded, size: 18), title: AppText(AppStrings.s.setShare, type: AppTextType.body2),
               dense: true, contentPadding: EdgeInsets.zero,
             )),
-            const PopupMenuItem(value: 'restore', child: ListTile(
-              leading: Icon(Icons.restore_outlined, size: 18, color: AppColors.warning),
-              title: AppText('পুনরুদ্ধার', type: AppTextType.body2), dense: true, contentPadding: EdgeInsets.zero,
+            PopupMenuItem(value: 'restore', child: ListTile(
+              leading: const Icon(Icons.restore_outlined, size: 18, color: AppColors.warning),
+              title: AppText(AppStrings.s.setRestore, type: AppTextType.body2), dense: true, contentPadding: EdgeInsets.zero,
             )),
-            const PopupMenuItem(value: 'share_file', child: ListTile(
-              leading: Icon(Icons.file_present_rounded, size: 18), title: AppText('ফাইল শেয়ার', type: AppTextType.body2),
+            PopupMenuItem(value: 'share_file', child: ListTile(
+              leading: const Icon(Icons.file_present_rounded, size: 18), title: AppText(AppStrings.s.setFileShare, type: AppTextType.body2),
               dense: true, contentPadding: EdgeInsets.zero,
             )),
           ],
-          const PopupMenuItem(value: 'delete', child: ListTile(
-            leading: Icon(Icons.delete_outline, size: 18, color: AppColors.error),
-            title: AppText('মুছুন', type: AppTextType.body2), dense: true, contentPadding: EdgeInsets.zero,
+          PopupMenuItem(value: 'delete', child: ListTile(
+            leading: const Icon(Icons.delete_outline, size: 18, color: AppColors.error),
+            title: AppText(AppStrings.s.setDelete, type: AppTextType.body2), dense: true, contentPadding: EdgeInsets.zero,
           )),
         ],
       ),
@@ -444,8 +445,8 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
         }
       case 'restore':
         if (entry.filePath != null) {
-          final confirmed = await _showConfirmDialog('পুনরুদ্ধার নিশ্চিত করুন',
-            '${entry.fileName} থেকে ডেটা পুনরুদ্ধার করবেন?\nবর্তমান ডেটা মুছে যাবে।');
+          final confirmed = await _showConfirmDialog(AppStrings.s.setRestoreConfirmTitle,
+            AppStrings.s.setRestoreConfirmMsg(entry.fileName));
           if (confirmed == true && entry.filePath != null) {
             await _doRestore(entry.filePath!);
           }
@@ -457,8 +458,8 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
         }
       case 'delete':
         if (mounted) {
-          final confirmed = await _showConfirmDialog('ব্যাকআপ মুছুন',
-            '${entry.fileName} ব্যাকআপটি মুছবেন?', destructive: true);
+          final confirmed = await _showConfirmDialog(AppStrings.s.setDeleteBackupTitle,
+            AppStrings.s.setDeleteBackupMsg(entry.fileName), destructive: true);
           if (confirmed == true) {
             final service = ref.read(backupServiceProvider);
             await service.deleteBackup(entry.id);
@@ -483,15 +484,15 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       if (mounted) {
         AppSnackBar.show(
           context,
-          'ব্যাকআপ সফল: ${p.basename(file.path)}',
+          AppStrings.s.setBackupSuccess(p.basename(file.path)),
           type: SnackBarType.success,
-          actionLabel: 'শেয়ার',
+          actionLabel: AppStrings.s.setShare,
           onAction: () => service.shareBackup(file.path),
         );
       }
     } catch (e) {
       if (mounted) {
-        AppSnackBar.error(context, 'ব্যর্থ: $e');
+        AppSnackBar.error(context, AppStrings.s.setFailed(e));
       }
     } finally {
       if (mounted) setState(() => _isBackingUp = false);
@@ -503,7 +504,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
     final history = await service.getBackupHistory(limit: 100);
     if (!mounted) return;
     if (history.isEmpty) {
-      AppSnackBar.warning(context, 'কোনো ব্যাকআপ পাওয়া যায়নি');
+      AppSnackBar.warning(context, AppStrings.s.setNoBackupFound);
       return;
     }
     await showModalBottomSheet(
@@ -514,11 +515,11 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Row(
+            Row(
               children: [
-                Icon(Icons.history_rounded, size: 20, color: AppColors.warning),
+                const Icon(Icons.history_rounded, size: 20, color: AppColors.warning),
                 AppSpacing.boxWSM,
-                AppText('ব্যাকআপ নির্বাচন করুন', type: AppTextType.subtitle2),
+                AppText(AppStrings.s.setSelectBackup, type: AppTextType.subtitle2),
               ],
             ),
             AppSpacing.boxMD,
@@ -549,8 +550,8 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
   Future<void> _confirmAndRestore(String? filePath, String fileName) async {
     if (filePath == null) return;
-    final confirmed = await _showConfirmDialog('পুনরুদ্ধার নিশ্চিত করুন',
-      '$fileName থেকে পুনরুদ্ধার করবেন?\nবর্তমান সব ডেটা মুছে যাবে!');
+    final confirmed = await _showConfirmDialog(AppStrings.s.setRestoreConfirmTitle,
+      AppStrings.s.setRestoreConfirmMsg2(fileName));
     if (confirmed == true) {
       await _doRestore(filePath);
     }
@@ -574,14 +575,14 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       if (mounted) {
         AppSnackBar.show(
           context,
-          success ? 'পুনরুদ্ধার সফল! ${p.basename(path)}' : 'পুনরুদ্ধার ব্যর্থ',
+          success ? AppStrings.s.setRestoreSuccess(p.basename(path)) : AppStrings.s.setRestoreFailed,
           type: success ? SnackBarType.success : SnackBarType.error,
         );
       }
     } catch (e) {
       log.e('Restore failed: $e');
       if (mounted) {
-        AppSnackBar.error(context, 'ত্রুটি: $e');
+        AppSnackBar.error(context, AppStrings.s.setErrorPrefix(e));
       }
     } finally {
       if (mounted) setState(() => _isRestoring = false);
@@ -597,7 +598,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
     } catch (e) {
       log.e('Export failed: $e');
       if (mounted) {
-        AppSnackBar.error(context, 'ত্রুটি: $e');
+        AppSnackBar.error(context, AppStrings.s.setErrorPrefix(e));
       }
     } finally {
       if (mounted) setState(() => _isExporting = false);
@@ -610,15 +611,15 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
     );
     if (fileResult == null || fileResult.files.single.path == null) return;
     final path = fileResult.files.single.path!;
-    final confirmed = await _showConfirmDialog('ইম্পোর্ট নিশ্চিত করুন',
-      '${fileResult.files.single.name} ইম্পোর্ট করবেন?\nবর্তমান ডেটা প্রতিস্থাপিত হবে!', destructive: true);
+    final confirmed = await _showConfirmDialog(AppStrings.s.setImportConfirmTitle,
+      AppStrings.s.setImportConfirmMsg(fileResult.files.single.name), destructive: true);
     if (confirmed == true) {
       final service = ref.read(backupServiceProvider);
       final success = await service.restore(path);
       if (mounted) {
         AppSnackBar.show(
           context,
-          success ? 'ইম্পোর্ট সফল' : 'ইম্পোর্ট ব্যর্থ',
+          success ? AppStrings.s.setImportSuccess : AppStrings.s.setImportFailed,
           type: success ? SnackBarType.success : SnackBarType.error,
         );
       }
@@ -630,7 +631,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       context,
       title: title,
       message: message,
-      confirmLabel: 'নিশ্চিত',
+      confirmLabel: AppStrings.s.commonConfirmLabel,
       icon: destructive ? Icons.warning_rounded : Icons.restore_rounded,
       iconColor: destructive ? AppColors.error : AppColors.warning,
       iconBackground: destructive ? AppColors.errorLight : AppColors.warningLight,

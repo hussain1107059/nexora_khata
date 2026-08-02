@@ -5,6 +5,7 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';import 'package:nexora_khata/core/widgets/app_dialog.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
@@ -29,18 +30,18 @@ class LoanDetailPage extends ConsumerWidget {
       appBar: contactAsync.when(
         loading: () => AppBar(title: const Text('...')),
         error: (_, _) => AppBar(
-          title: Text('হিসাব', style: AppTypography.subtitle1),
+          title: Text(AppStrings.s.loanDetailTitle, style: AppTypography.subtitle1),
         ),
         data: (contact) => AppBar(
           title: Text(
-            contact?.name ?? 'হিসাব',
+            contact?.name ?? AppStrings.s.loanDetailTitle,
             style: AppTypography.subtitle1,
           ),
           centerTitle: true,
           actions: [
             IconButton(
               icon: const Icon(Icons.edit_rounded),
-              tooltip: 'সম্পাদনা',
+              tooltip: AppStrings.s.loanEdit,
               onPressed: () async {
                 if (contact == null) return;
                 final result = await context.push<bool>(
@@ -54,14 +55,14 @@ class LoanDetailPage extends ConsumerWidget {
             ),
             IconButton(
               icon: const Icon(Icons.delete_rounded),
-              tooltip: 'মুছে ফেলুন',
+              tooltip: AppStrings.s.loanDelete,
               onPressed: () => _confirmDelete(context, ref),
             ),
           ],
         ),
       ),
       body: txnsAsync.when(
-        loading: () => const AppLoading(message: 'লেনদেন লোড হচ্ছে...'),
+        loading: () => AppLoading(message: AppStrings.s.loanTxnLoading),
         error: (e, _) => AppErrorWidget(
           message: e.toString(),
           onRetry: () => ref.invalidate(loanTransactionsProvider(contactId)),
@@ -84,10 +85,10 @@ class LoanDetailPage extends ConsumerWidget {
           final balance = remainingLend - remainingBorrow;
 
           if (txns.isEmpty) {
-            return const AppEmptyState(
+            return AppEmptyState(
               icon: Icons.receipt_long_rounded,
-              title: 'কোনো লেনদেন নেই',
-              subtitle: 'নিচের বাটন দিয়ে টাকা নেওয়া বা দেওয়ার হিসাব যোগ করুন',
+              title: AppStrings.s.loanTxnEmpty,
+              subtitle: AppStrings.s.loanTxnEmptySubtitle,
             );
           }
 
@@ -113,7 +114,7 @@ class LoanDetailPage extends ConsumerWidget {
                 Padding(
                   padding: AppSpacing.paddingHSm,
                   child: Text(
-                    'লেনদেনের ইতিহাস',
+                    AppStrings.s.loanHistory,
                     style: AppTypography.subtitle2.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -136,7 +137,7 @@ class LoanDetailPage extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('লেনদেন যোগ করুন'),
+        label: Text(AppStrings.s.loanAddTxn),
       ),
     );
   }
@@ -163,7 +164,7 @@ class LoanDetailPage extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  'কি করছেন?',
+                  AppStrings.s.loanActionPrompt,
                   style: AppTypography.subtitle1.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -174,8 +175,8 @@ class LoanDetailPage extends ConsumerWidget {
                 _SheetAction(
                   icon: Icons.arrow_upward_rounded,
                   color: AppColors.error,
-                  title: 'টাকা নিয়েছি',
-                  subtitle: '$name থেকে টাকা নিয়েছি',
+                  title: AppStrings.s.loanBorrow,
+                  subtitle: AppStrings.s.loanBorrowSubtitle(name),
                   onTap: () {
                     Navigator.pop(ctx);
                     context.push(
@@ -188,8 +189,8 @@ class LoanDetailPage extends ConsumerWidget {
                 _SheetAction(
                   icon: Icons.arrow_downward_rounded,
                   color: AppColors.success,
-                  title: 'টাকা দিয়েছি',
-                  subtitle: '$name কে টাকা দিয়েছি',
+                  title: AppStrings.s.loanLend,
+                  subtitle: AppStrings.s.loanLendSubtitle(name),
                   onTap: () {
                     Navigator.pop(ctx);
                     context.push(
@@ -202,8 +203,8 @@ class LoanDetailPage extends ConsumerWidget {
                 _SheetAction(
                   icon: Icons.autorenew_rounded,
                   color: AppColors.info,
-                  title: 'পরিশোধ',
-                  subtitle: 'টাকা ফেরত বা জমা',
+                  title: AppStrings.s.loanRepay,
+                  subtitle: AppStrings.s.loanRepaySubtitle,
                   onTap: () {
                     Navigator.pop(ctx);
                     context.push(
@@ -224,9 +225,9 @@ class LoanDetailPage extends ConsumerWidget {
   Future<void> _confirmDelete(BuildContext context, WidgetRef ref) async {
     final confirmed = await AppDialog.confirm(
       context,
-      title: 'হিসাব মুছে ফেলবেন?',
-      message: 'এই ব্যক্তির সব লেনদেনের হিসাব মুছে যাবে',
-      confirmLabel: 'মুছে ফেলুন',
+      title: AppStrings.s.loanDeleteTitle,
+      message: AppStrings.s.loanDeleteMsg,
+      confirmLabel: AppStrings.s.loanDelete,
       destructive: true,
       icon: Icons.delete_rounded,
       iconColor: AppColors.error,
@@ -237,7 +238,7 @@ class LoanDetailPage extends ConsumerWidget {
     final success = await notifier.delete(contactId);
     if (!context.mounted) return;
     if (success) {
-      AppSnackBar.success(context, 'হিসাব মুছে ফেলা হয়েছে');
+      AppSnackBar.success(context, AppStrings.s.loanDeleted);
       ref.invalidate(loanDashboardProvider);
       context.pop();
     } else {
@@ -255,9 +256,9 @@ class LoanDetailPage extends ConsumerWidget {
   ) async {
     final confirmed = await AppDialog.confirm(
       context,
-      title: 'লেনদেন মুছে ফেলবেন?',
-      message: 'এই লেনদেনটির হিসাব মুছে যাবে',
-      confirmLabel: 'মুছে ফেলুন',
+      title: AppStrings.s.loanTxnDeleteTitle,
+      message: AppStrings.s.loanTxnDeleteMsg,
+      confirmLabel: AppStrings.s.loanDelete,
       destructive: true,
       icon: Icons.delete_rounded,
       iconColor: AppColors.error,
@@ -268,7 +269,7 @@ class LoanDetailPage extends ConsumerWidget {
     final success = await notifier.delete(txn.id);
     if (!context.mounted) return;
     if (success) {
-      AppSnackBar.success(context, 'লেনদেন মুছে ফেলা হয়েছে');
+      AppSnackBar.success(context, AppStrings.s.loanTxnDeleted);
       ref.invalidate(loanTransactionsProvider(contactId));
       ref.invalidate(loanDashboardProvider);
     } else {
@@ -312,7 +313,9 @@ class _BalanceCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
-            isSettled ? 'সম্পূর্ণ পরিশোধ' : (balance > 0 ? 'আমি পাবো' : 'আমাকে দিতে হবে'),
+            isSettled
+                ? AppStrings.s.loanFullSettled
+                : (balance > 0 ? AppStrings.s.loanYouReceive : AppStrings.s.loanYouOwe),
             style: AppTypography.caption.copyWith(
               color: color,
               fontWeight: FontWeight.w600,
@@ -333,7 +336,7 @@ class _BalanceCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MiniStat(
-                  label: 'নিয়েছি',
+                  label: AppStrings.s.loanBorrowLabel,
                   amount: totalBorrow,
                   color: AppColors.error,
                 ),
@@ -341,7 +344,7 @@ class _BalanceCard extends StatelessWidget {
               Container(width: 1, height: 36, color: color.withValues(alpha: 0.3)),
               Expanded(
                 child: _MiniStat(
-                  label: 'দিয়েছি',
+                  label: AppStrings.s.loanLendLabel,
                   amount: totalLend,
                   color: AppColors.success,
                 ),
@@ -353,7 +356,7 @@ class _BalanceCard extends StatelessWidget {
             children: [
               Expanded(
                 child: _MiniStat(
-                  label: 'পরিশোধ (নেওয়া)',
+                  label: AppStrings.s.loanRepayBorrow,
                   amount: repaidBorrow,
                   color: AppColors.error,
                 ),
@@ -361,7 +364,7 @@ class _BalanceCard extends StatelessWidget {
               Container(width: 1, height: 36, color: color.withValues(alpha: 0.3)),
               Expanded(
                 child: _MiniStat(
-                  label: 'পরিশোধ (দেওয়া)',
+                  label: AppStrings.s.loanRepayLend,
                   amount: repaidLend,
                   color: AppColors.success,
                 ),
@@ -427,8 +430,8 @@ class _TransactionTile extends StatelessWidget {
             ? Icons.arrow_upward_rounded
             : Icons.arrow_downward_rounded);
     final title = isRepay
-        ? (txn.repaysBorrow ? 'নেওয়া পরিশোধ' : 'দেওয়া পরিশোধ')
-        : (isBorrow ? 'নিয়েছি' : 'দিয়েছি');
+        ? (txn.repaysBorrow ? AppStrings.s.loanRepayBorrowed : AppStrings.s.loanRepayLent)
+        : (isBorrow ? AppStrings.s.loanBorrowLabel : AppStrings.s.loanLendLabel);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 4),

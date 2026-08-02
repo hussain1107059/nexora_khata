@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
@@ -20,7 +21,7 @@ class RecentTransactionsList extends StatelessWidget {
         padding: AppSpacing.paddingLg,
         child: Center(
           child: Text(
-            'কোনো লেনদেন নেই',
+            AppStrings.s.dashboardNoTransaction,
             style: AppTypography.bodyText2.copyWith(
               color: AppColors.textHint,
             ),
@@ -38,7 +39,7 @@ class RecentTransactionsList extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'সাম্প্রতিক লেনদেন',
+                AppStrings.s.dashboardRecentTransactions,
                 style: AppTypography.subtitle2.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w600,
@@ -47,7 +48,7 @@ class RecentTransactionsList extends StatelessWidget {
               TextButton(
                 onPressed: () => context.push(RouteNames.incomeList),
                 child: Text(
-                  'সব দেখুন',
+                  AppStrings.s.dashboardViewAll,
                   style: AppTypography.labelMedium.copyWith(
                     color: AppColors.primary,
                   ),
@@ -71,7 +72,7 @@ class _TransactionTile extends StatelessWidget {
     final isIncome = tx.type == 'income';
     final color = isIncome ? AppColors.success : AppColors.error;
     final icon = isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
-    final label = isIncome ? 'আয়' : 'ব্যয়';
+    final label = isIncome ? AppStrings.s.dashboardIncome : AppStrings.s.dashboardExpense;
 
     return Container(
       margin: AppSpacing.paddingHSm.copyWith(bottom: AppSpacing.sm),

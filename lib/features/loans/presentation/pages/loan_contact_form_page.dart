@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
@@ -91,7 +92,10 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
     }
 
     if (!mounted) return;
-    AppSnackBar.success(context, _editing ? 'হিসাব আপডেট হয়েছে' : 'নতুন হিসাব যোগ হয়েছে');
+    AppSnackBar.success(
+      context,
+      _editing ? AppStrings.s.loanContactUpdated : AppStrings.s.loanContactAdded,
+    );
     ref.invalidate(loanDashboardProvider);
     ref.invalidate(loanContactListProvider);
     ref.invalidate(loanRefreshProvider);
@@ -145,7 +149,10 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text(_editing ? 'হিসাব সম্পাদনা' : 'নতুন হিসাব', style: AppTypography.subtitle1),
+        title: Text(
+          _editing ? AppStrings.s.loanContactEdit : AppStrings.s.loanContactNew,
+          style: AppTypography.subtitle1,
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -156,25 +163,25 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               AppTextField(
-                label: 'নাম *',
-                hint: 'যেমন: রাকিব, ফুপি, চাচা',
+                label: AppStrings.s.loanName,
+                hint: AppStrings.s.loanNameHint,
                 controller: _nameController,
                 textInputAction: TextInputAction.next,
                 validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'নাম দিন' : null,
+                    (v == null || v.trim().isEmpty) ? AppStrings.s.valEnterName : null,
               ),
               AppSpacing.boxLG,
               AppTextField(
-                label: 'ফোন',
-                hint: 'ফোন নম্বর (ঐচ্ছিক)',
+                label: AppStrings.s.loanPhone,
+                hint: AppStrings.s.loanPhoneHint,
                 controller: _phoneController,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
               ),
               AppSpacing.boxLG,
               AppTextField(
-                label: 'নোট',
-                hint: 'কোনো নোট (ঐচ্ছিক)',
+                label: AppStrings.s.formNote,
+                hint: AppStrings.s.loanNoteHint,
                 controller: _noteController,
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
@@ -184,7 +191,7 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
                 const Divider(height: 1),
                 AppSpacing.boxLG,
                 Text(
-                  'প্রথম লেনদেন (ঐচ্ছিক)',
+                  AppStrings.s.loanFirstTxn,
                   style: AppTypography.subtitle2.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -195,7 +202,7 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
                   children: [
                     Expanded(
                       child: _OptionButton(
-                        label: 'নিয়েছি',
+                        label: AppStrings.s.loanBorrowLabel,
                         icon: Icons.arrow_upward_rounded,
                         color: AppColors.error,
                         selected: _txnType == 'borrow',
@@ -205,7 +212,7 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
                     AppSpacing.boxWMD,
                     Expanded(
                       child: _OptionButton(
-                        label: 'দিয়েছি',
+                        label: AppStrings.s.loanLendLabel,
                         icon: Icons.arrow_downward_rounded,
                         color: AppColors.success,
                         selected: _txnType == 'lend',
@@ -216,8 +223,8 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
                 ),
                 AppSpacing.boxLG,
                 AppTextField(
-                  label: 'পরিমাণ',
-                  hint: '০.০০',
+                  label: AppStrings.s.formAmount,
+                  hint: AppStrings.s.formAmountHint,
                   controller: _amountController,
                   keyboardType: TextInputType.number,
                   prefix: Text(
@@ -231,7 +238,7 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
                 DropdownButtonFormField<String>(
                   initialValue: _paymentMethod,
                   decoration: InputDecoration(
-                    labelText: 'পেমেন্ট পদ্ধতি',
+                    labelText: AppStrings.s.payMethod,
                     labelStyle: AppTypography.bodyText2.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -243,9 +250,9 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
                       vertical: AppSpacing.md,
                     ),
                   ),
-                  items: const [
-                    DropdownMenuItem(value: 'cash', child: Text('নগদ')),
-                    DropdownMenuItem(value: 'bank', child: Text('ব্যাংক')),
+                  items: [
+                    DropdownMenuItem(value: 'cash', child: Text(AppStrings.s.payCash)),
+                    DropdownMenuItem(value: 'bank', child: Text(AppStrings.s.payBank)),
                   ],
                   onChanged: (v) => setState(() => _paymentMethod = v!),
                 ),
@@ -255,7 +262,9 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
                 builder: (context, ref, _) {
                   final state = ref.watch(loanContactFormProvider);
                   return AppButton(
-                    text: _editing ? 'আপডেট করুন' : 'সেভ করুন',
+                    text: _editing
+                        ? AppStrings.s.commonUpdateLabel
+                        : AppStrings.s.commonSaveShort,
                     icon: Icons.check_rounded,
                     isLoading: state.isLoading,
                     onPressed: _save,

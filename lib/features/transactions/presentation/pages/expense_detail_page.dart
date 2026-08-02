@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
@@ -22,7 +23,7 @@ class ExpenseDetailPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('ব্যয়ের বিবরণ', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.expDetail, style: AppTypography.subtitle1),
         centerTitle: true,
         actions: [
           IconButton(
@@ -53,17 +54,17 @@ class ExpenseDetailPage extends ConsumerWidget {
         error: (e, _) => AppErrorWidget(message: e.toString()),
         data: (expense) {
           if (expense == null) {
-            return const Center(child: Text('ব্যয় পাওয়া যায়নি'));
+            return Center(child: Text(AppStrings.s.expNotFound));
           }
           return TransactionDetailView(
             amount: expense.amount,
-            amountLabel: 'মোট ব্যয়',
+            amountLabel: AppStrings.s.expTotal,
             gradient: AppColors.primaryGradient,
             status: expense.status,
-            completedStatusText: 'পরিশোধিত',
+            completedStatusText: AppStrings.s.statusPaid,
             date: expense.expenseDate,
             categoryName: expense.catName,
-            partnerLabel: 'সাপ্লায়ার',
+            partnerLabel: AppStrings.s.expSupplier,
             partnerName: expense.supplierName,
             paymentMethod: expense.paymentMethod,
             reference: expense.reference,
@@ -81,20 +82,20 @@ class ExpenseDetailPage extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('নিশ্চিত করুন', style: AppTypography.subtitle1),
-        content: Text('আপনি কি এই ব্যয়টি মুছে ফেলতে চান?', style: AppTypography.bodyText2),
+        title: Text(AppStrings.s.commonConfirm, style: AppTypography.subtitle1),
+        content: Text(AppStrings.s.expDeleteConfirm, style: AppTypography.bodyText2),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('বাতিল', style: AppTypography.button.copyWith(color: AppColors.textSecondary))),
+          TextButton(onPressed: () => Navigator.pop(ctx), child: Text(AppStrings.s.commonCancel, style: AppTypography.button.copyWith(color: AppColors.textSecondary))),
           TextButton(onPressed: () async {
             Navigator.pop(ctx);
             await ref.read(expenseFormProvider.notifier).delete(id);
             if (!context.mounted) return;
-            AppSnackBar.success(context, 'ব্যয় মুছে ফেলা হয়েছে');
+            AppSnackBar.success(context, AppStrings.s.expDeleted);
             ref.invalidate(expenseFilteredListProvider);
             ref.invalidate(dashboardProvider);
             ref.invalidate(dashboardRefreshProvider);
             context.pop();
-          }, child: Text('মুছুন', style: AppTypography.button.copyWith(color: AppColors.error))),
+          }, child: Text(AppStrings.s.commonDelete, style: AppTypography.button.copyWith(color: AppColors.error))),
         ],
       ),
     );

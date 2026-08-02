@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
@@ -18,17 +19,17 @@ class MonthlyChart extends StatelessWidget {
 
     return CoreCard(
       margin: AppSpacing.paddingHSm,
-      title: 'মাসিক রিপোর্ট',
-      trailing: const Row(
+      title: AppStrings.s.dashboardMonthlyChart,
+      trailing: Row(
         children: [
           ChartLegend(
             color: AppColors.success,
-            label: 'আয়',
+            label: AppStrings.s.dashboardIncome,
             padding: EdgeInsets.only(left: 8),
           ),
           ChartLegend(
             color: AppColors.error,
-            label: 'ব্যয়',
+            label: AppStrings.s.dashboardExpense,
             padding: EdgeInsets.only(left: 8),
           ),
         ],
@@ -44,7 +45,7 @@ class MonthlyChart extends StatelessWidget {
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         final m = data[groupIndex];
                         final monthName = _monthName(m.month);
-                        final label = rodIndex == 0 ? 'আয়' : 'ব্যয়';
+                        final label = rodIndex == 0 ? AppStrings.s.dashboardIncome : AppStrings.s.dashboardExpense;
                         return BarTooltipItem(
                           '$monthName\n$label: ${AppNumberUtils.formatCurrency(rod.toY)}',
                           const TextStyle(
@@ -153,19 +154,19 @@ class MonthlyChart extends StatelessWidget {
   }
 
   String _monthName(int m) {
-    const months = [
-      'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল',
-      'মে', 'জুন', 'জুলাই', 'আগস্ট',
-      'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর',
+    final months = [
+      AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril,
+      AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust,
+      AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember,
     ];
     return months[m - 1];
   }
 
   String _shortMonth(int m) {
-    const months = [
-      'জানু', 'ফেব', 'মার', 'এপ্রি',
-      'মে', 'জুন', 'জুলা', 'আগ',
-      'সেপ', 'অক্টো', 'নভে', 'ডিসে',
+    final months = [
+      AppStrings.s.monthShort1, AppStrings.s.monthShort2, AppStrings.s.monthShort3, AppStrings.s.monthShort4,
+      AppStrings.s.monthShort5, AppStrings.s.monthShort6, AppStrings.s.monthShort7, AppStrings.s.monthShort8,
+      AppStrings.s.monthShort9, AppStrings.s.monthShort10, AppStrings.s.monthShort11, AppStrings.s.monthShort12,
     ];
     return months[m - 1];
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/features/loans/presentation/models/loan_summary.dart';
 
@@ -54,7 +55,7 @@ class LoanSummaryHeader extends StatelessWidget {
                 AppSpacing.boxWMD,
                 Expanded(
                   child: Text(
-                    'ঋণের সারসংক্ষেপ',
+                    AppStrings.s.loanSummary,
                     style: AppTypography.subtitle2.copyWith(
                       color: AppColors.white,
                       fontWeight: FontWeight.w700,
@@ -70,7 +71,7 @@ class LoanSummaryHeader extends StatelessWidget {
               children: [
                 Expanded(
                   child: _SummaryItem(
-                    label: 'মোট পাওনা',
+                    label: AppStrings.s.loanTotalReceivable,
                     amount: dashboard.totalLend,
                     color: AppColors.success,
                   ),
@@ -78,7 +79,7 @@ class LoanSummaryHeader extends StatelessWidget {
                 Container(width: 1, height: 44, color: AppColors.divider),
                 Expanded(
                   child: _SummaryItem(
-                    label: 'মোট দেনা',
+                    label: AppStrings.s.loanTotalDebt,
                     amount: dashboard.totalBorrow,
                     color: AppColors.error,
                   ),
@@ -86,7 +87,7 @@ class LoanSummaryHeader extends StatelessWidget {
                 Container(width: 1, height: 44, color: AppColors.divider),
                 Expanded(
                   child: _SummaryItem(
-                    label: 'নেট',
+                    label: AppStrings.s.loanNet,
                     amount: dashboard.netBalance,
                     color: dashboard.netBalance >= 0
                         ? AppColors.success

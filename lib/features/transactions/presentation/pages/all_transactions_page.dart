@@ -5,6 +5,7 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
@@ -31,13 +32,13 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('সব লেনদেন', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.txnAllTitle, style: AppTypography.subtitle1),
         centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(allTransactionsProvider),
-            tooltip: 'রিফ্রেশ',
+            tooltip: AppStrings.s.commonRefresh,
           ),
         ],
       ),
@@ -50,7 +51,7 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
               children: [
                 Expanded(
                   child: AppSearchField(
-                    hintText: 'লেনদেন অনুসন্ধান করুন...',
+                    hintText: AppStrings.s.txnSearchHint,
                     onChanged: (v) =>
                         ref.read(allTxSearchProvider.notifier).state = v,
                   ),
@@ -66,17 +67,17 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
           AppSpacing.boxSM,
           Expanded(
             child: txnsAsync.when(
-              loading: () => const AppLoading(message: 'লেনদেন লোড হচ্ছে...'),
+              loading: () => AppLoading(message: AppStrings.s.txnLoading),
               error: (e, _) => AppErrorWidget(
                 message: e.toString(),
                 onRetry: () => ref.invalidate(allTransactionsProvider),
               ),
               data: (txns) {
                 if (txns.isEmpty) {
-                  return const AppEmptyState(
+                  return AppEmptyState(
                     icon: Icons.receipt_long_rounded,
-                    title: 'কোনো লেনদেন নেই',
-                    subtitle: 'নতুন লেনদেন যোগ করতে নিচের বাটনে ক্লিক করুন',
+                    title: AppStrings.s.txnNoData,
+                    subtitle: AppStrings.s.txnNoDataSubtitle,
                   );
                 }
                 return RefreshIndicator(
@@ -102,7 +103,7 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         icon: const Icon(Icons.add_rounded),
-        label: const Text('নতুন লেনদেন'),
+        label: Text(AppStrings.s.txnNew),
       ),
     );
   }
@@ -153,8 +154,8 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
               ? Icons.arrow_upward_rounded
               : Icons.arrow_downward_rounded);
       final title = isRepay
-          ? 'পরিশোধ'
-          : (isBorrow ? 'নিয়েছি' : 'দিয়েছি');
+          ? AppStrings.s.txnRepay
+          : (isBorrow ? AppStrings.s.loanBorrowLabel : AppStrings.s.loanLendLabel);
       return TransactionCard(
         description: entry.contactName ?? '',
         date: entry.date,
@@ -165,7 +166,7 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
         iconColor: color,
         icon: icon,
         amountColor: color,
-        completedStatusText: 'সম্পন্ন',
+        completedStatusText: AppStrings.s.statusCompleted,
         onTap: () {
           final contactId = entry.contactId;
           if (contactId == null) return;
@@ -187,7 +188,7 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
           ? Icons.arrow_downward_rounded
           : Icons.arrow_upward_rounded,
       amountColor: color,
-      completedStatusText: isIncome ? 'গৃহীত' : 'পরিশোধিত',
+      completedStatusText: isIncome ? AppStrings.s.statusReceived : AppStrings.s.statusPaid,
       onTap: () {
         final route = isIncome
             ? '${RouteNames.incomeDetail}/${entry.id}'
@@ -213,7 +214,7 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Text(
-                'কি যোগ করবেন?',
+                AppStrings.s.txnAddPrompt,
                 style: AppTypography.subtitle1.copyWith(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w700,
@@ -224,8 +225,8 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
               _SheetAction(
                 icon: Icons.arrow_downward_rounded,
                 color: AppColors.success,
-                title: 'আয়',
-                subtitle: 'টাকা পেয়েছি (বেতন, বিক্রয় ইত্যাদি)',
+                title: AppStrings.s.txnIncomeTitle,
+                subtitle: AppStrings.s.txnIncomeSubtitle,
                 onTap: () async {
                   Navigator.pop(ctx);
                   final result = await context.push<bool>(RouteNames.incomeAdd);
@@ -239,8 +240,8 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
               _SheetAction(
                 icon: Icons.arrow_upward_rounded,
                 color: AppColors.error,
-                title: 'ব্যয়',
-                subtitle: 'টাকা খরচ হয়েছে (খাদ্য, ভাড়া ইত্যাদি)',
+                title: AppStrings.s.txnExpenseTitle,
+                subtitle: AppStrings.s.txnExpenseSubtitle,
                 onTap: () async {
                   Navigator.pop(ctx);
                   final result = await context.push<bool>(RouteNames.expenseAdd);
@@ -416,7 +417,7 @@ class _FilterSheetState extends State<_FilterSheet> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'ফিল্টার',
+                  AppStrings.s.commonFilter,
                   style: AppTypography.subtitle1.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w700,
@@ -431,55 +432,55 @@ class _FilterSheetState extends State<_FilterSheet> {
                       });
                       widget.onClear();
                     },
-                    child: const Text('সব মুছুন'),
+                    child: Text(AppStrings.s.txnClearAll),
                   ),
               ],
             ),
             AppSpacing.boxMD,
-            Text('ধরন', style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary)),
+            Text(AppStrings.s.txnType, style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary)),
             AppSpacing.boxSM,
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: [
-                _buildOption(label: 'সব', value: null, selected: _type, onSelected: (v) {
+                _buildOption(label: AppStrings.s.txnAll, value: null, selected: _type, onSelected: (v) {
                   setState(() => _type = v);
                   widget.onTypeChanged(v);
                 }),
-                _buildOption(label: 'আয়', value: 'income', selected: _type, onSelected: (v) {
+                _buildOption(label: AppStrings.s.txnIncomeTitle, value: 'income', selected: _type, onSelected: (v) {
                   setState(() => _type = v);
                   widget.onTypeChanged(v);
                 }),
-                _buildOption(label: 'ব্যয়', value: 'expense', selected: _type, onSelected: (v) {
+                _buildOption(label: AppStrings.s.txnExpenseTitle, value: 'expense', selected: _type, onSelected: (v) {
                   setState(() => _type = v);
                   widget.onTypeChanged(v);
                 }),
-                _buildOption(label: 'ঋণ', value: 'loan', selected: _type, onSelected: (v) {
+                _buildOption(label: AppStrings.s.txnLoan, value: 'loan', selected: _type, onSelected: (v) {
                   setState(() => _type = v);
                   widget.onTypeChanged(v);
                 }),
               ],
             ),
             AppSpacing.boxMD,
-            Text('স্ট্যাটাস', style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary)),
+            Text(AppStrings.s.txnStatusFilter, style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary)),
             AppSpacing.boxSM,
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: [
-                _buildOption(label: 'সব', value: null, selected: _status, onSelected: (v) {
+                _buildOption(label: AppStrings.s.txnAll, value: null, selected: _status, onSelected: (v) {
                   setState(() => _status = v);
                   widget.onStatusChanged(v);
                 }),
-                _buildOption(label: 'সম্পন্ন', value: 'completed', selected: _status, onSelected: (v) {
+                _buildOption(label: AppStrings.s.statusCompleted, value: 'completed', selected: _status, onSelected: (v) {
                   setState(() => _status = v);
                   widget.onStatusChanged(v);
                 }),
-                _buildOption(label: 'বকেয়া', value: 'pending', selected: _status, onSelected: (v) {
+                _buildOption(label: AppStrings.s.statusPending, value: 'pending', selected: _status, onSelected: (v) {
                   setState(() => _status = v);
                   widget.onStatusChanged(v);
                 }),
-                _buildOption(label: 'বাতিল', value: 'cancelled', selected: _status, onSelected: (v) {
+                _buildOption(label: AppStrings.s.statusCancelled, value: 'cancelled', selected: _status, onSelected: (v) {
                   setState(() => _status = v);
                   widget.onStatusChanged(v);
                 }),

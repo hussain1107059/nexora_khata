@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../config/theme/app_colors.dart';
 import '../config/theme/app_spacing.dart';
 
@@ -10,13 +11,15 @@ abstract final class AppDialog {
     BuildContext context, {
     required String title,
     required String message,
-    String confirmLabel = 'নিশ্চিত করুন',
-    String cancelLabel = 'বাতিল',
+    String? confirmLabel,
+    String? cancelLabel,
     IconData icon = Icons.help_outline_rounded,
     Color iconColor = AppColors.info,
     Color iconBackground = AppColors.infoLight,
     bool destructive = false,
   }) {
+    final resolvedConfirm = confirmLabel ?? AppStrings.s.commonConfirm;
+    final resolvedCancel = cancelLabel ?? AppStrings.s.commonCancel;
     return showDialog<bool>(
       context: context,
       barrierColor: AppColors.scrim,
@@ -43,7 +46,7 @@ abstract final class AppDialog {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: Text(cancelLabel),
+            child: Text(resolvedCancel),
           ),
           AppSpacing.boxWSM,
           FilledButton(
@@ -51,7 +54,7 @@ abstract final class AppDialog {
             style: destructive
                 ? FilledButton.styleFrom(backgroundColor: AppColors.error)
                 : null,
-            child: Text(confirmLabel),
+            child: Text(resolvedConfirm),
           ),
         ],
       ),

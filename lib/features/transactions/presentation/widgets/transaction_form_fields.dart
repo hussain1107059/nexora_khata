@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
@@ -138,7 +139,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
 
   Future<void> _pickImage() async {
     if (kIsWeb) {
-      AppSnackBar.warning(context, 'ওয়েব সংস্করণে ছবি সংযুক্তি সমর্থিত নয়');
+      AppSnackBar.warning(context, AppStrings.s.formWebImageUnsupported);
       return;
     }
     final picker = ImagePicker();
@@ -150,7 +151,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     if (_isSubmitting) return;
     if (!_formKey.currentState!.validate()) return;
     if (_categoryId == null) {
-      AppSnackBar.warning(context, 'ক্যাটাগরি নির্বাচন করুন');
+      AppSnackBar.warning(context, AppStrings.s.valSelectCategory);
       return;
     }
     final amount = double.tryParse(_amountCtrl.text) ?? 0;
@@ -179,15 +180,15 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
         padding: EdgeInsets.all(AppSpacing.lg),
         children: [
           AppTextField(
-            label: 'পরিমাণ',
-            hint: '০.০০',
+            label: AppStrings.s.formAmount,
+            hint: AppStrings.s.formAmountHint,
             controller: _amountCtrl,
             keyboardType: TextInputType.number,
             prefix: Text('৳ ', style: AppTypography.subtitle1.copyWith(color: AppColors.textSecondary)),
             validator: (v) {
-              if (v == null || v.isEmpty) return 'পরিমাণ লিখুন';
+              if (v == null || v.isEmpty) return AppStrings.s.valEnterAmount;
               final n = double.tryParse(v);
-              if (n == null || n <= 0) return 'সঠিক পরিমাণ লিখুন';
+              if (n == null || n <= 0) return AppStrings.s.valEnterValidAmount;
               return null;
             },
           ),
@@ -195,7 +196,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
           _buildCategorySection(),
           AppSpacing.boxLG,
           AppTextField(
-            label: 'তারিখ',
+            label: AppStrings.s.formDate,
             controller: _dateCtrl,
             readOnly: true,
             onTap: _pickDate,
@@ -203,15 +204,15 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
           ),
           AppSpacing.boxLG,
           AppTextField(
-            label: 'নোট',
-            hint: 'বিবরণ লিখুন...',
+            label: AppStrings.s.formNote,
+            hint: AppStrings.s.formNoteHint,
             controller: _descriptionCtrl,
             maxLines: 3,
           ),
           AppSpacing.boxLG,
           AppTextField(
-            label: 'রেফারেন্স',
-            hint: 'ইনভয়েস নম্বর ইত্যাদি',
+            label: AppStrings.s.formReference,
+            hint: AppStrings.s.formReferenceHint,
             controller: _referenceCtrl,
           ),
           AppSpacing.boxLG,
@@ -222,7 +223,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
           _buildImagePicker(),
           AppSpacing.boxXXL,
           AppButton.primary(
-            _isSubmitting ? 'লোড হচ্ছে...' : 'সংরক্ষণ করুন',
+            _isSubmitting ? AppStrings.s.commonLoading : AppStrings.s.commonSaveLabel,
             isLoading: _isSubmitting,
             onPressed: _submit,
           ),
@@ -242,7 +243,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     return DropdownButtonFormField<int>(
       initialValue: _categoryId,
       decoration: InputDecoration(
-        labelText: 'ক্যাটাগরি',
+        labelText: AppStrings.s.formCategory,
         labelStyle: AppTypography.bodyText2.copyWith(color: AppColors.textSecondary),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
         contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
@@ -260,7 +261,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
               children: [
                 const Icon(Icons.add_rounded, size: 18, color: AppColors.primary),
                 const SizedBox(width: AppSpacing.sm),
-                Text('নতুন ক্যাটাগরি', style: AppTypography.bodyText2),
+                Text(AppStrings.s.formNewCategory, style: AppTypography.bodyText2),
               ],
             ),
           ),
@@ -272,7 +273,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
           setState(() => _categoryId = v);
         }
       },
-      validator: (v) => v == null ? 'ক্যাটাগরি নির্বাচন করুন' : null,
+      validator: (v) => v == null ? AppStrings.s.valSelectCategory : null,
     );
   }
 
@@ -290,10 +291,10 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
       context: context,
       barrierColor: AppColors.scrim,
       builder: (ctx) => AlertDialog(
-        title: const Text('নতুন ক্যাটাগরি'),
+        title: Text(AppStrings.s.formNewCategory),
         content: AppTextField(
-          label: 'ক্যাটাগরির নাম',
-          hint: 'যেমন: কাপড়, বিল, চিকিৎসা',
+          label: AppStrings.s.formCategoryName,
+          hint: AppStrings.s.formCategoryNameHint,
           controller: controller,
           autofocus: true,
           textInputAction: TextInputAction.done,
@@ -301,11 +302,11 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('বাতিল'),
+            child: Text(AppStrings.s.commonCancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('যোগ করুন'),
+            child: Text(AppStrings.s.commonAdd),
           ),
         ],
       ),
@@ -316,7 +317,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     final id = await widget.onAddCategory!(name);
     if (!mounted) return;
     if (id == null) {
-      AppSnackBar.error(context, 'ক্যাটাগরি যোগ করা যায়নি');
+      AppSnackBar.error(context, AppStrings.s.formCategoryAddFailed);
       return;
     }
     setState(() {
@@ -329,19 +330,19 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     return DropdownButtonFormField<String>(
       initialValue: _paymentMethod,
       decoration: InputDecoration(
-        labelText: 'পেমেন্ট পদ্ধতি',
+        labelText: AppStrings.s.payMethod,
         labelStyle: AppTypography.bodyText2.copyWith(color: AppColors.textSecondary),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
         contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
       ),
-      items: const [
-        DropdownMenuItem(value: 'cash', child: Text('নগদ')),
-        DropdownMenuItem(value: 'bank', child: Text('ব্যাংক')),
-        DropdownMenuItem(value: 'bkash', child: Text('বিকাশ')),
-        DropdownMenuItem(value: 'nagad', child: Text('নগদ (Nagad)')),
-        DropdownMenuItem(value: 'rocket', child: Text('রকেট')),
-        DropdownMenuItem(value: 'card', child: Text('কার্ড')),
-        DropdownMenuItem(value: 'check', child: Text('চেক')),
+      items: [
+        DropdownMenuItem(value: 'cash', child: Text(AppStrings.s.payCash)),
+        DropdownMenuItem(value: 'bank', child: Text(AppStrings.s.payBank)),
+        DropdownMenuItem(value: 'bkash', child: Text(AppStrings.s.payBkash)),
+        DropdownMenuItem(value: 'nagad', child: Text(AppStrings.s.payNagad)),
+        DropdownMenuItem(value: 'rocket', child: Text(AppStrings.s.payRocket)),
+        DropdownMenuItem(value: 'card', child: Text(AppStrings.s.payCard)),
+        DropdownMenuItem(value: 'check', child: Text(AppStrings.s.payCheck)),
       ],
       onChanged: (v) => setState(() => _paymentMethod = v!),
     );
@@ -351,15 +352,15 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     return DropdownButtonFormField<String>(
       initialValue: _status,
       decoration: InputDecoration(
-        labelText: 'স্ট্যাটাস',
+        labelText: AppStrings.s.txnStatusFilter,
         labelStyle: AppTypography.bodyText2.copyWith(color: AppColors.textSecondary),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
         contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
       ),
       items: [
         DropdownMenuItem(value: 'completed', child: Text(widget.completedStatusLabel)),
-        const DropdownMenuItem(value: 'pending', child: Text('বকেয়া')),
-        const DropdownMenuItem(value: 'cancelled', child: Text('বাতিল')),
+        DropdownMenuItem(value: 'pending', child: Text(AppStrings.s.statusPending)),
+        DropdownMenuItem(value: 'cancelled', child: Text(AppStrings.s.statusCancelled)),
       ],
       onChanged: (v) => setState(() => _status = v!),
     );
@@ -384,7 +385,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
             AppSpacing.boxMD,
             Expanded(
               child: Text(
-                _imagePath != null ? 'ছবি সংযুক্ত হয়েছে' : 'ছবি যোগ করুন',
+                _imagePath != null ? AppStrings.s.formImageAttached : AppStrings.s.formImageAdd,
                 style: AppTypography.bodyText2.copyWith(
                   color: _imagePath != null ? AppColors.textPrimary : AppColors.textSecondary,
                 ),

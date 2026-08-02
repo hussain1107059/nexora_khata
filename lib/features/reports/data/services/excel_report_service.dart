@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 import 'package:excel/excel.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/file_share_service.dart';
 import 'package:nexora_khata/features/transactions/data/models/income_model.dart';
 import 'package:nexora_khata/features/transactions/data/models/expense_model.dart';
@@ -32,10 +33,10 @@ class ExcelReportService {
     String? dateRange,
   }) {
     final excel = Excel.createExcel();
-    final sheet = excel['আয়'];
+    final sheet = excel[AppStrings.s.rptIncomeSheet];
     _setupSheet(sheet, 6);
     _writeTitle(sheet, title, dateRange, 6);
-    _writeHeaders(sheet, ['তারিখ', 'ক্যাটাগরি', 'গ্রাহক', 'বিবরণ', 'পরিমাণ', 'অবস্থা'], 2);
+    _writeHeaders(sheet, [AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderCategory, AppStrings.s.rptHeaderCustomer, AppStrings.s.rptHeaderDescription, AppStrings.s.rptHeaderAmount, AppStrings.s.rptHeaderStatus], 2);
 
     double total = 0;
     for (var i = 0; i < incomes.length; i++) {
@@ -50,7 +51,7 @@ class ExcelReportService {
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: row)).value = TextCellValue(_st(inc.status));
       total += inc.amount;
     }
-    _writeTotal(sheet, incomes.length + 3, total, 'মোট আয়');
+    _writeTotal(sheet, incomes.length + 3, total, AppStrings.s.dashboardTotalIncome);
     final encoded = excel.encode();
     return encoded != null ? Uint8List.fromList(encoded) : null;
   }
@@ -61,10 +62,10 @@ class ExcelReportService {
     String? dateRange,
   }) {
     final excel = Excel.createExcel();
-    final sheet = excel['ব্যয়'];
+    final sheet = excel[AppStrings.s.rptExpenseSheet];
     _setupSheet(sheet, 6);
     _writeTitle(sheet, title, dateRange, 6);
-    _writeHeaders(sheet, ['তারিখ', 'ক্যাটাগরি', 'সরবরাহকারী', 'বিবরণ', 'পরিমাণ', 'অবস্থা'], 2);
+    _writeHeaders(sheet, [AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderCategory, AppStrings.s.rptHeaderSupplier, AppStrings.s.rptHeaderDescription, AppStrings.s.rptHeaderAmount, AppStrings.s.rptHeaderStatus], 2);
 
     double total = 0;
     for (var i = 0; i < expenses.length; i++) {
@@ -79,7 +80,7 @@ class ExcelReportService {
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 5, rowIndex: row)).value = TextCellValue(_st(exp.status));
       total += exp.amount;
     }
-    _writeTotal(sheet, expenses.length + 3, total, 'মোট ব্যয়');
+    _writeTotal(sheet, expenses.length + 3, total, AppStrings.s.dashboardTotalExpense);
     final encoded = excel.encode();
     return encoded != null ? Uint8List.fromList(encoded) : null;
   }
@@ -90,13 +91,13 @@ class ExcelReportService {
     required int month,
     required ReportSummary summary,
   }) {
-    final monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final excel = Excel.createExcel();
-    final sheet = excel['মাসিক'];
+    final sheet = excel[AppStrings.s.rptMonthlySheet];
     _setupSheet(sheet, 4);
-    _writeTitle(sheet, 'মাসিক রিপোর্ট - ${monthNames[month - 1]} $year', null, 4);
+    _writeTitle(sheet, AppStrings.s.rptMonthlyReportTitle(monthNames[month - 1], year), null, 4);
     _writeSummary(sheet, 1, summary);
-    _writeHeaders(sheet, ['তারিখ', 'আয়', 'ব্যয়', 'নেট'], 3);
+    _writeHeaders(sheet, [AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderIncome, AppStrings.s.rptHeaderExpense, AppStrings.s.rptHeaderNet], 3);
 
     for (var i = 0; i < data.length; i++) {
       final row = i + 4;
@@ -119,13 +120,13 @@ class ExcelReportService {
     required int year,
     required ReportSummary summary,
   }) {
-    final monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final excel = Excel.createExcel();
-    final sheet = excel['বার্ষিক'];
+    final sheet = excel[AppStrings.s.rptYearlySheet];
     _setupSheet(sheet, 4);
-    _writeTitle(sheet, 'বার্ষিক রিপোর্ট - $year', null, 4);
+    _writeTitle(sheet, AppStrings.s.rptYearlyReportTitle(year), null, 4);
     _writeSummary(sheet, 1, summary);
-    _writeHeaders(sheet, ['মাস', 'আয়', 'ব্যয়', 'নেট'], 3);
+    _writeHeaders(sheet, [AppStrings.s.rptHeaderMonth, AppStrings.s.rptHeaderIncome, AppStrings.s.rptHeaderExpense, AppStrings.s.rptHeaderNet], 3);
 
     for (var i = 0; i < data.length; i++) {
       final row = i + 4;
@@ -140,7 +141,7 @@ class ExcelReportService {
     }
     _writeTotalRow(sheet, data.length + 4, summary.totalIncome, summary.totalExpense, summary.netAmount);
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: data.length + 5))
-      .value = TextCellValue('মোট লেনদেন: ${summary.totalTransactions}');
+      .value = TextCellValue(AppStrings.s.rptTotalTxnsLabel(summary.totalTransactions));
     final encoded = excel.encode();
     return encoded != null ? Uint8List.fromList(encoded) : null;
   }
@@ -150,24 +151,24 @@ class ExcelReportService {
     required int year,
     required int month,
   }) {
-    final monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final last = data.isNotEmpty ? data.last : null;
     final excel = Excel.createExcel();
-    final sheet = excel['ক্যাশ ফ্লো'];
+    final sheet = excel[AppStrings.s.rptCashflowSheet];
     _setupSheet(sheet, 4);
-    _writeTitle(sheet, 'ক্যাশ ফ্লো রিপোর্ট - ${monthNames[month - 1]} $year', null, 4);
+    _writeTitle(sheet, AppStrings.s.rptCashflowReportTitle(monthNames[month - 1], year), null, 4);
 
     if (last != null) {
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 1))
-        .value = TextCellValue('নগদ ব্যালেন্স: ৳${last.cashBalance.toStringAsFixed(2)}');
+        .value = TextCellValue('${AppStrings.s.rptCashBalance}: ৳${last.cashBalance.toStringAsFixed(2)}');
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: 1))
-        .value = TextCellValue('ব্যাংক ব্যালেন্স: ৳${last.bankBalance.toStringAsFixed(2)}');
+        .value = TextCellValue('${AppStrings.s.rptBankBalance}: ৳${last.bankBalance.toStringAsFixed(2)}');
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 2))
-        .value = TextCellValue('মোট ব্যালেন্স: ৳${last.totalBalance.toStringAsFixed(2)}');
+        .value = TextCellValue('${AppStrings.s.rptTotalBalance}: ৳${last.totalBalance.toStringAsFixed(2)}');
       sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: 2)).cellStyle = _blueBoldStyle;
     }
 
-    _writeHeaders(sheet, ['তারিখ', 'নগদ', 'ব্যাংক', 'মোট'], 4);
+    _writeHeaders(sheet, [AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderCash, AppStrings.s.rptHeaderBank, AppStrings.s.rptHeaderTotal], 4);
 
     for (var i = 0; i < data.length; i++) {
       final row = i + 5;
@@ -213,7 +214,7 @@ class ExcelReportService {
 
   static void _writeSummary(Sheet sheet, int row, ReportSummary s) {
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row)).value = TextCellValue(
-      'আয়: ৳${s.totalIncome.toStringAsFixed(2)}  ব্যয়: ৳${s.totalExpense.toStringAsFixed(2)}  নেট: ৳${s.netAmount.toStringAsFixed(2)}  লেনদেন: ${s.totalTransactions}');
+      AppStrings.s.rptSummaryLine(s.totalTransactions, '৳${s.totalExpense.toStringAsFixed(2)}', '৳${s.totalIncome.toStringAsFixed(2)}', '৳${s.netAmount.toStringAsFixed(2)}'));
   }
 
   static void _writeTotal(Sheet sheet, int row, double total, String label) {
@@ -223,7 +224,7 @@ class ExcelReportService {
   }
 
   static void _writeTotalRow(Sheet sheet, int row, double income, double expense, double net) {
-    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row)).value = TextCellValue('মোট আয়');
+    sheet.cell(CellIndex.indexByColumnRow(columnIndex: 0, rowIndex: row)).value = TextCellValue(AppStrings.s.dashboardTotalIncome);
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row)).value = DoubleCellValue(income);
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 1, rowIndex: row)).cellStyle = _greenStyle;
     sheet.cell(CellIndex.indexByColumnRow(columnIndex: 2, rowIndex: row)).value = DoubleCellValue(expense);
@@ -234,9 +235,9 @@ class ExcelReportService {
 
   static String _st(String status) {
     switch (status) {
-      case 'completed': return 'সম্পন্ন';
-      case 'pending': return 'মুলতুবি';
-      case 'cancelled': return 'বাতিল';
+      case 'completed': return AppStrings.s.statusCompleted;
+      case 'pending': return AppStrings.s.statusPendingAlt;
+      case 'cancelled': return AppStrings.s.statusCancelled;
       default: return status;
     }
   }

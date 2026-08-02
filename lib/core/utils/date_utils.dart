@@ -1,4 +1,5 @@
 import 'package:intl/intl.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 
 abstract final class AppDateUtils {
   AppDateUtils._();
@@ -46,26 +47,27 @@ abstract final class AppDateUtils {
   static String timeAgo(DateTime date) {
     final now = DateTime.now();
     final difference = now.difference(date);
+    final s = AppStrings.s;
 
     if (difference.inDays > 365) {
-      return '${(difference.inDays / 365).floor()} বছর আগে';
+      return s.timeYearsAgo((difference.inDays / 365).floor());
     }
     if (difference.inDays > 30) {
-      return '${(difference.inDays / 30).floor()} মাস আগে';
+      return s.timeMonthsAgo((difference.inDays / 30).floor());
     }
     if (difference.inDays > 7) {
-      return '${(difference.inDays / 7).floor()} সপ্তাহ আগে';
+      return s.timeWeeksAgo((difference.inDays / 7).floor());
     }
     if (difference.inDays > 0) {
-      return '${difference.inDays} দিন আগে';
+      return s.timeDaysAgo(difference.inDays);
     }
     if (difference.inHours > 0) {
-      return '${difference.inHours} ঘন্টা আগে';
+      return s.timeHoursAgo(difference.inHours);
     }
     if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} মিনিট আগে';
+      return s.timeMinutesAgo(difference.inMinutes);
     }
-    return 'এইমাত্র';
+    return s.timeJustNow;
   }
 
   static bool isSameDay(DateTime a, DateTime b) {
@@ -147,19 +149,52 @@ abstract final class AppDateUtils {
   }
 
   static String monthNameBn(int month) {
-    const months = [
-      'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল',
-      'মে', 'জুন', 'জুলাই', 'আগস্ট',
-      'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর',
-    ];
-    return months[month - 1];
+    final s = AppStrings.s;
+    switch (month) {
+      case 1:
+        return s.monthJanuary;
+      case 2:
+        return s.monthFebruary;
+      case 3:
+        return s.monthMarch;
+      case 4:
+        return s.monthApril;
+      case 5:
+        return s.monthMay;
+      case 6:
+        return s.monthJune;
+      case 7:
+        return s.monthJuly;
+      case 8:
+        return s.monthAugust;
+      case 9:
+        return s.monthSeptember;
+      case 10:
+        return s.monthOctober;
+      case 11:
+        return s.monthNovember;
+      default:
+        return s.monthDecember;
+    }
   }
 
   static String dayNameBn(int weekday) {
-    const days = [
-      'সোমবার', 'মঙ্গলবার', 'বুধবার',
-      'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার', 'রবিবার',
-    ];
-    return days[weekday - 1];
+    final s = AppStrings.s;
+    switch (weekday) {
+      case 1:
+        return s.weekdayMon;
+      case 2:
+        return s.weekdayTue;
+      case 3:
+        return s.weekdayWed;
+      case 4:
+        return s.weekdayThu;
+      case 5:
+        return s.weekdayFri;
+      case 6:
+        return s.weekdaySat;
+      default:
+        return s.weekdaySun;
+    }
   }
 }

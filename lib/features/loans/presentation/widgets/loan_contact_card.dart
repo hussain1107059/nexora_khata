@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/features/loans/presentation/models/loan_summary.dart';
 
@@ -30,7 +31,9 @@ class LoanContactCard extends StatelessWidget {
     final icon = summary.isSettled
         ? Icons.check_circle_rounded
         : (isReceivable ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded);
-    final tag = summary.isSettled ? 'পরিশোধিত' : (isReceivable ? 'পাওনা' : 'দেনা');
+    final tag = summary.isSettled
+        ? AppStrings.s.loanSettled
+        : (isReceivable ? AppStrings.s.loanReceivable : AppStrings.s.loanDebt);
     final balanceText = summary.isSettled
         ? AppNumberUtils.formatCurrency(0, decimalDigits: 0)
         : AppNumberUtils.formatCurrency(summary.balance.abs(), decimalDigits: 0);
@@ -85,7 +88,16 @@ class LoanContactCard extends StatelessWidget {
                     if (summary.totalBorrow > 0 || summary.totalLend > 0) ...[
                       AppSpacing.boxXXS,
                       Text(
-                        'নিয়েছি ${AppNumberUtils.formatCurrency(summary.totalBorrow, decimalDigits: 0)} · দিয়েছি ${AppNumberUtils.formatCurrency(summary.totalLend, decimalDigits: 0)}',
+                        AppStrings.s.loanBorrowLent(
+                          AppNumberUtils.formatCurrency(
+                            summary.totalBorrow,
+                            decimalDigits: 0,
+                          ),
+                          AppNumberUtils.formatCurrency(
+                            summary.totalLend,
+                            decimalDigits: 0,
+                          ),
+                        ),
                         style: AppTypography.overline.copyWith(
                           color: AppColors.textHint,
                           fontSize: 10,

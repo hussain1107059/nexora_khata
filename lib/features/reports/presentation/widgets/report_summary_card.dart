@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
 
@@ -72,7 +73,7 @@ class ReportSummaryCard extends StatelessWidget {
                   children: [
                     Expanded(
                       child: _SummaryItem(
-                        label: 'মোট আয়',
+                        label: AppStrings.s.dashboardTotalIncome,
                         amount: summary.totalIncome,
                         color: AppColors.success,
                       ),
@@ -84,7 +85,7 @@ class ReportSummaryCard extends StatelessWidget {
                     ),
                     Expanded(
                       child: _SummaryItem(
-                        label: 'মোট ব্যয়',
+                        label: AppStrings.s.dashboardTotalExpense,
                         amount: summary.totalExpense,
                         color: AppColors.error,
                       ),
@@ -101,7 +102,7 @@ class ReportSummaryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'নেট পরিমাণ',
+                            AppStrings.s.rptNetAmount,
                             style: AppTypography.caption.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -123,14 +124,14 @@ class ReportSummaryCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Text(
-                          'মোট লেনদেন',
+                          AppStrings.s.rptTotalTransactions,
                           style: AppTypography.caption.copyWith(
                             color: AppColors.textSecondary,
                           ),
                         ),
                         AppSpacing.boxHXS,
                         Text(
-                          '${summary.totalTransactions} টি',
+                          AppStrings.s.rptCount(summary.totalTransactions),
                           style: AppTypography.subtitle1.copyWith(
                             color: AppColors.textPrimary,
                             fontWeight: FontWeight.w700,

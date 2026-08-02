@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../config/theme/app_colors.dart';
 import '../config/theme/app_spacing.dart';
 import 'app_text.dart';
@@ -50,7 +51,7 @@ class AppErrorWidget extends StatelessWidget {
             ),
             AppSpacing.boxHXL,
             AppText(
-              title ?? 'কিছু ভুল হয়েছে',
+              title ?? AppStrings.s.commonError,
               type: AppTextType.subtitle1,
               color: AppColors.textPrimary,
               textAlign: TextAlign.center,
@@ -65,7 +66,7 @@ class AppErrorWidget extends StatelessWidget {
             if (onRetry != null) ...[
               AppSpacing.boxHXL,
               AppButton(
-                text: 'পুনরায় চেষ্টা করুন',
+                text: AppStrings.s.commonRetry,
                 onPressed: onRetry,
                 icon: Icons.refresh_rounded,
               ),

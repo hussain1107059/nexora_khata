@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/file_share_service.dart';
 import 'package:nexora_khata/features/transactions/data/models/income_model.dart';
 import 'package:nexora_khata/features/transactions/data/models/expense_model.dart';
@@ -41,10 +42,10 @@ class PdfReportService {
       build: (ctx) => [
         _buildSummaryRow(incomes.fold<double>(0, (s, i) => s + i.amount), incomes.length),
         pw.SizedBox(height: 16),
-        _buildTableHeaders(['তারিখ', 'ক্যাটাগরি', 'গ্রাহক', 'বিবরণ', 'পরিমাণ', 'অবস্থা']),
+        _buildTableHeaders([AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderCategory, AppStrings.s.rptHeaderCustomer, AppStrings.s.rptHeaderDescription, AppStrings.s.rptHeaderAmount, AppStrings.s.rptHeaderStatus]),
         ...incomes.map((i) => _buildIncomeRow(i)),
         pw.Divider(thickness: 1, color: PdfColors.grey300),
-        _buildTotalRow('মোট আয়', incomes.fold<double>(0, (s, i) => s + i.amount)),
+        _buildTotalRow(AppStrings.s.dashboardTotalIncome, incomes.fold<double>(0, (s, i) => s + i.amount)),
       ],
     ));
     return doc.save();
@@ -65,10 +66,10 @@ class PdfReportService {
       build: (ctx) => [
         _buildSummaryRow(expenses.fold<double>(0, (s, e) => s + e.amount), expenses.length),
         pw.SizedBox(height: 16),
-        _buildTableHeaders(['তারিখ', 'ক্যাটাগরি', 'সরবরাহকারী', 'বিবরণ', 'পরিমাণ', 'অবস্থা']),
+        _buildTableHeaders([AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderCategory, AppStrings.s.rptHeaderSupplier, AppStrings.s.rptHeaderDescription, AppStrings.s.rptHeaderAmount, AppStrings.s.rptHeaderStatus]),
         ...expenses.map((e) => _buildExpenseRow(e)),
         pw.Divider(thickness: 1, color: PdfColors.grey300),
-        _buildTotalRow('মোট ব্যয়', expenses.fold<double>(0, (s, e) => s + e.amount)),
+        _buildTotalRow(AppStrings.s.dashboardTotalExpense, expenses.fold<double>(0, (s, e) => s + e.amount)),
       ],
     ));
     return doc.save();
@@ -81,22 +82,22 @@ class PdfReportService {
     required ReportSummary summary,
   }) async {
     await _loadFont();
-    final monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(32),
-      header: (ctx) => _buildHeader('মাসিক রিপোর্ট', '${monthNames[month - 1]} $year'),
+      header: (ctx) => _buildHeader(AppStrings.s.rptMonthlyReportTitle(monthNames[month - 1], year), null),
       footer: (ctx) => _buildFooter(),
       build: (ctx) => [
         _buildMonthlySummary(summary),
         pw.SizedBox(height: 16),
-        _buildTableHeaders(['তারিখ', 'আয়', 'ব্যয়', 'নেট']),
+        _buildTableHeaders([AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderIncome, AppStrings.s.rptHeaderExpense, AppStrings.s.rptHeaderNet]),
         ...data.map((d) => _buildDailyRow(d)),
         pw.Divider(thickness: 1, color: PdfColors.grey300),
-        _buildTotalRow('মোট আয়', summary.totalIncome),
-        _buildTotalRow('মোট ব্যয়', summary.totalExpense),
-        _buildTotalRow('নেট', summary.netAmount, bold: true),
+        _buildTotalRow(AppStrings.s.dashboardTotalIncome, summary.totalIncome),
+        _buildTotalRow(AppStrings.s.dashboardTotalExpense, summary.totalExpense),
+        _buildTotalRow(AppStrings.s.rptNet, summary.netAmount, bold: true),
       ],
     ));
     return doc.save();
@@ -108,17 +109,17 @@ class PdfReportService {
     required ReportSummary summary,
   }) async {
     await _loadFont();
-    final monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(32),
-      header: (ctx) => _buildHeader('বার্ষিক রিপোর্ট', '$year'),
+      header: (ctx) => _buildHeader(AppStrings.s.rptYearlyReportTitle(year), null),
       footer: (ctx) => _buildFooter(),
       build: (ctx) => [
         _buildMonthlySummary(summary),
         pw.SizedBox(height: 16),
-        _buildTableHeaders(['মাস', 'আয়', 'ব্যয়', 'নেট']),
+        _buildTableHeaders([AppStrings.s.rptHeaderMonth, AppStrings.s.rptHeaderIncome, AppStrings.s.rptHeaderExpense, AppStrings.s.rptHeaderNet]),
         ...data.map((m) => pw.Container(
           padding: const pw.EdgeInsets.symmetric(vertical: 6, horizontal: 8),
           decoration: const pw.BoxDecoration(
@@ -134,11 +135,11 @@ class PdfReportService {
           ),
         )),
         pw.Divider(thickness: 1, color: PdfColors.grey300),
-        _buildTotalRow('মোট আয়', summary.totalIncome),
-        _buildTotalRow('মোট ব্যয়', summary.totalExpense),
-        _buildTotalRow('নেট', summary.netAmount, bold: true),
+        _buildTotalRow(AppStrings.s.dashboardTotalIncome, summary.totalIncome),
+        _buildTotalRow(AppStrings.s.dashboardTotalExpense, summary.totalExpense),
+        _buildTotalRow(AppStrings.s.rptNet, summary.netAmount, bold: true),
         pw.SizedBox(height: 12),
-        pw.Text('মোট লেনদেন: ${summary.totalTransactions}', style: _s(10, color: PdfColors.grey700)),
+        pw.Text(AppStrings.s.rptTotalTxnsLabel(summary.totalTransactions), style: _s(10, color: PdfColors.grey700)),
       ],
     ));
     return doc.save();
@@ -150,13 +151,13 @@ class PdfReportService {
     required int month,
   }) async {
     await _loadFont();
-    final monthNames = ['জানুয়ারি','ফেব্রুয়ারি','মার্চ','এপ্রিল','মে','জুন','জুলাই','আগস্ট','সেপ্টেম্বর','অক্টোবর','নভেম্বর','ডিসেম্বর'];
+    final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final last = data.isNotEmpty ? data.last : null;
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(32),
-      header: (ctx) => _buildHeader('ক্যাশ ফ্লো রিপোর্ট', '${monthNames[month - 1]} $year'),
+      header: (ctx) => _buildHeader(AppStrings.s.rptCashflowReportTitle(monthNames[month - 1], year), null),
       footer: (ctx) => _buildFooter(),
       build: (ctx) => [
         if (last != null) pw.Container(
@@ -168,14 +169,14 @@ class PdfReportService {
           child: pw.Row(
             mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
             children: [
-              _statBox('নগদ ব্যালেন্স', last.cashBalance, PdfColors.blue700),
-              _statBox('ব্যাংক ব্যালেন্স', last.bankBalance, PdfColors.green700),
-              _statBox('মোট ব্যালেন্স', last.totalBalance, PdfColors.blue700),
+              _statBox(AppStrings.s.rptCashBalance, last.cashBalance, PdfColors.blue700),
+              _statBox(AppStrings.s.rptBankBalance, last.bankBalance, PdfColors.green700),
+              _statBox(AppStrings.s.rptTotalBalance, last.totalBalance, PdfColors.blue700),
             ],
           ),
         ),
         pw.SizedBox(height: 16),
-        _buildTableHeaders(['তারিখ', 'নগদ', 'ব্যাংক', 'মোট']),
+        _buildTableHeaders([AppStrings.s.rptHeaderDate, AppStrings.s.rptHeaderCash, AppStrings.s.rptHeaderBank, AppStrings.s.rptHeaderTotal]),
         ...data.map((d) => pw.Container(
           padding: const pw.EdgeInsets.symmetric(vertical: 5, horizontal: 8),
           decoration: const pw.BoxDecoration(
@@ -214,7 +215,7 @@ class PdfReportService {
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text('নেক্সোরা খাতা', style: _s(16, weight: pw.FontWeight.bold, color: PdfColors.red700)),
+                pw.Text(AppStrings.s.appTitle, style: _s(16, weight: pw.FontWeight.bold, color: PdfColors.red700)),
                 pw.Text(title, style: _s(12, color: PdfColors.grey700)),
               ],
             ),
@@ -234,7 +235,7 @@ class PdfReportService {
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
           pw.Text('BadhonByte', style: _s(8, color: PdfColors.grey500)),
-          pw.Text('নেক্সোরা খাতা', style: _s(8, color: PdfColors.grey500)),
+          pw.Text(AppStrings.s.appTitle, style: _s(8, color: PdfColors.grey500)),
         ],
       ),
     );
@@ -250,8 +251,8 @@ class PdfReportService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
         children: [
-          _statBox('মোট পরিমাণ', total, PdfColors.blue700),
-          _statBox('মোট লেনদেন', count.toDouble(), PdfColors.grey700),
+          _statBox(AppStrings.s.rptTotalAmount, total, PdfColors.blue700),
+          _statBox(AppStrings.s.rptTotalTransactions, count.toDouble(), PdfColors.grey700),
         ],
       ),
     );
@@ -277,9 +278,9 @@ class PdfReportService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceAround,
         children: [
-          _statBox('মোট আয়', s.totalIncome, PdfColors.green700),
-          _statBox('মোট ব্যয়', s.totalExpense, PdfColors.red700),
-          _statBox('নেট', s.netAmount, s.netAmount >= 0 ? PdfColors.blue700 : PdfColors.red700),
+          _statBox(AppStrings.s.dashboardTotalIncome, s.totalIncome, PdfColors.green700),
+          _statBox(AppStrings.s.dashboardTotalExpense, s.totalExpense, PdfColors.red700),
+          _statBox(AppStrings.s.rptNet, s.netAmount, s.netAmount >= 0 ? PdfColors.blue700 : PdfColors.red700),
         ],
       ),
     );
@@ -389,9 +390,9 @@ class PdfReportService {
 
   String _statusBn(String status) {
     switch (status) {
-      case 'completed': return 'সম্পন্ন';
-      case 'pending': return 'মুলতুবি';
-      case 'cancelled': return 'বাতিল';
+      case 'completed': return AppStrings.s.statusCompleted;
+      case 'pending': return AppStrings.s.statusPendingAlt;
+      case 'cancelled': return AppStrings.s.statusCancelled;
       default: return status;
     }
   }

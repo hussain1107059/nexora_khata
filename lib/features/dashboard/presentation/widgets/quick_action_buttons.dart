@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
@@ -16,7 +17,7 @@ class QuickActionButtons extends StatelessWidget {
         Padding(
           padding: AppSpacing.screenPadding,
           child: Text(
-            'দ্রুত অ্যাকশন',
+            AppStrings.s.dashboardQuickActions,
             style: AppTypography.subtitle2.copyWith(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,
@@ -32,25 +33,25 @@ class QuickActionButtons extends StatelessWidget {
             children: [
               _ActionBtn(
                 icon: Icons.add_circle_rounded,
-                label: 'আয় যোগ করুন',
+                label: AppStrings.s.dashboardAddIncome,
                 color: AppColors.success,
                 onTap: () => context.push(RouteNames.incomeAdd),
               ),
               _ActionBtn(
                 icon: Icons.remove_circle_rounded,
-                label: 'ব্যয় যোগ করুন',
+                label: AppStrings.s.dashboardAddExpense,
                 color: AppColors.error,
                 onTap: () => context.push(RouteNames.expenseAdd),
               ),
               _ActionBtn(
                 icon: Icons.swap_horiz_rounded,
-                label: 'ট্রান্সফার',
+                label: AppStrings.s.dashboardTransfer,
                 color: AppColors.info,
                 onTap: () => context.push(RouteNames.transferAdd),
               ),
               _ActionBtn(
                 icon: Icons.currency_exchange_rounded,
-                label: 'ঋণ',
+                label: AppStrings.s.navLoans,
                 color: AppColors.warning,
                 onTap: () => context.push(RouteNames.loanList),
               ),

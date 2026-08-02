@@ -3,6 +3,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/core_card.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
@@ -23,11 +24,11 @@ class ReportBarChart extends StatelessWidget {
 
     return CoreCard(
       title: title,
-      trailing: const Row(
+      trailing: Row(
         children: [
-          ChartLegend(color: AppColors.success, label: 'আয়'),
+          ChartLegend(color: AppColors.success, label: AppStrings.s.rptIncome),
           AppSpacing.boxWSM,
-          ChartLegend(color: AppColors.error, label: 'ব্যয়'),
+          ChartLegend(color: AppColors.error, label: AppStrings.s.rptExpense),
         ],
       ),
       child: SizedBox(
@@ -40,7 +41,7 @@ class ReportBarChart extends StatelessWidget {
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         final item = data[groupIndex];
-                        final label = rodIndex == 0 ? 'আয়' : 'ব্যয়';
+                        final label = rodIndex == 0 ? AppStrings.s.rptIncome : AppStrings.s.rptExpense;
                         return BarTooltipItem(
                           '${item.label}\n$label: ${AppNumberUtils.formatCurrency(rod.toY)}',
                           const TextStyle(

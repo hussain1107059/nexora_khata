@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
 
@@ -85,15 +86,15 @@ class _TransactionCategoryFormFieldsState extends State<TransactionCategoryFormF
         padding: EdgeInsets.all(AppSpacing.lg),
         children: [
           AppTextField(
-            label: 'নাম',
-            hint: 'ক্যাটাগরির নাম লিখুন',
+            label: AppStrings.s.catName,
+            hint: AppStrings.s.catNameHint,
             controller: _nameCtrl,
-            validator: (v) => (v == null || v.trim().isEmpty) ? 'নাম লিখুন' : null,
+            validator: (v) => (v == null || v.trim().isEmpty) ? AppStrings.s.valEnterNameHint : null,
           ),
           AppSpacing.boxLG,
           AppTextField(
-            label: 'বিবরণ',
-            hint: 'ঐচ্ছিক',
+            label: AppStrings.s.catDesc,
+            hint: AppStrings.s.catOptional,
             controller: _descCtrl,
             maxLines: 2,
           ),
@@ -101,7 +102,7 @@ class _TransactionCategoryFormFieldsState extends State<TransactionCategoryFormF
           _buildIconSelector(),
           AppSpacing.boxXXL,
           AppButton.primary(
-            _isSubmitting ? 'লোড হচ্ছে...' : 'সংরক্ষণ করুন',
+            _isSubmitting ? AppStrings.s.commonLoading : AppStrings.s.commonSaveLabel,
             isLoading: _isSubmitting,
             onPressed: _submit,
           ),
@@ -114,7 +115,7 @@ class _TransactionCategoryFormFieldsState extends State<TransactionCategoryFormF
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('আইকন', style: AppTypography.bodyText2.copyWith(color: AppColors.textSecondary)),
+        Text(AppStrings.s.catIcon, style: AppTypography.bodyText2.copyWith(color: AppColors.textSecondary)),
         AppSpacing.boxSM,
         Wrap(
           spacing: AppSpacing.sm,

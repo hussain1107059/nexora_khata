@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/database_helper.dart';
 
 class BackupService {
@@ -58,7 +59,7 @@ class BackupService {
     if (kIsWeb) {
       throw UnsupportedError('ওয়েব সংস্করণে ব্যাকআপ শেয়ার সমর্থিত নয়');
     }
-    await Share.shareXFiles([XFile(filePath)], text: 'নেক্সোরা খাতা ব্যাকআপ');
+    await Share.shareXFiles([XFile(filePath)], text: '${AppStrings.s.appTitle} ${AppStrings.s.setBackup}');
   }
 
   Future<List<BackupEntry>> getBackupHistory({int limit = 50}) async {

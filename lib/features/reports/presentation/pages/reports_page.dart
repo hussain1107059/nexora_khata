@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
@@ -19,14 +20,14 @@ import 'package:nexora_khata/features/reports/presentation/widgets/report_summar
 class ReportsPage extends ConsumerWidget {
   const ReportsPage({super.key});
 
-  static const _tabs = [
-    'দৈনিক',
-    'সাপ্তাহিক',
-    'মাসিক',
-    'বার্ষিক',
-    'ক্যাটাগরি',
-    'আয়-ব্যয়',
-    'ক্যাশ ফ্লো',
+  static List<String> get _tabs => [
+    AppStrings.s.rptDaily,
+    AppStrings.s.rptWeekly,
+    AppStrings.s.rptMonthly,
+    AppStrings.s.rptYearly,
+    AppStrings.s.rptCategory,
+    AppStrings.s.rptIncomeExpense,
+    AppStrings.s.rptCashFlow,
   ];
 
   @override
@@ -37,7 +38,7 @@ class ReportsPage extends ConsumerWidget {
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
         title: Text(
-          'রিপোর্ট',
+          AppStrings.s.rptTitle,
           style: AppTypography.subtitle1.copyWith(
             color: AppColors.textPrimary,
             fontWeight: FontWeight.w700,
@@ -237,7 +238,7 @@ class _DailyReportView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _DatePickerTile(
-            label: 'তারিখ নির্বাচন',
+            label: AppStrings.s.rptSelectDate,
             date: effectiveDate,
             onTap: () => _pickDate(context, ref),
           ),
@@ -277,7 +278,7 @@ class _DailyReportView extends ConsumerWidget {
       totalExpense: expense,
       netAmount: income - expense,
       totalTransactions: count,
-      period: 'দৈনিক রিপোর্ট',
+      period: AppStrings.s.rptDailyReport,
     );
   }
 
@@ -322,7 +323,7 @@ class _WeeklyReportView extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _DatePickerTile(
-            label: 'সপ্তাহ নির্বাচন (যেকোনো দিন)',
+            label: AppStrings.s.rptSelectWeek,
             date: effectiveDate,
             onTap: () => _pickDate(context, ref),
           ),
@@ -337,7 +338,7 @@ class _WeeklyReportView extends ConsumerWidget {
           ),
           AppSpacing.boxHLG,
           reportAsync.when(
-            loading: () => const AppLoading(message: 'লোড হচ্ছে...'),
+            loading: () => AppLoading(message: AppStrings.s.rptLoading),
             error: (err, _) => AppErrorWidget(
               message: err.toString(),
               onRetry: () => ref.invalidate(weeklyReportProvider(effectiveDate)),
@@ -403,7 +404,7 @@ class _MonthlyReportView extends ConsumerWidget {
           ),
           AppSpacing.boxHLG,
           reportAsync.when(
-            loading: () => const AppLoading(message: 'লোড হচ্ছে...'),
+            loading: () => AppLoading(message: AppStrings.s.rptLoading),
             error: (err, _) => AppErrorWidget(
               message: err.toString(),
               onRetry: () => ref.invalidate(monthlyReportProvider(params)),
@@ -441,7 +442,7 @@ class _YearlyReportView extends ConsumerWidget {
           ),
           AppSpacing.boxHLG,
           reportAsync.when(
-            loading: () => const AppLoading(message: 'লোড হচ্ছে...'),
+            loading: () => AppLoading(message: AppStrings.s.rptLoading),
             error: (err, _) => AppErrorWidget(
               message: err.toString(),
               onRetry: () => ref.invalidate(yearlyReportProvider(year)),
@@ -456,7 +457,7 @@ class _YearlyReportView extends ConsumerWidget {
               }).toList();
               return ReportBarChart(
                 data: chartData,
-                title: 'বার্ষিক রিপোর্ট - $year',
+                title: AppStrings.s.rptYearlyTitle(year),
               );
             },
           ),
@@ -492,7 +493,7 @@ class _CategoryReportView extends ConsumerWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'আয়',
+                        AppStrings.s.rptIncome,
                         style: AppTypography.labelMedium.copyWith(
                           color: toggle == 0 ? AppColors.white : AppColors.textSecondary,
                           fontWeight: FontWeight.w600,
@@ -514,7 +515,7 @@ class _CategoryReportView extends ConsumerWidget {
                     ),
                     child: Center(
                       child: Text(
-                        'ব্যয়',
+                        AppStrings.s.rptExpense,
                         style: AppTypography.labelMedium.copyWith(
                           color: toggle == 1 ? AppColors.white : AppColors.textSecondary,
                           fontWeight: FontWeight.w600,
@@ -528,9 +529,9 @@ class _CategoryReportView extends ConsumerWidget {
           ),
           AppSpacing.boxHLG,
           if (toggle == 0)
-            _buildCategoryContent(ref, true, 'ক্যাটাগরি অনুযায়ী আয়')
+            _buildCategoryContent(ref, true, AppStrings.s.rptCatIncome)
           else
-            _buildCategoryContent(ref, false, 'ক্যাটাগরি অনুযায়ী ব্যয়'),
+            _buildCategoryContent(ref, false, AppStrings.s.rptCatExpense),
         ],
       ),
     );
@@ -556,7 +557,7 @@ class _CategoryReportView extends ConsumerWidget {
         },
       ),
       data: (items) => items.isEmpty
-          ? const AppLoading(message: 'কোনো ডাটা নেই')
+          ? AppLoading(message: AppStrings.s.rptNoData)
           : ReportPieChart(data: items, title: title),
     );
   }
@@ -580,10 +581,10 @@ class _IncomeVsExpenseView extends ConsumerWidget {
           onRetry: () => ref.invalidate(incomeVsExpenseProvider(year)),
         ),
         data: (items) => items.isEmpty
-            ? const AppLoading(message: 'কোনো ডাটা নেই')
+            ? AppLoading(message: AppStrings.s.rptNoData)
             : ReportBarChart(
                 data: items,
-                title: 'আয় vs ব্যয় - $year',
+                title: AppStrings.s.rptIncomeVsExpense(year),
               ),
       ),
     );
@@ -620,10 +621,10 @@ class _CashFlowView extends ConsumerWidget {
               onRetry: () => ref.invalidate(cashFlowProvider(params)),
             ),
             data: (items) => items.isEmpty
-                ? const AppLoading(message: 'কোনো ডাটা নেই')
+                ? AppLoading(message: AppStrings.s.rptNoData)
                 : ReportLineChart(
                     data: items,
-                    title: 'ক্যাশ ফ্লো - ${AppDateUtils.monthNameBn(params['month']!)} ${params['year']}',
+                    title: AppStrings.s.rptCashFlowTitle(AppDateUtils.monthNameBn(params['month']!), params['year']!),
                   ),
           ),
         ],
@@ -733,7 +734,7 @@ class _MonthPickerTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'মাস নির্বাচন',
+                    AppStrings.s.rptSelectMonth,
                     style: AppTypography.caption.copyWith(
                       color: AppColors.textSecondary,
                     ),
@@ -790,10 +791,10 @@ class _DailyBarChart extends StatelessWidget {
     });
 
     if (maxVal == 0) {
-      return const AppEmptyState(
+      return AppEmptyState(
         icon: Icons.insert_chart_rounded,
-        title: 'কোনো লেনদেন নেই',
-        subtitle: 'এই সময়ে কোনো আয় বা ব্যয়ের লেনদেন পাওয়া যায়নি',
+        title: AppStrings.s.rptNoTxn,
+        subtitle: AppStrings.s.rptNoTxnSubtitle,
       );
     }
 
@@ -819,17 +820,17 @@ class _DailyBarChart extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  'দিনভিত্তিক রিপোর্ট',
+                  AppStrings.s.rptDayWise,
                   style: AppTypography.subtitle2.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                const Row(
+                Row(
                   children: [
-                    _BarLegend(color: AppColors.success, label: 'আয়'),
+                    _BarLegend(color: AppColors.success, label: AppStrings.s.rptIncome),
                     AppSpacing.boxWSM,
-                    _BarLegend(color: AppColors.error, label: 'ব্যয়'),
+                    _BarLegend(color: AppColors.error, label: AppStrings.s.rptExpense),
                   ],
                 ),              ],
             ),
@@ -844,10 +845,10 @@ class _DailyBarChart extends StatelessWidget {
                     touchTooltipData: BarTouchTooltipData(
                       getTooltipItem: (group, groupIndex, rod, rodIndex) {
                         final item = items[groupIndex];
-                        final label = rodIndex == 0 ? 'আয়' : 'ব্যয়';
+                        final label = rodIndex == 0 ? AppStrings.s.rptIncome : AppStrings.s.rptExpense;
                         final day = item.date.day;
                         return BarTooltipItem(
-                          '$day তারিখ\n$label: ${AppNumberUtils.formatCurrency(rod.toY)}',
+                          '$day ${AppStrings.s.detDate}\n$label: ${AppNumberUtils.formatCurrency(rod.toY)}',
                           const TextStyle(
                             color: AppColors.white,
                             fontSize: 11,

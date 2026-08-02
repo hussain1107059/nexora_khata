@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
@@ -25,14 +26,14 @@ class DashboardPage extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'নেক্সোরা খাতা',
+              AppStrings.s.appTitle,
               style: AppTypography.subtitle1.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
               ),
             ),
             Text(
-              'ড্যাশবোর্ড',
+              AppStrings.s.dashboardTitle,
               style: AppTypography.caption.copyWith(
                 color: AppColors.textSecondary,
               ),
@@ -92,7 +93,7 @@ class _DashboardContent extends StatelessWidget {
         Padding(
           padding: AppSpacing.paddingHSm,
           child: Text(
-            'আজকের হিসাব',
+            AppStrings.s.dashboardTodaySummary,
             style: AppTypography.subtitle2.copyWith(
               color: AppColors.textPrimary,
               fontWeight: FontWeight.w600,
@@ -108,7 +109,7 @@ class _DashboardContent extends StatelessWidget {
                 children: [
                   Expanded(
                     child: StatCardLarge(
-                      title: 'আজকের আয়',
+                      title: AppStrings.s.dashboardTodayIncome,
                       amount: data.todayIncome,
                       icon: Icons.arrow_downward_rounded,
                       color: AppColors.success,
@@ -118,7 +119,7 @@ class _DashboardContent extends StatelessWidget {
                   AppSpacing.boxWMD,
                   Expanded(
                     child: StatCardLarge(
-                      title: 'আজকের ব্যয়',
+                      title: AppStrings.s.dashboardTodayExpense,
                       amount: data.todayExpense,
                       icon: Icons.arrow_upward_rounded,
                       color: AppColors.error,
@@ -131,7 +132,7 @@ class _DashboardContent extends StatelessWidget {
             return Column(
               children: [
                 StatCardLarge(
-                  title: 'আজকের আয়',
+                  title: AppStrings.s.dashboardTodayIncome,
                   amount: data.todayIncome,
                   icon: Icons.arrow_downward_rounded,
                   color: AppColors.success,
@@ -139,7 +140,7 @@ class _DashboardContent extends StatelessWidget {
                 ),
                 AppSpacing.boxHSM,
                 StatCardLarge(
-                  title: 'আজকের ব্যয়',
+                  title: AppStrings.s.dashboardTodayExpense,
                   amount: data.todayExpense,
                   icon: Icons.arrow_upward_rounded,
                   color: AppColors.error,
@@ -164,7 +165,7 @@ class _DashboardContent extends StatelessWidget {
             children: [
               Flexible(
                 child: Text(
-                  'ব্যালেন্স',
+                  AppStrings.s.dashboardBalance,
                   style: AppTypography.subtitle2.copyWith(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.w600,
@@ -184,7 +185,7 @@ class _DashboardContent extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Text(
-                  'মোট: ${data.totalBalance >= 0 ? '+' : ''}৳${data.totalBalance.toStringAsFixed(0)}',
+                  '${AppStrings.s.dashboardTotalLabel}: ${data.totalBalance >= 0 ? '+' : ''}৳${data.totalBalance.toStringAsFixed(0)}',
                   style: AppTypography.caption.copyWith(
                     color: data.totalBalance >= 0
                         ? AppColors.success
@@ -203,25 +204,25 @@ class _DashboardContent extends StatelessWidget {
 
             final cards = [
               StatCard(
-                title: 'ক্যাশ ব্যালেন্স',
+                title: AppStrings.s.dashboardCashBalance,
                 amount: data.cashBalance,
                 icon: Icons.money_rounded,
                 color: AppColors.success,
               ),
               StatCard(
-                title: 'ব্যাংক ব্যালেন্স',
+                title: AppStrings.s.dashboardBankBalance,
                 amount: data.bankBalance,
                 icon: Icons.account_balance_rounded,
                 color: AppColors.info,
               ),
               StatCard(
-                title: 'মোট আয়',
+                title: AppStrings.s.dashboardTotalIncome,
                 amount: data.totalIncome,
                 icon: Icons.trending_up_rounded,
                 color: AppColors.success,
               ),
               StatCard(
-                title: 'মোট ব্যয়',
+                title: AppStrings.s.dashboardTotalExpense,
                 amount: data.totalExpense,
                 icon: Icons.trending_down_rounded,
                 color: AppColors.error,

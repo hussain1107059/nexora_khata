@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_dialog.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
@@ -49,9 +50,9 @@ class TransactionCategoriesPage extends ConsumerWidget {
           if (categories.isEmpty) {
             return AppEmptyState(
               icon: Icons.category_rounded,
-              title: 'কোনো ক্যাটাগরি নেই',
-              subtitle: 'নতুন ক্যাটাগরি যোগ করুন',
-              actionLabel: 'ক্যাটাগরি যোগ করুন',
+              title: AppStrings.s.catEmptyTitle,
+              subtitle: AppStrings.s.catEmptySubtitle,
+              actionLabel: AppStrings.s.catAddLabel,
               onAction: () async {
                 final result = await context.push<bool>(addRoute);
                 if (result == true) await refresh(ref);
@@ -102,23 +103,23 @@ class TransactionCategoriesPage extends ConsumerWidget {
                       }
                     },
                     itemBuilder: (_) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'edit',
                         child: Row(
                           children: [
                             Icon(Icons.edit_rounded, size: 18, color: AppColors.primary),
                             AppSpacing.boxSM,
-                            Text('সম্পাদনা'),
+                            Text(AppStrings.s.catEdit),
                           ],
                         ),
                       ),
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'delete',
                         child: Row(
                           children: [
                             Icon(Icons.delete_rounded, size: 18, color: AppColors.error),
                             AppSpacing.boxSM,
-                            Text('মুছুন'),
+                            Text(AppStrings.s.catDelete),
                           ],
                         ),
                       ),
@@ -145,9 +146,9 @@ class TransactionCategoriesPage extends ConsumerWidget {
   void _confirmDelete(BuildContext context, WidgetRef ref, int id, String name) {
     AppDialog.confirm(
       context,
-      title: 'ক্যাটাগরি মুছুন',
-      message: '"$name" ক্যাটাগরি মুছে ফেলবেন?',
-      confirmLabel: 'মুছুন',
+      title: AppStrings.s.catDeleteTitle,
+      message: AppStrings.s.catDeleteMessage(name),
+      confirmLabel: AppStrings.s.catDelete,
       icon: Icons.delete_outline_rounded,
       iconColor: AppColors.error,
       iconBackground: AppColors.errorLight,
@@ -156,7 +157,7 @@ class TransactionCategoriesPage extends ConsumerWidget {
       if (confirmed != true || !context.mounted) return;
       await delete(id);
       if (!context.mounted) return;
-      AppSnackBar.success(context, 'ক্যাটাগরি মুছে ফেলা হয়েছে');
+      AppSnackBar.success(context, AppStrings.s.catDeleted);
       await refresh(ref);
     });
   }

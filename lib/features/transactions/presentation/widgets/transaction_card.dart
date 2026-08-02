@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 
@@ -53,9 +54,9 @@ class TransactionCard extends StatelessWidget {
       case 'completed':
         return completedStatusText;
       case 'pending':
-        return 'বকেয়া';
+        return AppStrings.s.statusPending;
       case 'cancelled':
-        return 'বাতিল';
+        return AppStrings.s.statusCancelled;
       default:
         return status;
     }

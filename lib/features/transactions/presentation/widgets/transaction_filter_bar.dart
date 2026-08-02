@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_search_field.dart';
 
 class TransactionFilterBar extends ConsumerStatefulWidget {
@@ -48,13 +49,13 @@ class _TransactionFilterBarState extends ConsumerState<TransactionFilterBar> {
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             children: [
-              _buildFilterChip('সব', null),
+              _buildFilterChip(AppStrings.s.filterAll, null),
               AppSpacing.boxSM,
               _buildFilterChip(widget.completedLabel, 'completed'),
               AppSpacing.boxSM,
-              _buildFilterChip('বকেয়া', 'pending'),
+              _buildFilterChip(AppStrings.s.statusPending, 'pending'),
               AppSpacing.boxSM,
-              _buildFilterChip('বাতিল', 'cancelled'),
+              _buildFilterChip(AppStrings.s.statusCancelled, 'cancelled'),
               if (widget.extraChips != null && widget.extraChips!.isNotEmpty) ...[
                 const Padding(
                   padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),

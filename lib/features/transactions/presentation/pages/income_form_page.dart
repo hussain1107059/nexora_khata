@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/di/injection_container.dart';
 import 'package:nexora_khata/features/categories/domain/entities/income_category.dart';
@@ -24,7 +25,7 @@ class IncomeFormPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text(income != null ? 'আয় সম্পাদনা' : 'নতুন আয়', style: AppTypography.subtitle1),
+        title: Text(income != null ? AppStrings.s.incEdit : AppStrings.s.incNew, style: AppTypography.subtitle1),
         centerTitle: true,
       ),
       body: TransactionFormFields(
@@ -36,7 +37,7 @@ class IncomeFormPage extends ConsumerWidget {
         initialImagePath: income?.imagePath,
         initialPaymentMethod: income?.paymentMethod ?? 'cash',
         initialStatus: income?.status ?? 'completed',
-        completedStatusLabel: 'গৃহীত',
+        completedStatusLabel: AppStrings.s.statusReceived,
         categoriesLoading: categoriesAsync.isLoading,
         categories: categoriesAsync.valueOrNull
             ?.map((c) => CategoryOption(c.id, c.name))
@@ -99,7 +100,7 @@ class IncomeFormPage extends ConsumerWidget {
             error: (e, _) => AppSnackBar.error(context, e.toString()),
           );
           if (state is AsyncData) {
-            AppSnackBar.success(context, editing ? 'আয় আপডেট হয়েছে' : 'নতুন আয় যোগ হয়েছে');
+            AppSnackBar.success(context, editing ? AppStrings.s.incUpdated : AppStrings.s.incAdded);
             ref.invalidate(incomeFilteredListProvider);
             ref.invalidate(incomeRefreshProvider);
             ref.invalidate(dashboardProvider);

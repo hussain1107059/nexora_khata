@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/expense_category_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_categories_page.dart';
 
@@ -11,7 +12,7 @@ class ExpenseCategoriesPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return TransactionCategoriesPage(
-      title: 'ব্যব্যের ক্যাটাগরি',
+      title: AppStrings.s.expCategoryTitle,
       addRoute: RouteNames.expenseCategoryAdd,
       editRoute: RouteNames.expenseCategoryEdit,
       avatarBackground: AppColors.errorLight,

@@ -1,15 +1,16 @@
 import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/config/theme/app_theme.dart';
 import 'core/config/theme/app_colors.dart';
 import 'core/config/theme/app_typography.dart';
 import 'core/router/app_router.dart';
+import 'core/services/app_strings.dart';
 import 'core/services/database_helper.dart';
 import 'di/injection_container.dart';
 import 'features/settings/presentation/providers/settings_provider.dart';
+import 'generated/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,15 +57,8 @@ class NexoraKhataApp extends ConsumerWidget {
       themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: appRouter,
       locale: locale,
-      supportedLocales: const [
-        Locale('bn', 'BD'),
-        Locale('en', 'US'),
-      ],
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
       localeResolutionCallback: (locale, supportedLocales) {
         for (final supportedLocale in supportedLocales) {
           if (supportedLocale.languageCode == locale?.languageCode) {
@@ -74,6 +68,7 @@ class NexoraKhataApp extends ConsumerWidget {
         return const Locale('bn', 'BD');
       },
       builder: (context, child) {
+        AppStrings.current = AppLocalizations.of(context);
         final isDark = Theme.of(context).brightness == Brightness.dark;
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: SystemUiOverlayStyle(
@@ -159,7 +154,7 @@ class _AppInitializerState extends ConsumerState<_AppInitializer> {
               ),
               const SizedBox(height: 16),
               Text(
-                'নেক্সোরা খাতা',
+                AppStrings.s.appTitle,
                 style: AppTypography.heading4.copyWith(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w700,
@@ -178,7 +173,7 @@ class _AppInitializerState extends ConsumerState<_AppInitializer> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () => setState(() => _ready = true),
-                  child: const Text('যাইহোক চালু করুন'),
+                  child: Text(AppStrings.s.splashContinue),
                 ),
               ] else ...[
                 const SizedBox(height: 24),

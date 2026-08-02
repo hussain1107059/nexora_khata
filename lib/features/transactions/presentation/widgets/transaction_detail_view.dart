@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
@@ -54,7 +55,7 @@ class TransactionDetailView extends StatelessWidget {
         _buildInfoSection(),
         if (description != null && description!.isNotEmpty) ...[
           AppSpacing.boxLG,
-          _buildSection('নোট', description!),
+          _buildSection(AppStrings.s.detNote, description!),
         ],
         if (imagePath != null) ...[
           AppSpacing.boxLG,
@@ -62,7 +63,7 @@ class TransactionDetailView extends StatelessWidget {
         ],
         AppSpacing.boxHXXXL,
         AppButton.danger(
-          'মুছে ফেলুন',
+          AppStrings.s.detDelete,
           icon: Icons.delete_rounded,
           onPressed: onDelete,
         ),
@@ -141,21 +142,21 @@ class TransactionDetailView extends StatelessWidget {
         padding: AppSpacing.paddingLg,
         child: Column(
           children: [
-            _infoRow(Icons.calendar_month_rounded, 'তারিখ', AppDateUtils.formatDate(date)),
+            _infoRow(Icons.calendar_month_rounded, AppStrings.s.detDate, AppDateUtils.formatDate(date)),
             AppSpacing.boxSM,
-            _infoRow(Icons.category_rounded, 'ক্যাটাগরি', categoryName ?? 'অনির্বাচিত'),
+            _infoRow(Icons.category_rounded, AppStrings.s.detCategory, categoryName ?? AppStrings.s.statusUnselected),
             if (partnerName != null && partnerLabel != null) ...[
               AppSpacing.boxSM,
               _infoRow(Icons.person_rounded, partnerLabel!, partnerName!),
             ],
             AppSpacing.boxSM,
-            _infoRow(Icons.payment_rounded, 'পেমেন্ট', _paymentText()),
+            _infoRow(Icons.payment_rounded, AppStrings.s.payPayment, _paymentText()),
             if (reference != null) ...[
               AppSpacing.boxSM,
-              _infoRow(Icons.receipt_rounded, 'রেফারেন্স', reference!),
+              _infoRow(Icons.receipt_rounded, AppStrings.s.detReference, reference!),
             ],
             AppSpacing.boxSM,
-            _infoRow(Icons.access_time_rounded, 'তৈরির তারিখ', AppDateUtils.formatDateTime(createdAt)),
+            _infoRow(Icons.access_time_rounded, AppStrings.s.detCreatedAt, AppDateUtils.formatDateTime(createdAt)),
           ],
         ),
       ),
@@ -281,9 +282,9 @@ class TransactionDetailView extends StatelessWidget {
       case 'completed':
         return completedStatusText;
       case 'pending':
-        return 'বকেয়া';
+        return AppStrings.s.statusPending;
       case 'cancelled':
-        return 'বাতিল';
+        return AppStrings.s.statusCancelled;
       default:
         return status;
     }

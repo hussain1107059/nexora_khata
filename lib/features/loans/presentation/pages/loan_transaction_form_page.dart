@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
@@ -85,7 +86,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
     if (!_formKey.currentState!.validate()) return;
     final amount = double.tryParse(_amountCtrl.text) ?? 0;
     if (_type == 'repay' && _repayType == null) {
-      AppSnackBar.error(context, 'কোন হিসাব পরিশোধ করছেন তা নির্বাচন করুন');
+      AppSnackBar.error(context, AppStrings.s.loanTxnRepaySelectError);
       return;
     }
     final now = DateTime.now();
@@ -125,9 +126,9 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
       return;
     }
     final label = switch (_type) {
-      'borrow' => 'টাকা নেওয়া হয়েছে',
-      'lend' => 'টাকা দেওয়া হয়েছে',
-      _ => 'পরিশোধ করা হয়েছে',
+      'borrow' => AppStrings.s.loanTxnBorrowedMsg,
+      'lend' => AppStrings.s.loanTxnLentMsg,
+      _ => AppStrings.s.loanTxnRepaidMsg,
     };
     AppSnackBar.success(context, label);
     ref.invalidate(loanDashboardProvider);
@@ -141,7 +142,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('লেনদেন যোগ করুন', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.loanTxnAddTitle, style: AppTypography.subtitle1),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -179,7 +180,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'হিসাব',
+                            AppStrings.s.loanTxnAccount,
                             style: AppTypography.caption.copyWith(
                               color: AppColors.textSecondary,
                             ),
@@ -201,7 +202,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
               ),
               AppSpacing.boxXL,
               Text(
-                'লেনদেনের ধরন',
+                AppStrings.s.loanTxnType,
                 style: AppTypography.labelMedium.copyWith(
                   color: AppColors.textSecondary,
                 ),
@@ -211,8 +212,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                 children: [
                   Expanded(
                     child: _TypeButton(
-                      label: 'নিয়েছি',
-                      subtitle: 'আমি টাকা নিয়েছি',
+                      label: AppStrings.s.loanBorrowLabel,
+                      subtitle: AppStrings.s.loanTxnBorrowSub,
                       icon: Icons.arrow_upward_rounded,
                       color: AppColors.error,
                       selected: _type == 'borrow',
@@ -225,8 +226,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                   AppSpacing.boxWMD,
                   Expanded(
                     child: _TypeButton(
-                      label: 'দিয়েছি',
-                      subtitle: 'আমি টাকা দিয়েছি',
+                      label: AppStrings.s.loanLendLabel,
+                      subtitle: AppStrings.s.loanTxnLendSub,
                       icon: Icons.arrow_downward_rounded,
                       color: AppColors.success,
                       selected: _type == 'lend',
@@ -241,7 +242,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
               if (_type == 'repay') ...[
                 AppSpacing.boxLG,
                 Text(
-                  'কোন হিসাব পরিশোধ হচ্ছে?',
+                  AppStrings.s.loanTxnRepayWhich,
                   style: AppTypography.labelMedium.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -251,8 +252,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                   children: [
                     Expanded(
                       child: _RepayDirectionButton(
-                        label: 'নেওয়া টাকা',
-                        subtitle: 'আমি ফেরত দিচ্ছি',
+                        label: AppStrings.s.loanTxnRepayBorrow,
+                        subtitle: AppStrings.s.loanTxnRepayBorrowSub,
                         icon: Icons.south_west_rounded,
                         color: AppColors.error,
                         selected: _repayType == 'borrow',
@@ -262,8 +263,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                     AppSpacing.boxWMD,
                     Expanded(
                       child: _RepayDirectionButton(
-                        label: 'দেওয়া টাকা',
-                        subtitle: 'ফেরত পাচ্ছি',
+                        label: AppStrings.s.loanTxnRepayLend,
+                        subtitle: AppStrings.s.loanTxnRepayLendSub,
                         icon: Icons.north_east_rounded,
                         color: AppColors.success,
                         selected: _repayType == 'lend',
@@ -275,8 +276,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
               ],
               AppSpacing.boxXL,
               AppTextField(
-                label: 'পরিমাণ',
-                hint: '০.০০',
+                label: AppStrings.s.formAmount,
+                hint: AppStrings.s.formAmountHint,
                 controller: _amountCtrl,
                 keyboardType: TextInputType.number,
                 prefix: Text(
@@ -286,9 +287,9 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                   ),
                 ),
                 validator: (v) {
-                  if (v == null || v.isEmpty) return 'পরিমাণ লিখুন';
+                  if (v == null || v.isEmpty) return AppStrings.s.valEnterAmount;
                   final n = double.tryParse(v);
-                  if (n == null || n <= 0) return 'সঠিক পরিমাণ লিখুন';
+                  if (n == null || n <= 0) return AppStrings.s.valEnterValidAmount;
                   return null;
                 },
               ),
@@ -296,7 +297,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
               DropdownButtonFormField<String>(
                 initialValue: _paymentMethod,
                 decoration: InputDecoration(
-                  labelText: 'পেমেন্ট পদ্ধতি',
+                  labelText: AppStrings.s.payMethod,
                   labelStyle: AppTypography.bodyText2.copyWith(
                     color: AppColors.textSecondary,
                   ),
@@ -308,15 +309,15 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                     vertical: AppSpacing.md,
                   ),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'cash', child: Text('নগদ')),
-                  DropdownMenuItem(value: 'bank', child: Text('ব্যাংক')),
+                items: [
+                  DropdownMenuItem(value: 'cash', child: Text(AppStrings.s.payCash)),
+                  DropdownMenuItem(value: 'bank', child: Text(AppStrings.s.payBank)),
                 ],
                 onChanged: (v) => setState(() => _paymentMethod = v!),
               ),
               AppSpacing.boxLG,
               AppTextField(
-                label: 'তারিখ',
+                label: AppStrings.s.formDate,
                 controller: _dateCtrl,
                 readOnly: true,
                 onTap: _pickDate,
@@ -327,8 +328,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
               ),
               AppSpacing.boxLG,
               AppTextField(
-                label: 'নোট',
-                hint: 'কেন নেওয়া/দেওয়া/পরিশোধ হলো (ঐচ্ছিক)',
+                label: AppStrings.s.formNote,
+                hint: AppStrings.s.loanTxnNoteHint,
                 controller: _noteCtrl,
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
@@ -338,7 +339,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                 builder: (context, ref, _) {
                   final state = ref.watch(loanTransactionFormProvider);
                   return AppButton(
-                    text: 'সংরক্ষণ করুন',
+                    text: AppStrings.s.loanTxnSave,
                     icon: Icons.check_rounded,
                     isLoading: state.isLoading,
                     onPressed: _save,

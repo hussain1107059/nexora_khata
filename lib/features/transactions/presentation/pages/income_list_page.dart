@@ -5,6 +5,7 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
+import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
@@ -22,18 +23,18 @@ class IncomeListPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text('আয়ের তালিকা', style: AppTypography.subtitle1),
+        title: Text(AppStrings.s.incListTitle, style: AppTypography.subtitle1),
         centerTitle: true,
         actions: [
           IconButton(
             icon: Icon(Icons.bar_chart_rounded),
             onPressed: () => context.push(RouteNames.incomeMonthlyReport),
-            tooltip: 'মাসিক রিপোর্ট',
+            tooltip: AppStrings.s.incMonthlyReportTooltip,
           ),
           IconButton(
             icon: Icon(Icons.category_rounded),
             onPressed: () => context.push(RouteNames.incomeCategories),
-            tooltip: 'ক্যাটাগরি',
+            tooltip: AppStrings.s.incCategoryTooltip,
           ),
         ],
       ),
@@ -41,8 +42,8 @@ class IncomeListPage extends ConsumerWidget {
         children: [
           AppSpacing.boxSM,
           TransactionFilterBar(
-            searchHint: 'আয় অনুসন্ধান করুন...',
-            completedLabel: 'গৃহীত',
+            searchHint: AppStrings.s.incSearchHint,
+            completedLabel: AppStrings.s.statusReceived,
             searchProvider: incomeSearchProvider,
             statusProvider: incomeStatusFilterProvider,
             refreshProvider: incomeRefreshProvider,
@@ -50,7 +51,7 @@ class IncomeListPage extends ConsumerWidget {
           AppSpacing.boxSM,
           Expanded(
             child: incomesAsync.when(
-              loading: () => AppLoading(message: 'আয় লোড হচ্ছে...'),
+              loading: () => AppLoading(message: AppStrings.s.incLoading),
               error: (e, _) => AppErrorWidget(
                 message: e.toString(),
                 onRetry: () => ref.invalidate(incomeFilteredListProvider),
@@ -59,8 +60,8 @@ class IncomeListPage extends ConsumerWidget {
                 if (incomes.isEmpty) {
                   return AppEmptyState(
                     icon: Icons.account_balance_wallet_rounded,
-                    title: 'কোনো আয় নেই',
-                    subtitle: 'নতুন আয় যোগ করতে নিচের বাটনে ক্লিক করুন',
+                    title: AppStrings.s.incEmpty,
+                    subtitle: AppStrings.s.incEmptySubtitle,
                   );
                 }
                 return RefreshIndicator(
@@ -82,7 +83,7 @@ class IncomeListPage extends ConsumerWidget {
                         iconColor: AppColors.success,
                         icon: Icons.arrow_downward_rounded,
                         amountColor: AppColors.success,
-                        completedStatusText: 'গৃহীত',
+                        completedStatusText: AppStrings.s.statusReceived,
                         onTap: () => context.push('${RouteNames.incomeDetail}/${income.id}'),
                       );
                     },
@@ -103,7 +104,7 @@ class IncomeListPage extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
         icon: Icon(Icons.add_rounded),
-        label: Text('নতুন আয়'),
+        label: Text(AppStrings.s.incAdd),
       ),
     );
   }
