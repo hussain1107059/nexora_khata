@@ -3,6 +3,9 @@ import 'package:get_it/get_it.dart';
 import '../core/network/connectivity_service.dart';
 import '../core/services/database_helper.dart';
 import '../core/services/logger.dart';
+import '../features/auth/data/datasources/auth_datasource.dart';
+import '../features/auth/data/repositories/auth_repository_impl.dart';
+import '../features/auth/domain/repositories/auth_repository.dart';
 import '../features/categories/data/datasources/expense_category_datasource.dart';
 import '../features/categories/data/datasources/income_category_datasource.dart';
 import '../features/categories/data/repositories/expense_category_repository_impl.dart';
@@ -46,6 +49,12 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<DatabaseHelper>(() => dbHelper);
   getIt.registerLazySingleton<ConnectivityService>(
     () => ConnectivityService(),
+  );
+
+  final authDataSource = AuthDataSource(dbHelper);
+  getIt.registerLazySingleton<AuthDataSource>(() => authDataSource);
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(authDataSource),
   );
 
   final incomeDataSource = IncomeDataSource(dbHelper);

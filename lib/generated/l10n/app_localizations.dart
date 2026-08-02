@@ -3150,6 +3150,210 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'If you have any questions about the terms, contact us: '**
   String get termsContactMsg;
+
+  /// No description provided for @authLoginTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome Back'**
+  String get authLoginTitle;
+
+  /// No description provided for @authLoginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in to your account to continue'**
+  String get authLoginSubtitle;
+
+  /// No description provided for @authUsernameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Username or Email'**
+  String get authUsernameLabel;
+
+  /// No description provided for @authUsernameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your username or email'**
+  String get authUsernameHint;
+
+  /// No description provided for @authPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get authPasswordLabel;
+
+  /// No description provided for @authPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your password'**
+  String get authPasswordHint;
+
+  /// No description provided for @authLoginButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get authLoginButton;
+
+  /// No description provided for @authNoAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t have an account?'**
+  String get authNoAccount;
+
+  /// No description provided for @authSignupLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Create an account'**
+  String get authSignupLink;
+
+  /// No description provided for @authLoginError.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid username or password'**
+  String get authLoginError;
+
+  /// No description provided for @authLoginSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in successfully'**
+  String get authLoginSuccess;
+
+  /// No description provided for @authSignupTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Account'**
+  String get authSignupTitle;
+
+  /// No description provided for @authSignupSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up to start tracking your finances'**
+  String get authSignupSubtitle;
+
+  /// No description provided for @authFullNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Name'**
+  String get authFullNameLabel;
+
+  /// No description provided for @authFullNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your full name'**
+  String get authFullNameHint;
+
+  /// No description provided for @authNewUsernameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get authNewUsernameLabel;
+
+  /// No description provided for @authNewUsernameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a username'**
+  String get authNewUsernameHint;
+
+  /// No description provided for @authConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Password'**
+  String get authConfirmPasswordLabel;
+
+  /// No description provided for @authConfirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter your password'**
+  String get authConfirmPasswordHint;
+
+  /// No description provided for @authSignupButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign Up'**
+  String get authSignupButton;
+
+  /// No description provided for @authHaveAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Already have an account?'**
+  String get authHaveAccount;
+
+  /// No description provided for @authLoginLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get authLoginLink;
+
+  /// No description provided for @authUsernameTaken.
+  ///
+  /// In en, this message translates to:
+  /// **'This username is already taken'**
+  String get authUsernameTaken;
+
+  /// No description provided for @authPasswordsMismatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get authPasswordsMismatch;
+
+  /// No description provided for @authSignupSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Account created successfully'**
+  String get authSignupSuccess;
+
+  /// No description provided for @authRequiredField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get authRequiredField;
+
+  /// No description provided for @authPasswordMin.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 4 characters'**
+  String get authPasswordMin;
+
+  /// No description provided for @setAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get setAccount;
+
+  /// No description provided for @setLoggedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in as'**
+  String get setLoggedInAs;
+
+  /// No description provided for @setLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get setLogout;
+
+  /// No description provided for @logoutConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutConfirmTitle;
+
+  /// No description provided for @logoutConfirmMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to log out?'**
+  String get logoutConfirmMsg;
+
+  /// No description provided for @logoutConfirmYes.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutConfirmYes;
+
+  /// No description provided for @logoutConfirmNo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get logoutConfirmNo;
 }
 
 class _AppLocalizationsDelegate

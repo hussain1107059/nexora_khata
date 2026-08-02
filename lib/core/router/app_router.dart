@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../widgets/app_shell.dart';
+import '../../features/auth/presentation/pages/login_page.dart';
+import '../../features/auth/presentation/pages/signup_page.dart';
+import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/settings/presentation/pages/about_page.dart';
@@ -35,11 +38,39 @@ final GlobalKey<NavigatorState> _rootNavigatorKey =
 final GoRouter appRouter = GoRouter(
   navigatorKey: _rootNavigatorKey,
   initialLocation: RouteNames.dashboard,
+  refreshListenable: authUserNotifier,
   debugLogDiagnostics: false,
+  redirect: (context, state) {
+    final loggedIn = authUserNotifier.value != null;
+    final atAuthPage = state.matchedLocation == RouteNames.login ||
+        state.matchedLocation == RouteNames.signup;
+    if (!loggedIn && !atAuthPage) return RouteNames.login;
+    if (loggedIn && atAuthPage) return RouteNames.dashboard;
+    return null;
+  },
   routes: [
     GoRoute(
       path: '/',
-      redirect: (context, state) => RouteNames.dashboard,
+      redirect: (context, state) {
+        if (authUserNotifier.value == null) return RouteNames.login;
+        return RouteNames.dashboard;
+      },
+    ),
+    GoRoute(
+      path: RouteNames.login,
+      name: RouteNames.login,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: LoginPage(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.signup,
+      name: RouteNames.signup,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: SignupPage(),
+      ),
     ),
     ShellRoute(
       builder: (context, state, child) => AppShell(child: child),

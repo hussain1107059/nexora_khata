@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
+import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_text.dart';
+import 'package:nexora_khata/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nexora_khata/features/settings/presentation/providers/settings_provider.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -26,6 +28,7 @@ class SettingsPage extends ConsumerWidget {
       ),
       body: ListView(
         children: [
+          const _ProfileSection(),
           _SectionHeader(title: AppStrings.s.setPreferences),
           SwitchListTile(
             secondary: Icon(
@@ -74,6 +77,7 @@ class SettingsPage extends ConsumerWidget {
             onTap: () => context.push('/settings/terms'),
           ),
           const _AppVersionTile(),
+          const _LogoutTile(),
           const SizedBox(height: AppSpacing.xxxl),
         ],
       ),
@@ -187,5 +191,95 @@ class _AppVersionTile extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class _ProfileSection extends ConsumerWidget {
+  const _ProfileSection();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    AppStrings.dependOnLocale(context);
+    final user = ref.watch(authStateProvider).value;
+    final name = user?.name ?? '';
+    final subtitle = user?.username ?? user?.email;
+
+    return Padding(
+      padding: AppSpacing.screenPadding,
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 28,
+            backgroundColor: AppColors.primaryLight,
+            child: Text(
+              name.isEmpty ? '?' : name.characters.first.toUpperCase(),
+              style: AppTypography.heading5.copyWith(color: AppColors.primary),
+            ),
+          ),
+          AppSpacing.boxWMD,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AppText(
+                  name.isEmpty ? AppStrings.s.appTitle : name,
+                  type: AppTextType.subtitle1,
+                ),
+                if (subtitle != null && subtitle.isNotEmpty)
+                  AppText(
+                    subtitle,
+                    type: AppTextType.caption,
+                    color: AppColors.textSecondary,
+                  ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _LogoutTile extends ConsumerWidget {
+  const _LogoutTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    AppStrings.dependOnLocale(context);
+    return ListTile(
+      leading: const Icon(Icons.logout, color: AppColors.error),
+      title: AppText(
+        AppStrings.s.setLogout,
+        type: AppTextType.body2,
+        color: AppColors.error,
+      ),
+      onTap: () => _confirmLogout(context, ref),
+    );
+  }
+
+  static Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: AppText(AppStrings.s.logoutConfirmTitle, type: AppTextType.heading4),
+        content: AppText(AppStrings.s.logoutConfirmMsg, type: AppTextType.body2),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: AppText(AppStrings.s.logoutConfirmNo),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: AppText(
+              AppStrings.s.logoutConfirmYes,
+              color: AppColors.error,
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await ref.read(authStateProvider.notifier).logout();
+    }
   }
 }

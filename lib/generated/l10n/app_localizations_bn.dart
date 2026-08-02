@@ -1659,4 +1659,106 @@ class AppLocalizationsBn extends AppLocalizations {
   @override
   String get termsContactMsg =>
       'শর্তাবলী সম্পর্কে কোনো প্রশ্ন থাকলে আমাদের সাথে যোগাযোগ করুন: ';
+
+  @override
+  String get authLoginTitle => 'আবার স্বাগতম';
+
+  @override
+  String get authLoginSubtitle => 'চালিয়ে যেতে আপনার অ্যাকাউন্টে লগইন করুন';
+
+  @override
+  String get authUsernameLabel => 'ইউজারনেম বা ইমেইল';
+
+  @override
+  String get authUsernameHint => 'আপনার ইউজারনেম বা ইমেইল লিখুন';
+
+  @override
+  String get authPasswordLabel => 'পাসওয়ার্ড';
+
+  @override
+  String get authPasswordHint => 'আপনার পাসওয়ার্ড লিখুন';
+
+  @override
+  String get authLoginButton => 'লগইন';
+
+  @override
+  String get authNoAccount => 'অ্যাকাউন্ট নেই?';
+
+  @override
+  String get authSignupLink => 'অ্যাকাউন্ট তৈরি করুন';
+
+  @override
+  String get authLoginError => 'ভুল ইউজারনেম বা পাসওয়ার্ড';
+
+  @override
+  String get authLoginSuccess => 'সফলভাবে লগইন হয়েছে';
+
+  @override
+  String get authSignupTitle => 'অ্যাকাউন্ট তৈরি করুন';
+
+  @override
+  String get authSignupSubtitle => 'আপনার আর্থিক হিসাব রাখতে সাইন আপ করুন';
+
+  @override
+  String get authFullNameLabel => 'পুরো নাম';
+
+  @override
+  String get authFullNameHint => 'আপনার পুরো নাম লিখুন';
+
+  @override
+  String get authNewUsernameLabel => 'ইউজারনেম';
+
+  @override
+  String get authNewUsernameHint => 'একটি ইউজারনেম চয়ন করুন';
+
+  @override
+  String get authConfirmPasswordLabel => 'পাসওয়ার্ড নিশ্চিত করুন';
+
+  @override
+  String get authConfirmPasswordHint => 'পাসওয়ার্ড আবার লিখুন';
+
+  @override
+  String get authSignupButton => 'সাইন আপ';
+
+  @override
+  String get authHaveAccount => 'ইতিমধ্যে অ্যাকাউন্ট আছে?';
+
+  @override
+  String get authLoginLink => 'লগইন';
+
+  @override
+  String get authUsernameTaken => 'এই ইউজারনেমটি ইতিমধ্যে ব্যবহৃত হচ্ছে';
+
+  @override
+  String get authPasswordsMismatch => 'পাসওয়ার্ড মিলছে না';
+
+  @override
+  String get authSignupSuccess => 'অ্যাকাউন্ট সফলভাবে তৈরি হয়েছে';
+
+  @override
+  String get authRequiredField => 'এই ঘরটি অবশ্যই পূরণ করুন';
+
+  @override
+  String get authPasswordMin => 'পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে';
+
+  @override
+  String get setAccount => 'অ্যাকাউন্ট';
+
+  @override
+  String get setLoggedInAs => 'লগইন করা হয়েছে';
+
+  @override
+  String get setLogout => 'লগআউট';
+
+  @override
+  String get logoutConfirmTitle => 'লগআউট';
+
+  @override
+  String get logoutConfirmMsg => 'আপনি কি নিশ্চিতভাবে লগআউট করতে চান?';
+
+  @override
+  String get logoutConfirmYes => 'লগআউট';
+
+  @override
+  String get logoutConfirmNo => 'বাতিল';
 }

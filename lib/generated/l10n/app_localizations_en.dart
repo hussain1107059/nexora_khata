@@ -1659,4 +1659,106 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get termsContactMsg =>
       'If you have any questions about the terms, contact us: ';
+
+  @override
+  String get authLoginTitle => 'Welcome Back';
+
+  @override
+  String get authLoginSubtitle => 'Sign in to your account to continue';
+
+  @override
+  String get authUsernameLabel => 'Username or Email';
+
+  @override
+  String get authUsernameHint => 'Enter your username or email';
+
+  @override
+  String get authPasswordLabel => 'Password';
+
+  @override
+  String get authPasswordHint => 'Enter your password';
+
+  @override
+  String get authLoginButton => 'Login';
+
+  @override
+  String get authNoAccount => 'Don\'t have an account?';
+
+  @override
+  String get authSignupLink => 'Create an account';
+
+  @override
+  String get authLoginError => 'Invalid username or password';
+
+  @override
+  String get authLoginSuccess => 'Logged in successfully';
+
+  @override
+  String get authSignupTitle => 'Create Account';
+
+  @override
+  String get authSignupSubtitle => 'Sign up to start tracking your finances';
+
+  @override
+  String get authFullNameLabel => 'Full Name';
+
+  @override
+  String get authFullNameHint => 'Enter your full name';
+
+  @override
+  String get authNewUsernameLabel => 'Username';
+
+  @override
+  String get authNewUsernameHint => 'Choose a username';
+
+  @override
+  String get authConfirmPasswordLabel => 'Confirm Password';
+
+  @override
+  String get authConfirmPasswordHint => 'Re-enter your password';
+
+  @override
+  String get authSignupButton => 'Sign Up';
+
+  @override
+  String get authHaveAccount => 'Already have an account?';
+
+  @override
+  String get authLoginLink => 'Login';
+
+  @override
+  String get authUsernameTaken => 'This username is already taken';
+
+  @override
+  String get authPasswordsMismatch => 'Passwords do not match';
+
+  @override
+  String get authSignupSuccess => 'Account created successfully';
+
+  @override
+  String get authRequiredField => 'This field is required';
+
+  @override
+  String get authPasswordMin => 'Password must be at least 4 characters';
+
+  @override
+  String get setAccount => 'Account';
+
+  @override
+  String get setLoggedInAs => 'Logged in as';
+
+  @override
+  String get setLogout => 'Logout';
+
+  @override
+  String get logoutConfirmTitle => 'Logout';
+
+  @override
+  String get logoutConfirmMsg => 'Are you sure you want to log out?';
+
+  @override
+  String get logoutConfirmYes => 'Logout';
+
+  @override
+  String get logoutConfirmNo => 'Cancel';
 }

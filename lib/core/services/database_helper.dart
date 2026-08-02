@@ -123,6 +123,7 @@ class DatabaseHelper {
       CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
+        username TEXT,
         email TEXT,
         phone TEXT,
         password_hash TEXT,
@@ -581,6 +582,7 @@ class DatabaseHelper {
       () => b.execute('CREATE INDEX idx_attachments_reference ON attachments(reference_type, reference_id)'),
       () => b.execute('CREATE INDEX idx_settings_business ON settings(business_id)'),
       () => b.execute('CREATE INDEX idx_backup_logs_business ON backup_logs(business_id)'),
+      () => b.execute('CREATE UNIQUE INDEX IF NOT EXISTS idx_users_username ON users(username)'),
     ];
     for (final fn in idx) {
       fn();
@@ -870,6 +872,9 @@ class DatabaseHelper {
     }
     if (version == 10) {
       await _addLoanAccountColumns(db);
+    }
+    if (version == 11) {
+      await _ensureColumn(db, 'users', 'username', 'TEXT');
     }
   }
 
