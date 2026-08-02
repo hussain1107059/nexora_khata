@@ -19,7 +19,7 @@ class StatCard extends StatelessWidget {
     required this.amount,
     required this.icon,
     required this.color,
-    this.backgroundColor = AppColors.white,
+    this.backgroundColor = AppColors.cardBackground,
     this.isCurrency = true,
   });
 
@@ -28,12 +28,13 @@ class StatCard extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: backgroundColor,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 12,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -50,7 +51,7 @@ class StatCard extends StatelessWidget {
                   height: 36,
                   decoration: BoxDecoration(
                     color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(icon, size: 18, color: color),
                 ),
@@ -68,7 +69,9 @@ class StatCard extends StatelessWidget {
             ),
             AppSpacing.boxHSM,
             Text(
-              isCurrency ? AppNumberUtils.formatCurrency(amount) : amount.toStringAsFixed(0),
+              isCurrency
+                  ? AppNumberUtils.formatCurrency(amount)
+                  : amount.toStringAsFixed(0),
               style: AppTypography.subtitle1.copyWith(
                 color: AppColors.textPrimary,
                 fontWeight: FontWeight.w700,
@@ -117,18 +120,18 @@ class StatCardLarge extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXxl),
         gradient: effectiveGradient,
         boxShadow: [
           BoxShadow(
-            color: color.withValues(alpha: 0.3),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
+            color: color.withValues(alpha: 0.28),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
           ),
         ],
       ),
       child: Padding(
-        padding: AppSpacing.paddingXl,
+        padding: const EdgeInsets.all(AppSpacing.xl),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -138,24 +141,24 @@ class StatCardLarge extends StatelessWidget {
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.2),
+                    color: AppColors.white.withValues(alpha: 0.22),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(icon, size: 20, color: AppColors.white),
                 ),
                 const Spacer(),
                 Container(
-                  padding: AppSpacing.paddingHVXl.copyWith(
-                    left: AppSpacing.md, right: AppSpacing.md,
-                    top: AppSpacing.xs, bottom: AppSpacing.xs,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.md,
+                    vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.2),
+                    color: AppColors.white.withValues(alpha: 0.22),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
                     'আজ',
-                    style: AppTypography.caption.copyWith(
+                    style: AppTypography.labelMedium.copyWith(
                       color: AppColors.white,
                       fontWeight: FontWeight.w600,
                     ),

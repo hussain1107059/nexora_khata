@@ -89,7 +89,7 @@ class _TabBar extends ConsumerWidget {
     final tab = ref.watch(reportTabProvider);
 
     return Container(
-      color: AppColors.white,
+      color: AppColors.surface,
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         padding: AppSpacing.paddingHSm.copyWith(
@@ -105,7 +105,9 @@ class _TabBar extends ConsumerWidget {
               padding: const EdgeInsets.only(right: AppSpacing.sm),
               child: GestureDetector(
                 onTap: () => ref.read(reportTabProvider.notifier).state = i,
-                child: Container(
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  curve: Curves.easeOut,
                   padding: AppSpacing.paddingHSm.copyWith(
                     top: AppSpacing.sm,
                     bottom: AppSpacing.sm,
@@ -115,6 +117,15 @@ class _TabBar extends ConsumerWidget {
                         ? AppColors.primary
                         : AppColors.chipBackground,
                     borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+                    boxShadow: isSelected
+                        ? const [
+                            BoxShadow(
+                              color: Color(0x3DE53935),
+                              blurRadius: 10,
+                              offset: Offset(0, 3),
+                            ),
+                          ]
+                        : null,
                   ),
                   child: Text(
                     label,
@@ -122,7 +133,7 @@ class _TabBar extends ConsumerWidget {
                       color: isSelected
                           ? AppColors.white
                           : AppColors.textSecondary,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                      fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                     ),
                   ),
                 ),
@@ -149,9 +160,9 @@ class _YearSelector extends ConsumerWidget {
     final yearsAsync = ref.watch(availableYearsProvider);
 
     return yearsAsync.when(
-      loading: () => Padding(
+      loading: () => const Padding(
         padding: AppSpacing.paddingHSm,
-        child: const SizedBox(
+        child: SizedBox(
           width: 20,
           height: 20,
           child: CircularProgressIndicator(strokeWidth: 2),
@@ -638,18 +649,31 @@ class _DatePickerTile extends StatelessWidget {
     );
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 12,
+            offset: Offset(0, 2),
           ),
         ],
       ),
       child: ListTile(
-        leading: const Icon(Icons.calendar_today_rounded, color: AppColors.primary),
+        leading: Container(
+          width: 40,
+          height: 40,
+          decoration: BoxDecoration(
+            color: AppColors.primaryLight,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: const Icon(
+            Icons.calendar_today_rounded,
+            color: AppColors.primary,
+            size: 20,
+          ),
+        ),
         title: Text(label, style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
         subtitle: Text(displayDate, style: AppTypography.bodyText1.copyWith(color: AppColors.textPrimary, fontWeight: FontWeight.w600)),
         trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 16, color: AppColors.textHint),
@@ -674,13 +698,14 @@ class _MonthPickerTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 12,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -688,7 +713,19 @@ class _MonthPickerTile extends StatelessWidget {
         padding: AppSpacing.paddingLg,
         child: Row(
           children: [
-            const Icon(Icons.calendar_month_rounded, color: AppColors.primary),
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.primaryLight,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(
+                Icons.calendar_month_rounded,
+                color: AppColors.primary,
+                size: 20,
+              ),
+            ),
             AppSpacing.boxWMD,
             Expanded(
               child: Column(
@@ -753,13 +790,14 @@ class _DailyBarChart extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 12,
+            offset: Offset(0, 2),
           ),
         ],
       ),
@@ -778,14 +816,13 @@ class _DailyBarChart extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
-                Row(
+                const Row(
                   children: [
                     _BarLegend(color: AppColors.success, label: 'আয়'),
                     AppSpacing.boxWSM,
                     _BarLegend(color: AppColors.error, label: 'ব্যয়'),
                   ],
-                ),
-              ],
+                ),              ],
             ),
             AppSpacing.boxHLG,
             SizedBox(
@@ -891,7 +928,7 @@ class _DailyBarChart extends StatelessWidget {
                     show: true,
                     drawVerticalLine: false,
                     horizontalInterval: maxVal / 4,
-                    getDrawingHorizontalLine: (value) => FlLine(
+                    getDrawingHorizontalLine: (value) => const FlLine(
                       color: AppColors.divider,
                       strokeWidth: 1,
                     ),

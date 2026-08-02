@@ -24,7 +24,7 @@ class SettingsPage extends ConsumerWidget {
       ),
       body: ListView(
         children: [
-          _SectionHeader(title: 'পছন্দসমূহ'),
+          const _SectionHeader(title: 'পছন্দসমূহ'),
           SwitchListTile(
             secondary: Icon(
               isDarkMode ? Icons.dark_mode : Icons.light_mode,
@@ -36,7 +36,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           const _LanguageTile(),
           const Divider(height: 1),
-          _SectionHeader(title: 'ডেটাবেস'),
+          const _SectionHeader(title: 'ডেটাবেস'),
           ListTile(
             leading: const Icon(Icons.backup, color: AppColors.primary),
             title: const AppText('ব্যাকআপ', type: AppTextType.body2),
@@ -52,7 +52,7 @@ class SettingsPage extends ConsumerWidget {
             onTap: () => context.push('/settings/backup'),
           ),
           const Divider(height: 1),
-          _SectionHeader(title: 'অন্যান্য'),
+          const _SectionHeader(title: 'অন্যান্য'),
           ListTile(
             leading: const Icon(Icons.info_outline, color: AppColors.primary),
             title: const AppText('সম্পর্কে', type: AppTextType.body2),
@@ -129,34 +129,29 @@ class _LanguageTile extends ConsumerWidget {
       context: context,
       builder: (context) => AlertDialog(
         title: const AppText('ভাষা নির্বাচন করুন', type: AppTextType.heading4),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioListTile<Locale>(
-              title: const AppText('বাংলা'),
-              activeColor: AppColors.primary,
-              value: const Locale('bn', 'BD'),
-              groupValue: currentLocale,
-              onChanged: (locale) {
-                if (locale != null) {
-                  ref.read(localeProvider.notifier).setLocale(locale);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-            RadioListTile<Locale>(
-              title: const AppText('English'),
-              activeColor: AppColors.primary,
-              value: const Locale('en', 'US'),
-              groupValue: currentLocale,
-              onChanged: (locale) {
-                if (locale != null) {
-                  ref.read(localeProvider.notifier).setLocale(locale);
-                  Navigator.pop(context);
-                }
-              },
-            ),
-          ],
+        content: RadioGroup<Locale>(
+          groupValue: currentLocale,
+          onChanged: (locale) {
+            if (locale != null) {
+              ref.read(localeProvider.notifier).setLocale(locale);
+              Navigator.pop(context);
+            }
+          },
+          child: const Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              RadioListTile<Locale>(
+                title: AppText('বাংলা'),
+                activeColor: AppColors.primary,
+                value: Locale('bn', 'BD'),
+              ),
+              RadioListTile<Locale>(
+                title: AppText('English'),
+                activeColor: AppColors.primary,
+                value: Locale('en', 'US'),
+              ),
+            ],
+          ),
         ),
       ),
     );

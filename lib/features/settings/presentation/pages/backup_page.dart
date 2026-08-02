@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
+import 'package:nexora_khata/core/widgets/app_dialog.dart';
+import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text.dart';
 import 'package:nexora_khata/features/settings/data/services/backup_service.dart';
 import 'package:nexora_khata/features/settings/presentation/providers/backup_provider.dart';
@@ -76,8 +78,6 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
   Widget _buildAutoBackupCard(bool autoEnabled) {
     return Card(
-      elevation: AppSpacing.elevationSm,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
       child: Padding(
         padding: AppSpacing.cardPadding,
         child: Column(
@@ -85,7 +85,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
           children: [
             Row(
               children: [
-                Icon(Icons.schedule_rounded, color: AppColors.info, size: 20),
+                const Icon(Icons.schedule_rounded, color: AppColors.info, size: 20),
                 AppSpacing.boxWSM,
                 const AppText('স্বয়ংক্রিয় ব্যাকআপ', type: AppTextType.subtitle2),
                 const Spacer(),
@@ -145,7 +145,9 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
     final selected = value == current;
     return GestureDetector(
       onTap: () => ref.read(autoBackupFrequencyProvider.notifier).setFrequency(value),
-      child: Container(
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
           color: selected ? AppColors.info : AppColors.chipBackground,
@@ -160,18 +162,16 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
   Widget _buildManualBackupCard() {
     return Card(
-      elevation: AppSpacing.elevationSm,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
       child: Padding(
         padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.cloud_upload_outlined, color: AppColors.primary, size: 20),
                 AppSpacing.boxWSM,
-                const AppText('ম্যানুয়াল ব্যাকআপ', type: AppTextType.subtitle2),
+                AppText('ম্যানুয়াল ব্যাকআপ', type: AppTextType.subtitle2),
               ],
             ),
             AppSpacing.boxMD,
@@ -199,18 +199,16 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
   Widget _buildRestoreCard() {
     return Card(
-      elevation: AppSpacing.elevationSm,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
       child: Padding(
         padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.restore_outlined, color: AppColors.warning, size: 20),
                 AppSpacing.boxWSM,
-                const AppText('পুনরুদ্ধার', type: AppTextType.subtitle2),
+                AppText('পুনরুদ্ধার', type: AppTextType.subtitle2),
               ],
             ),
             AppSpacing.boxMD,
@@ -273,18 +271,16 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
   Widget _buildExportImportCard() {
     return Card(
-      elevation: AppSpacing.elevationSm,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
       child: Padding(
         padding: AppSpacing.cardPadding,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.share_outlined, color: AppColors.secondary, size: 20),
                 AppSpacing.boxWSM,
-                const AppText('এক্সপোর্ট / ইম্পোর্ট', type: AppTextType.subtitle2),
+                AppText('এক্সপোর্ট / ইম্পোর্ট', type: AppTextType.subtitle2),
               ],
             ),
             AppSpacing.boxMD,
@@ -332,8 +328,6 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
   Widget _buildHistorySection(AsyncValue<List<BackupEntry>> historyAsync, AsyncValue<int> countAsync, AsyncValue<double> sizeAsync) {
     return Card(
-      elevation: AppSpacing.elevationSm,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
       child: Padding(
         padding: AppSpacing.cardPadding,
         child: Column(
@@ -341,7 +335,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
           children: [
             Row(
               children: [
-                Icon(Icons.history_rounded, color: AppColors.textPrimary, size: 20),
+                const Icon(Icons.history_rounded, color: AppColors.textPrimary, size: 20),
                 AppSpacing.boxWSM,
                 const AppText('ব্যাকআপ ইতিহাস', type: AppTextType.subtitle2),
                 const Spacer(),
@@ -457,7 +451,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       case 'delete':
         if (mounted) {
           final confirmed = await _showConfirmDialog('ব্যাকআপ মুছুন',
-            '${entry.fileName} ব্যাকআপটি মুছবেন?');
+            '${entry.fileName} ব্যাকআপটি মুছবেন?', destructive: true);
           if (confirmed == true) {
             final service = ref.read(backupServiceProvider);
             await service.deleteBackup(entry.id);
@@ -480,23 +474,17 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       ref.invalidate(backupCountProvider);
       ref.invalidate(backupTotalSizeProvider);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: AppText('ব্যাকআপ সফল: ${p.basename(file.path)}', color: AppColors.white),
-          backgroundColor: AppColors.success,
-          duration: const Duration(seconds: 3),
-          action: SnackBarAction(
-            label: 'শেয়ার',
-            textColor: AppColors.white,
-            onPressed: () => service.shareBackup(file.path),
-          ),
-        ));
+        AppSnackBar.show(
+          context,
+          'ব্যাকআপ সফল: ${p.basename(file.path)}',
+          type: SnackBarType.success,
+          actionLabel: 'শেয়ার',
+          onAction: () => service.shareBackup(file.path),
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: AppText('ব্যর্থ: $e', color: AppColors.white),
-          backgroundColor: AppColors.error,
-        ));
+        AppSnackBar.error(context, 'ব্যর্থ: $e');
       }
     } finally {
       if (mounted) setState(() => _isBackingUp = false);
@@ -508,27 +496,18 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
     final history = await service.getBackupHistory(limit: 100);
     if (!mounted) return;
     if (history.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: AppText('কোনো ব্যাকআপ পাওয়া যায়নি', color: AppColors.white),
-        backgroundColor: AppColors.warning,
-      ));
+      AppSnackBar.warning(context, 'কোনো ব্যাকআপ পাওয়া যায়নি');
       return;
     }
     await showModalBottomSheet(
       context: context,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(AppSpacing.radiusXl),
-          topRight: Radius.circular(AppSpacing.radiusXl),
-        ),
-      ),
       builder: (ctx) => Padding(
         padding: AppSpacing.cardPadding,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
                 Icon(Icons.history_rounded, size: 20, color: AppColors.warning),
                 AppSpacing.boxWSM,
@@ -586,17 +565,15 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       final service = ref.read(backupServiceProvider);
       final success = await service.restore(path);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: AppText(success ? 'পুনরুদ্ধার সফল! ${p.basename(path)}' : 'পুনরুদ্ধার ব্যর্থ', color: AppColors.white),
-          backgroundColor: success ? AppColors.success : AppColors.error,
-        ));
+        AppSnackBar.show(
+          context,
+          success ? 'পুনরুদ্ধার সফল! ${p.basename(path)}' : 'পুনরুদ্ধার ব্যর্থ',
+          type: success ? SnackBarType.success : SnackBarType.error,
+        );
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: AppText('ত্রুটি: $e', color: AppColors.white),
-          backgroundColor: AppColors.error,
-        ));
+        AppSnackBar.error(context, 'ত্রুটি: $e');
       }
     } finally {
       if (mounted) setState(() => _isRestoring = false);
@@ -611,10 +588,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       await service.shareBackup(file.path);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: AppText('ত্রুটি: $e', color: AppColors.white),
-          backgroundColor: AppColors.error,
-        ));
+        AppSnackBar.error(context, 'ত্রুটি: $e');
       }
     } finally {
       if (mounted) setState(() => _isExporting = false);
@@ -628,31 +602,30 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
     if (fileResult == null || fileResult.files.single.path == null) return;
     final path = fileResult.files.single.path!;
     final confirmed = await _showConfirmDialog('ইম্পোর্ট নিশ্চিত করুন',
-      '${fileResult.files.single.name} ইম্পোর্ট করবেন?\nবর্তমান ডেটা প্রতিস্থাপিত হবে!');
+      '${fileResult.files.single.name} ইম্পোর্ট করবেন?\nবর্তমান ডেটা প্রতিস্থাপিত হবে!', destructive: true);
     if (confirmed == true) {
       final service = ref.read(backupServiceProvider);
       final success = await service.restore(path);
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: AppText(success ? 'ইম্পোর্ট সফল' : 'ইম্পোর্ট ব্যর্থ', color: AppColors.white),
-          backgroundColor: success ? AppColors.success : AppColors.error,
-        ));
+        AppSnackBar.show(
+          context,
+          success ? 'ইম্পোর্ট সফল' : 'ইম্পোর্ট ব্যর্থ',
+          type: success ? SnackBarType.success : SnackBarType.error,
+        );
       }
     }
   }
 
-  Future<bool?> _showConfirmDialog(String title, String message) {
-    return showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: AppText(title, type: AppTextType.subtitle2),
-        content: AppText(message, type: AppTextType.body2),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const AppText('বাতিল', type: AppTextType.button)),
-          TextButton(onPressed: () => Navigator.pop(ctx, true),
-            child: const AppText('নিশ্চিত', type: AppTextType.button, color: AppColors.error)),
-        ],
-      ),
+  Future<bool?> _showConfirmDialog(String title, String message, {bool destructive = false}) {
+    return AppDialog.confirm(
+      context,
+      title: title,
+      message: message,
+      confirmLabel: 'নিশ্চিত',
+      icon: destructive ? Icons.warning_rounded : Icons.restore_rounded,
+      iconColor: destructive ? AppColors.error : AppColors.warning,
+      iconBackground: destructive ? AppColors.errorLight : AppColors.warningLight,
+      destructive: destructive,
     );
   }
 

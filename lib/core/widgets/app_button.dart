@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../config/theme/app_colors.dart';
 import '../config/theme/app_spacing.dart';
 
-class AppButton extends StatelessWidget {
+class AppButton extends StatefulWidget {
   final String text;
   final VoidCallback? onPressed;
   final ButtonType type;
@@ -89,50 +89,69 @@ class AppButton extends StatelessWidget {
       );
 
   @override
+  State<AppButton> createState() => _AppButtonState();
+}
+
+class _AppButtonState extends State<AppButton> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    final disabled = isDisabled || isLoading || onPressed == null;
+    final disabled = widget.isDisabled || widget.isLoading || widget.onPressed == null;
 
     final content = Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        if (isLoading)
+        if (widget.isLoading)
           _buildLoader()
         else ...[
-          if (icon != null) ...[
-            Icon(icon, size: 18),
+          if (widget.icon != null) ...[
+            Icon(widget.icon, size: 18),
             AppSpacing.boxWSM,
           ],
-          Text(text),
+          Text(widget.text),
         ],
       ],
     );
 
-    return SizedBox(
-      width: width,
-      height: height ?? 48,
-      child: switch (type) {
-        ButtonType.primary => ElevatedButton(
-            onPressed: disabled ? null : onPressed,
-            child: content,
-          ),
-        ButtonType.outlined => OutlinedButton(
-            onPressed: disabled ? null : onPressed,
-            child: content,
-          ),
-        ButtonType.text => TextButton(
-            onPressed: disabled ? null : onPressed,
-            child: content,
-          ),
-        ButtonType.danger => ElevatedButton(
-            onPressed: disabled ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.error,
-              foregroundColor: AppColors.white,
-            ),
-            child: content,
-          ),
-      },
+    return AnimatedScale(
+      scale: _pressed && !disabled ? 0.98 : 1.0,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+      child: Listener(
+        onPointerDown: (_) {
+          if (!disabled) setState(() => _pressed = true);
+        },
+        onPointerUp: (_) => setState(() => _pressed = false),
+        onPointerCancel: (_) => setState(() => _pressed = false),
+        child: SizedBox(
+          width: widget.width,
+          height: widget.height ?? 48,
+          child: switch (widget.type) {
+            ButtonType.primary => ElevatedButton(
+                onPressed: disabled ? null : widget.onPressed,
+                child: content,
+              ),
+            ButtonType.outlined => OutlinedButton(
+                onPressed: disabled ? null : widget.onPressed,
+                child: content,
+              ),
+            ButtonType.text => TextButton(
+                onPressed: disabled ? null : widget.onPressed,
+                child: content,
+              ),
+            ButtonType.danger => ElevatedButton(
+                onPressed: disabled ? null : widget.onPressed,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.error,
+                  foregroundColor: AppColors.white,
+                ),
+                child: content,
+              ),
+          },
+        ),
+      ),
     );
   }
 
@@ -142,7 +161,7 @@ class AppButton extends StatelessWidget {
       height: 20,
       child: CircularProgressIndicator(
         strokeWidth: 2,
-        color: type == ButtonType.primary || type == ButtonType.danger
+        color: widget.type == ButtonType.primary || widget.type == ButtonType.danger
             ? AppColors.white
             : AppColors.primary,
       ),
@@ -152,7 +171,7 @@ class AppButton extends StatelessWidget {
 
 enum ButtonType { primary, outlined, text, danger }
 
-class AppIconButton extends StatelessWidget {
+class AppIconButton extends StatefulWidget {
   final IconData icon;
   final VoidCallback? onPressed;
   final Color? backgroundColor;
@@ -169,21 +188,39 @@ class AppIconButton extends StatelessWidget {
   });
 
   @override
+  State<AppIconButton> createState() => _AppIconButtonState();
+}
+
+class _AppIconButtonState extends State<AppIconButton> {
+  bool _pressed = false;
+
+  @override
   Widget build(BuildContext context) {
-    final btnSize = size ?? 40;
-    return Material(
-      color: backgroundColor ?? AppColors.primaryLight,
-      borderRadius: BorderRadius.circular(btnSize / 2),
-      child: InkWell(
-        onTap: onPressed,
-        borderRadius: BorderRadius.circular(btnSize / 2),
-        child: SizedBox(
-          width: btnSize,
-          height: btnSize,
-          child: Icon(
-            icon,
-            size: btnSize * 0.5,
-            color: iconColor ?? AppColors.primary,
+    final btnSize = widget.size ?? 40;
+    return AnimatedScale(
+      scale: _pressed ? 0.92 : 1.0,
+      duration: const Duration(milliseconds: 120),
+      curve: Curves.easeOut,
+      child: Listener(
+        onPointerDown: (_) => setState(() => _pressed = true),
+        onPointerUp: (_) => setState(() => _pressed = false),
+        onPointerCancel: (_) => setState(() => _pressed = false),
+        child: Material(
+          color: widget.backgroundColor ?? AppColors.primaryLight,
+          elevation: 0,
+          borderRadius: BorderRadius.circular(btnSize / 2),
+          child: InkWell(
+            onTap: widget.onPressed,
+            customBorder: const CircleBorder(),
+            child: SizedBox(
+              width: btnSize,
+              height: btnSize,
+              child: Icon(
+                widget.icon,
+                size: btnSize * 0.5,
+                color: widget.iconColor ?? AppColors.primary,
+              ),
+            ),
           ),
         ),
       ),

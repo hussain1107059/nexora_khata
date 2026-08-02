@@ -33,7 +33,7 @@ class _TransactionFilterBarState extends ConsumerState<TransactionFilterBar> {
     return Column(
       children: [
         Padding(
-          padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+          padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
           child: AppSearchField(
             hintText: widget.searchHint,
             onChanged: (v) => ref.read(widget.searchProvider.notifier).state = v,
@@ -41,10 +41,10 @@ class _TransactionFilterBarState extends ConsumerState<TransactionFilterBar> {
         ),
         AppSpacing.boxSM,
         SizedBox(
-          height: 36,
+          height: 40,
           child: ListView(
             scrollDirection: Axis.horizontal,
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
             children: [
               _buildFilterChip('সব', null),
               AppSpacing.boxSM,
@@ -62,24 +62,33 @@ class _TransactionFilterBarState extends ConsumerState<TransactionFilterBar> {
 
   Widget _buildFilterChip(String label, String? status) {
     final selected = _selectedStatus == status;
-    return FilterChip(
-      label: Text(label, style: AppTypography.labelMedium.copyWith(
-        color: selected ? AppColors.white : AppColors.textPrimary,
-        fontSize: 12,
-      )),
-      selected: selected,
-      onSelected: (_) {
+    return GestureDetector(
+      onTap: () {
         setState(() => _selectedStatus = selected ? null : status);
         ref.read(widget.statusProvider.notifier).state = _selectedStatus;
         ref.read(widget.refreshProvider.notifier).state++;
       },
-      selectedColor: AppColors.primary,
-      checkmarkColor: AppColors.white,
-      backgroundColor: AppColors.chipBackground,
-      side: BorderSide.none,
-      shape: StadiumBorder(),
-      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-      visualDensity: VisualDensity.compact,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          color: selected ? AppColors.primary : AppColors.background,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: selected ? AppColors.primary : AppColors.border,
+          ),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: AppTypography.labelMedium.copyWith(
+              color: selected ? AppColors.white : AppColors.textPrimary,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

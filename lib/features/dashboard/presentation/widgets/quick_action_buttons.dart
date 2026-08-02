@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
+import '../../../../core/router/route_names.dart';
 
 class QuickActionButtons extends StatelessWidget {
   const QuickActionButtons({super.key});
@@ -33,13 +34,13 @@ class QuickActionButtons extends StatelessWidget {
                 icon: Icons.add_circle_rounded,
                 label: 'আয় যোগ করুন',
                 color: AppColors.success,
-                onTap: () => context.push('/incomes'),
+                onTap: () => context.push(RouteNames.incomeAdd),
               ),
               _ActionBtn(
                 icon: Icons.remove_circle_rounded,
                 label: 'ব্যয় যোগ করুন',
                 color: AppColors.error,
-                onTap: () => context.push('/expenses'),
+                onTap: () => context.push(RouteNames.expenseAdd),
               ),
               _ActionBtn(
                 icon: Icons.swap_horiz_rounded,
@@ -53,7 +54,7 @@ class QuickActionButtons extends StatelessWidget {
                 icon: Icons.people_rounded,
                 label: 'গ্রাহক',
                 color: AppColors.warning,
-                onTap: () => context.push('/customers'),
+                onTap: () => context.push(RouteNames.customers),
               ),
             ],
           ),
@@ -95,11 +96,11 @@ class _ActionBtn extends StatelessWidget {
             color: AppColors.white,
             borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
             border: Border.all(color: AppColors.divider),
-            boxShadow: [
+            boxShadow: const [
               BoxShadow(
                 color: AppColors.shadow,
-                blurRadius: 4,
-                offset: const Offset(0, 1),
+                blurRadius: 8,
+                offset: Offset(0, 2),
               ),
             ],
           ),
@@ -111,7 +112,7 @@ class _ActionBtn extends StatelessWidget {
                 height: 32,
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(icon, size: 18, color: color),
               ),
@@ -120,7 +121,7 @@ class _ActionBtn extends StatelessWidget {
                 label,
                 style: AppTypography.labelMedium.copyWith(
                   color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

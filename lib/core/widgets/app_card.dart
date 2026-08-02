@@ -31,7 +31,7 @@ class AppCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final effectiveBorderRadius =
-        borderRadius ?? BorderRadius.circular(AppSpacing.radiusMd);
+        borderRadius ?? BorderRadius.circular(AppSpacing.radiusLg);
 
     if (onTap == null && onLongPress == null) {
       return Container(
@@ -51,13 +51,13 @@ class AppCard extends StatelessWidget {
         color: Colors.transparent,
         borderRadius: effectiveBorderRadius is BorderRadius
             ? effectiveBorderRadius
-            : BorderRadius.circular(AppSpacing.radiusMd),
+            : BorderRadius.circular(AppSpacing.radiusLg),
         child: InkWell(
           onTap: onTap,
           onLongPress: onLongPress,
           borderRadius: effectiveBorderRadius is BorderRadius
               ? effectiveBorderRadius
-              : BorderRadius.circular(AppSpacing.radiusMd),
+              : BorderRadius.circular(AppSpacing.radiusLg),
           child: Padding(
             padding: padding ?? AppSpacing.cardPadding,
             child: child,
@@ -70,12 +70,13 @@ class AppCard extends StatelessWidget {
   BoxDecoration _defaultDecoration() {
     return BoxDecoration(
       color: backgroundColor ?? AppColors.cardBackground,
-      borderRadius: borderRadius ?? BorderRadius.circular(AppSpacing.radiusMd),
-      boxShadow: boxShadow ?? [
+      borderRadius: borderRadius ?? BorderRadius.circular(AppSpacing.radiusLg),
+      border: Border.all(color: AppColors.divider, width: 1),
+      boxShadow: boxShadow ?? const [
         BoxShadow(
           color: AppColors.shadow,
-          blurRadius: elevation ?? AppSpacing.elevationSm,
-          offset: const Offset(0, 1),
+          blurRadius: 12,
+          offset: Offset(0, 2),
         ),
       ],
     );
@@ -126,7 +127,7 @@ class AppCardHeader extends StatelessWidget {
               ],
             ),
           ),
-          if (trailing != null) trailing!,
+          ?trailing,
         ],
       ),
     );

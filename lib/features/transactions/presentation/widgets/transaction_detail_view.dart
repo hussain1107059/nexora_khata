@@ -46,7 +46,7 @@ class TransactionDetailView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView(
-      padding: EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.lg),
       children: [
         _buildAmountCard(),
         AppSpacing.boxLG,
@@ -59,7 +59,7 @@ class TransactionDetailView extends StatelessWidget {
           AppSpacing.boxLG,
           _buildImageSection(imagePath!),
         ],
-        AppSpacing.boxXXL,
+        AppSpacing.boxHXXXL,
         AppButton.danger(
           'মুছে ফেলুন',
           icon: Icons.delete_rounded,
@@ -71,25 +71,51 @@ class TransactionDetailView extends StatelessWidget {
 
   Widget _buildAmountCard() {
     return Container(
-      padding: AppSpacing.paddingXxl,
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         gradient: gradient,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusXxl),
+        boxShadow: [
+          BoxShadow(
+            color: gradient is LinearGradient
+                ? (gradient as LinearGradient).colors.first.withValues(alpha: 0.3)
+                : AppColors.shadow,
+            blurRadius: 20,
+            offset: const Offset(0, 8),
+          ),
+        ],
       ),
       child: Column(
         children: [
-          Text(amountLabel, style: AppTypography.bodyText2.copyWith(color: Colors.white70)),
+          Text(
+            amountLabel,
+            style: AppTypography.bodyText2.copyWith(color: Colors.white70),
+          ),
           AppSpacing.boxSM,
-          Text(AppNumberUtils.formatCurrency(amount),
-            style: AppTypography.heading2.copyWith(color: AppColors.white, fontWeight: FontWeight.w700)),
-          AppSpacing.boxSM,
+          Text(
+            AppNumberUtils.formatCurrency(amount),
+            style: AppTypography.heading3.copyWith(
+              color: AppColors.white,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+          AppSpacing.boxMD,
           Container(
-            padding: EdgeInsets.symmetric(horizontal: AppSpacing.md, vertical: AppSpacing.xs),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: 6,
+            ),
             decoration: BoxDecoration(
               color: Colors.white.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
+              borderRadius: BorderRadius.circular(20),
             ),
-            child: Text(_statusText(), style: AppTypography.caption.copyWith(color: AppColors.white)),
+            child: Text(
+              _statusText(),
+              style: AppTypography.labelMedium.copyWith(
+                color: AppColors.white,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ),
         ],
       ),
@@ -98,57 +124,110 @@ class TransactionDetailView extends StatelessWidget {
 
   Widget _buildInfoSection() {
     return Container(
-      padding: AppSpacing.paddingLg,
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [BoxShadow(color: AppColors.shadow, blurRadius: 4, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        children: [
-          _infoRow(Icons.calendar_month_rounded, 'তারিখ', AppDateUtils.formatDate(date)),
-          _infoRow(Icons.category_rounded, 'ক্যাটাগরি', categoryName ?? 'অনির্বাচিত'),
-          if (partnerName != null && partnerLabel != null)
-            _infoRow(Icons.person_rounded, partnerLabel!, partnerName!),
-          _infoRow(Icons.payment_rounded, 'পেমেন্ট', _paymentText()),
-          if (reference != null)
-            _infoRow(Icons.receipt_rounded, 'রেফারেন্স', reference!),
-          _infoRow(Icons.access_time_rounded, 'তৈরির তারিখ', AppDateUtils.formatDateTime(createdAt)),
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
         ],
+      ),
+      child: Padding(
+        padding: AppSpacing.paddingLg,
+        child: Column(
+          children: [
+            _infoRow(Icons.calendar_month_rounded, 'তারিখ', AppDateUtils.formatDate(date)),
+            AppSpacing.boxSM,
+            _infoRow(Icons.category_rounded, 'ক্যাটাগরি', categoryName ?? 'অনির্বাচিত'),
+            if (partnerName != null && partnerLabel != null) ...[
+              AppSpacing.boxSM,
+              _infoRow(Icons.person_rounded, partnerLabel!, partnerName!),
+            ],
+            AppSpacing.boxSM,
+            _infoRow(Icons.payment_rounded, 'পেমেন্ট', _paymentText()),
+            if (reference != null) ...[
+              AppSpacing.boxSM,
+              _infoRow(Icons.receipt_rounded, 'রেফারেন্স', reference!),
+            ],
+            AppSpacing.boxSM,
+            _infoRow(Icons.access_time_rounded, 'তৈরির তারিখ', AppDateUtils.formatDateTime(createdAt)),
+          ],
+        ),
       ),
     );
   }
 
   Widget _infoRow(IconData icon, String label, String value) {
-    return Padding(
-      padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: AppColors.textSecondary),
-          AppSpacing.boxMD,
-          Text(label, style: AppTypography.bodyText2.copyWith(color: AppColors.textSecondary)),
-          const Spacer(),
-          Text(value, style: AppTypography.subtitle2.copyWith(color: AppColors.textPrimary)),
-        ],
-      ),
+    return Row(
+      children: [
+        Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            color: AppColors.background,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(icon, size: 16, color: AppColors.textSecondary),
+        ),
+        AppSpacing.boxWMD,
+        Expanded(
+          child: Text(
+            label,
+            style: AppTypography.bodyText2.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Flexible(
+          child: Text(
+            value,
+            style: AppTypography.subtitle2.copyWith(
+              color: AppColors.textPrimary,
+            ),
+            textAlign: TextAlign.end,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildSection(String title, String content) {
     return Container(
-      padding: AppSpacing.paddingLg,
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [BoxShadow(color: AppColors.shadow, blurRadius: 4, offset: const Offset(0, 2))],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(title, style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
-          AppSpacing.boxSM,
-          Text(content, style: AppTypography.bodyText2),
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
         ],
+      ),
+      child: Padding(
+        padding: AppSpacing.paddingLg,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: AppTypography.labelMedium.copyWith(
+                color: AppColors.textSecondary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            AppSpacing.boxSM,
+            Text(content, style: AppTypography.bodyText2),
+          ],
+        ),
       ),
     );
   }
@@ -156,39 +235,70 @@ class TransactionDetailView extends StatelessWidget {
   Widget _buildImageSection(String imagePath) {
     return Container(
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [BoxShadow(color: AppColors.shadow, blurRadius: 4, offset: const Offset(0, 2))],
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 12,
+            offset: Offset(0, 2),
+          ),
+        ],
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        child: Image.file(File(imagePath), width: double.infinity, height: 240, fit: BoxFit.cover, errorBuilder: (_, _, _) => Container(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        child: Image.file(
+          File(imagePath),
+          width: double.infinity,
           height: 240,
-          color: AppColors.chipBackground,
-          child: Center(child: Icon(Icons.broken_image_rounded, size: 48, color: AppColors.textHint)),
-        )),
+          fit: BoxFit.cover,
+          errorBuilder: (_, _, _) => Container(
+            height: 240,
+            color: AppColors.chipBackground,
+            child: const Center(
+              child: Icon(
+                Icons.broken_image_rounded,
+                size: 48,
+                color: AppColors.textHint,
+              ),
+            ),
+          ),
+        ),
       ),
     );
   }
 
   String _statusText() {
     switch (status) {
-      case 'completed': return completedStatusText;
-      case 'pending': return 'বকেয়া';
-      case 'cancelled': return 'বাতিল';
-      default: return status;
+      case 'completed':
+        return completedStatusText;
+      case 'pending':
+        return 'বকেয়া';
+      case 'cancelled':
+        return 'বাতিল';
+      default:
+        return status;
     }
   }
 
   String _paymentText() {
     switch (paymentMethod) {
-      case 'cash': return 'নগদ';
-      case 'bank': return 'ব্যাংক';
-      case 'bkash': return 'বিকাশ';
-      case 'nagad': return 'নগদ';
-      case 'rocket': return 'রকেট';
-      case 'card': return 'কার্ড';
-      case 'check': return 'চেক';
-      default: return paymentMethod ?? 'নগদ';
+      case 'cash':
+        return 'নগদ';
+      case 'bank':
+        return 'ব্যাংক';
+      case 'bkash':
+        return 'বিকাশ';
+      case 'nagad':
+        return 'নগদ (নগদ)';
+      case 'rocket':
+        return 'রকেট';
+      case 'card':
+        return 'কার্ড';
+      case 'check':
+        return 'চেক';
+      default:
+        return paymentMethod ?? 'নগদ';
     }
   }
 }

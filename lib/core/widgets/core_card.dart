@@ -24,12 +24,13 @@ class CoreCard extends StatelessWidget {
     return Container(
       margin: margin,
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
         boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
+            blurRadius: 12,
             offset: Offset(0, 2),
           ),
         ],
@@ -41,15 +42,21 @@ class CoreCard extends StatelessWidget {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  title,
-                  style: AppTypography.subtitle2.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                Expanded(
+                  child: Text(
+                    title,
+                    style: AppTypography.subtitle2.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
-                ?trailing,
+                if (trailing != null) ...[
+                  AppSpacing.boxWSM,
+                  trailing!,
+                ],
               ],
             ),
             AppSpacing.boxHLG,

@@ -87,6 +87,7 @@ class AppShimmerLoading extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      physics: const NeverScrollableScrollPhysics(),
       padding: padding ?? AppSpacing.screenPadding,
       itemCount: itemCount,
       itemBuilder: (context, index) {
@@ -103,7 +104,8 @@ class AppShimmerLoading extends StatelessWidget {
       height: itemHeight,
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
       ),
       child: Row(
         children: [
@@ -113,7 +115,7 @@ class AppShimmerLoading extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               color: AppColors.disabled.withValues(alpha: 0.3),
-              borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+              borderRadius: BorderRadius.circular(12),
             ),
           ),
           AppSpacing.boxWMD,

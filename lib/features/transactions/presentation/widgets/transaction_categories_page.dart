@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/widgets/app_dialog.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
@@ -58,21 +59,39 @@ class TransactionCategoriesPage extends ConsumerWidget {
             );
           }
           return ListView.builder(
-            padding: EdgeInsets.all(AppSpacing.lg),
+            padding: const EdgeInsets.all(AppSpacing.lg),
             itemCount: categories.length,
             itemBuilder: (context, index) {
               final cat = categories[index];
               return Card(
-                margin: EdgeInsets.only(bottom: AppSpacing.sm),
-                elevation: AppSpacing.elevationSm,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
+                margin: const EdgeInsets.only(bottom: AppSpacing.sm),
                 child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: avatarBackground,
-                    child: Icon(iconFor(cat.icon as String?), color: avatarColor, size: 22),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: 4,
+                  ),
+                  leading: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: avatarBackground,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      iconFor(cat.icon as String?),
+                      color: avatarColor,
+                      size: 22,
+                    ),
                   ),
                   title: Text(cat.name as String, style: AppTypography.subtitle2),
-                  subtitle: cat.description != null ? Text(cat.description as String, style: AppTypography.caption, maxLines: 1, overflow: TextOverflow.ellipsis) : null,
+                  subtitle: cat.description != null
+                      ? Text(
+                          cat.description as String,
+                          style: AppTypography.caption,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : null,
                   trailing: PopupMenuButton<String>(
                     onSelected: (v) async {
                       if (v == 'edit') {
@@ -83,8 +102,26 @@ class TransactionCategoriesPage extends ConsumerWidget {
                       }
                     },
                     itemBuilder: (_) => [
-                      PopupMenuItem(value: 'edit', child: Row(children: [Icon(Icons.edit_rounded, size: 18, color: AppColors.primary), AppSpacing.boxSM, Text('সম্পাদনা')])),
-                      PopupMenuItem(value: 'delete', child: Row(children: [Icon(Icons.delete_rounded, size: 18, color: AppColors.error), AppSpacing.boxSM, Text('মুছুন')])),
+                      const PopupMenuItem(
+                        value: 'edit',
+                        child: Row(
+                          children: [
+                            Icon(Icons.edit_rounded, size: 18, color: AppColors.primary),
+                            AppSpacing.boxSM,
+                            Text('সম্পাদনা'),
+                          ],
+                        ),
+                      ),
+                      const PopupMenuItem(
+                        value: 'delete',
+                        child: Row(
+                          children: [
+                            Icon(Icons.delete_rounded, size: 18, color: AppColors.error),
+                            AppSpacing.boxSM,
+                            Text('মুছুন'),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -100,28 +137,27 @@ class TransactionCategoriesPage extends ConsumerWidget {
         },
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.white,
-        child: Icon(Icons.add_rounded),
+        child: const Icon(Icons.add_rounded),
       ),
     );
   }
 
   void _confirmDelete(BuildContext context, WidgetRef ref, int id, String name) {
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: Text('নিশ্চিত করুন', style: AppTypography.subtitle1),
-        content: Text('"$name" ক্যাটাগরি মুছে ফেলবেন?', style: AppTypography.bodyText2),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(ctx), child: Text('বাতিল', style: AppTypography.button.copyWith(color: AppColors.textSecondary))),
-          TextButton(onPressed: () async {
-            Navigator.pop(ctx);
-            await delete(id);
-            if (!context.mounted) return;
-            AppSnackBar.success(context, 'ক্যাটাগরি মুছে ফেলা হয়েছে');
-            await refresh(ref);
-          }, child: Text('মুছুন', style: AppTypography.button.copyWith(color: AppColors.error))),
-        ],
-      ),
-    );
+    AppDialog.confirm(
+      context,
+      title: 'ক্যাটাগরি মুছুন',
+      message: '"$name" ক্যাটাগরি মুছে ফেলবেন?',
+      confirmLabel: 'মুছুন',
+      icon: Icons.delete_outline_rounded,
+      iconColor: AppColors.error,
+      iconBackground: AppColors.errorLight,
+      destructive: true,
+    ).then((confirmed) async {
+      if (confirmed != true || !context.mounted) return;
+      await delete(id);
+      if (!context.mounted) return;
+      AppSnackBar.success(context, 'ক্যাটাগরি মুছে ফেলা হয়েছে');
+      await refresh(ref);
+    });
   }
 }

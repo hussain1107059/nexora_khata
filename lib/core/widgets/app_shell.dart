@@ -18,52 +18,47 @@ class AppShell extends ConsumerWidget {
       body: child,
       bottomNavigationBar: Container(
         decoration: const BoxDecoration(
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 8,
-              offset: Offset(0, -2),
-            ),
-          ],
+          color: AppColors.surface,
+          border: Border(
+            top: BorderSide(color: AppColors.divider),
+          ),
         ),
-        child: NavigationBar(
-          selectedIndex: selectedIndex,
-          onDestinationSelected: (index) {
-            ref.read(_selectedIndexProvider.notifier).state = index;
-            _onTabSelected(context, index);
-          },
-          backgroundColor: AppColors.white,
-          indicatorColor: AppColors.primaryLight,
-          surfaceTintColor: Colors.transparent,
-          height: kBottomNavigationBarHeight + 8,
-          labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
-          destinations: const [
-            NavigationDestination(
-              icon: Icon(Icons.dashboard_outlined),
-              selectedIcon: Icon(Icons.dashboard_rounded, color: AppColors.primary),
-              label: 'ড্যাশবোর্ড',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.swap_horiz_outlined),
-              selectedIcon: Icon(Icons.swap_horiz_rounded, color: AppColors.primary),
-              label: 'লেনদেন',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.people_outline),
-              selectedIcon: Icon(Icons.people_rounded, color: AppColors.primary),
-              label: 'গ্রাহক',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.bar_chart_outlined),
-              selectedIcon: Icon(Icons.bar_chart_rounded, color: AppColors.primary),
-              label: 'রিপোর্ট',
-            ),
-            NavigationDestination(
-              icon: Icon(Icons.settings_outlined),
-              selectedIcon: Icon(Icons.settings_rounded, color: AppColors.primary),
-              label: 'সেটিংস',
-            ),
-          ],
+        child: SafeArea(
+          top: false,
+          child: NavigationBar(
+            selectedIndex: selectedIndex,
+            onDestinationSelected: (index) {
+              ref.read(_selectedIndexProvider.notifier).state = index;
+              _onTabSelected(context, index);
+            },
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.dashboard_outlined),
+                selectedIcon: Icon(Icons.dashboard_rounded),
+                label: 'ড্যাশবোর্ড',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.swap_horiz_outlined),
+                selectedIcon: Icon(Icons.swap_horiz_rounded),
+                label: 'লেনদেন',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.people_outline),
+                selectedIcon: Icon(Icons.people_rounded),
+                label: 'গ্রাহক',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.bar_chart_outlined),
+                selectedIcon: Icon(Icons.bar_chart_rounded),
+                label: 'রিপোর্ট',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.settings_outlined),
+                selectedIcon: Icon(Icons.settings_rounded),
+                label: 'সেটিংস',
+              ),
+            ],
+          ),
         ),
       ),
     );

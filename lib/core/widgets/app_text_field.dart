@@ -85,7 +85,11 @@ class _AppTextFieldState extends State<AppTextField> {
         if (widget.label != null) ...[
           Text(
             widget.label!,
-            style: Theme.of(context).textTheme.labelMedium,
+            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+              color: widget.errorText != null
+                  ? Theme.of(context).colorScheme.error
+                  : null,
+            ),
           ),
           AppSpacing.boxHSM,
         ],

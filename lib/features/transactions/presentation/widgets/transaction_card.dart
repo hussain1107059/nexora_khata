@@ -64,22 +64,25 @@ class TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.xs),
-      elevation: AppSpacing.elevationSm,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 6),
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+      ),
       child: InkWell(
         onTap: onTap,
         onLongPress: onLongPress,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         child: Padding(
           padding: AppSpacing.paddingLg,
           child: Row(
             children: [
               Container(
-                width: 44, height: 44,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: iconBackground,
-                  borderRadius: BorderRadius.circular(AppSpacing.radiusSm),
+                  borderRadius: BorderRadius.circular(12),
                 ),
                 child: Icon(icon, color: iconColor, size: 22),
               ),
@@ -89,16 +92,40 @@ class TransactionCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     if (description.isNotEmpty)
-                      Text(description, style: AppTypography.subtitle2, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      Text(
+                        description,
+                        style: AppTypography.subtitle2.copyWith(
+                          color: AppColors.textPrimary,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
                     AppSpacing.boxXS,
                     Row(
                       children: [
-                        Text(AppDateUtils.formatDate(date), style: AppTypography.caption.copyWith(color: AppColors.textSecondary)),
+                        Flexible(
+                          child: Text(
+                            AppDateUtils.formatDate(date),
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                         if (categoryName != null) ...[
                           AppSpacing.boxSM,
-                          Icon(Icons.circle, size: 4, color: AppColors.textHint),
+                          const Icon(Icons.circle, size: 4, color: AppColors.textHint),
                           AppSpacing.boxSM,
-                          Text(categoryName!, style: AppTypography.caption.copyWith(color: AppColors.textSecondary), maxLines: 1, overflow: TextOverflow.ellipsis),
+                          Flexible(
+                            child: Text(
+                              categoryName!,
+                              style: AppTypography.caption.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ],
                     ),
@@ -109,15 +136,31 @@ class TransactionCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(AppNumberUtils.formatCurrency(amount), style: AppTypography.subtitle1.copyWith(color: amountColor, fontWeight: FontWeight.w700)),
+                  Text(
+                    AppNumberUtils.formatCurrency(amount),
+                    style: AppTypography.subtitle1.copyWith(
+                      color: amountColor,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                   AppSpacing.boxXS,
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: 2),
-                    decoration: BoxDecoration(
-                      color: _statusColor.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusXs),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: 2,
                     ),
-                    child: Text(_statusText, style: AppTypography.caption.copyWith(color: _statusColor, fontSize: 10)),
+                    decoration: BoxDecoration(
+                      color: _statusColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      _statusText,
+                      style: AppTypography.overline.copyWith(
+                        color: _statusColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ),
                 ],
               ),

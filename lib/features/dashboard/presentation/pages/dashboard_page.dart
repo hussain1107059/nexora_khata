@@ -112,6 +112,7 @@ class _DashboardContent extends StatelessWidget {
                       amount: data.todayIncome,
                       icon: Icons.arrow_downward_rounded,
                       color: AppColors.success,
+                      gradient: AppColors.successGradient,
                     ),
                   ),
                   AppSpacing.boxWMD,
@@ -121,6 +122,7 @@ class _DashboardContent extends StatelessWidget {
                       amount: data.todayExpense,
                       icon: Icons.arrow_upward_rounded,
                       color: AppColors.error,
+                      gradient: AppColors.errorGradient,
                     ),
                   ),
                 ],
@@ -133,6 +135,7 @@ class _DashboardContent extends StatelessWidget {
                   amount: data.todayIncome,
                   icon: Icons.arrow_downward_rounded,
                   color: AppColors.success,
+                  gradient: AppColors.successGradient,
                 ),
                 AppSpacing.boxHSM,
                 StatCardLarge(
@@ -140,6 +143,7 @@ class _DashboardContent extends StatelessWidget {
                   amount: data.todayExpense,
                   icon: Icons.arrow_upward_rounded,
                   color: AppColors.error,
+                  gradient: AppColors.errorGradient,
                 ),
               ],
             );

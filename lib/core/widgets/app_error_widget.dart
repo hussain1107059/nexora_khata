@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import '../config/theme/app_colors.dart';
 import '../config/theme/app_spacing.dart';
 import 'app_text.dart';
@@ -27,11 +28,19 @@ class AppErrorWidget extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 96,
+              height: 96,
               decoration: BoxDecoration(
                 color: AppColors.errorLight,
-                borderRadius: BorderRadius.circular(40),
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.error, width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.error.withValues(alpha: 0.12),
+                    blurRadius: 24,
+                    offset: const Offset(0, 8),
+                  ),
+                ],
               ),
               child: Icon(
                 icon,
@@ -64,6 +73,6 @@ class AppErrorWidget extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ).animate().fadeIn(duration: 300.ms).scale(begin: const Offset(0.96, 0.96), end: const Offset(1, 1), curve: Curves.easeOut);
   }
 }

@@ -27,10 +27,25 @@ class AboutPage extends ConsumerWidget {
             child: Column(
               children: [
                 AppSpacing.boxHHuge,
-                Icon(
-                  Icons.menu_book_rounded,
-                  size: 80,
-                  color: AppColors.primary,
+                Container(
+                  width: 96,
+                  height: 96,
+                  decoration: BoxDecoration(
+                    gradient: AppColors.primaryGradient,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusXxl),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Color(0x42E53935),
+                        blurRadius: 20,
+                        offset: Offset(0, 8),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(
+                    Icons.menu_book_rounded,
+                    size: 48,
+                    color: AppColors.white,
+                  ),
                 ),
                 AppSpacing.boxLG,
                 const AppText(
@@ -48,10 +63,31 @@ class AboutPage extends ConsumerWidget {
                 AppSpacing.boxXXL,
                 const Divider(),
                 AppSpacing.boxLG,
-                _InfoRow(label: 'অ্যাপ সংস্করণ', value: versionStr),
-                _InfoRow(label: 'ডেভেলপার', value: 'BadhonByte'),
-                _InfoRow(label: 'ইমেইল', value: 'badhonbyte@email.com'),
-                _InfoRow(label: 'ওয়েবসাইট', value: 'https://badhonbyte.com'),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColors.cardBackground,
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+                    border: Border.all(color: AppColors.divider, width: 1),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: AppColors.shadow,
+                        blurRadius: 12,
+                        offset: Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Padding(
+                    padding: AppSpacing.paddingLg,
+                    child: Column(
+                      children: [
+                        _InfoRow(label: 'অ্যাপ সংস্করণ', value: versionStr),
+                        const _InfoRow(label: 'ডেভেলপার', value: 'BadhonByte'),
+                        const _InfoRow(label: 'ইমেইল', value: 'badhonbyte@email.com'),
+                        const _InfoRow(label: 'ওয়েবসাইট', value: 'https://badhonbyte.com'),
+                      ],
+                    ),
+                  ),
+                ),
                 AppSpacing.boxXXL,
                 const Divider(),
                 AppSpacing.boxLG,

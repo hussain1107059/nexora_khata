@@ -14,103 +14,136 @@ class ReportSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
+        color: AppColors.cardBackground,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
+        border: Border.all(color: AppColors.divider, width: 1),
+        boxShadow: const [
           BoxShadow(
             color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+            blurRadius: 12,
+            offset: Offset(0, 2),
           ),
         ],
       ),
-      child: Padding(
-        padding: AppSpacing.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              summary.period,
-              style: AppTypography.subtitle2.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: double.infinity,
+            padding: AppSpacing.paddingLg,
+            decoration: const BoxDecoration(
+              gradient: AppColors.primaryGradient,
             ),
-            AppSpacing.boxHLG,
-            Row(
+            child: Row(
               children: [
-                Expanded(
-                  child: _SummaryItem(
-                    label: 'মোট আয়',
-                    amount: summary.totalIncome,
-                    color: AppColors.success,
+                Container(
+                  width: 32,
+                  height: 32,
+                  decoration: BoxDecoration(
+                    color: AppColors.white.withValues(alpha: 0.22),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const Icon(
+                    Icons.insert_chart_rounded,
+                    size: 18,
+                    color: AppColors.white,
                   ),
                 ),
-                Container(
-                  width: 1,
-                  height: 40,
-                  color: AppColors.divider,
-                ),
+                AppSpacing.boxWMD,
                 Expanded(
-                  child: _SummaryItem(
-                    label: 'মোট ব্যয়',
-                    amount: summary.totalExpense,
-                    color: AppColors.error,
+                  child: Text(
+                    summary.period,
+                    style: AppTypography.subtitle2.copyWith(
+                      color: AppColors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ),
               ],
             ),
-            AppSpacing.boxHMD,
-            const Divider(height: 1, color: AppColors.divider),
-            AppSpacing.boxHMD,
-            Row(
+          ),
+          Padding(
+            padding: AppSpacing.paddingLg,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'নেট পরিমাণ',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                      AppSpacing.boxHXS,
-                      Text(
-                        AppNumberUtils.formatCurrency(summary.netAmount),
-                        style: AppTypography.subtitle1.copyWith(
-                          color: summary.netAmount >= 0
-                              ? AppColors.info
-                              : AppColors.error,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                Row(
                   children: [
-                    Text(
-                      'মোট লেনদেন',
-                      style: AppTypography.caption.copyWith(
-                        color: AppColors.textSecondary,
+                    Expanded(
+                      child: _SummaryItem(
+                        label: 'মোট আয়',
+                        amount: summary.totalIncome,
+                        color: AppColors.success,
                       ),
                     ),
-                    AppSpacing.boxHXS,
-                    Text(
-                      '${summary.totalTransactions} টি',
-                      style: AppTypography.subtitle1.copyWith(
-                        color: AppColors.textPrimary,
-                        fontWeight: FontWeight.w700,
+                    Container(
+                      width: 1,
+                      height: 44,
+                      color: AppColors.divider,
+                    ),
+                    Expanded(
+                      child: _SummaryItem(
+                        label: 'মোট ব্যয়',
+                        amount: summary.totalExpense,
+                        color: AppColors.error,
                       ),
+                    ),
+                  ],
+                ),
+                AppSpacing.boxHMD,
+                const Divider(height: 1, color: AppColors.divider),
+                AppSpacing.boxHMD,
+                Row(
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'নেট পরিমাণ',
+                            style: AppTypography.caption.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          AppSpacing.boxHXS,
+                          Text(
+                            AppNumberUtils.formatCurrency(summary.netAmount),
+                            style: AppTypography.subtitle1.copyWith(
+                              color: summary.netAmount >= 0
+                                  ? AppColors.success
+                                  : AppColors.error,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          'মোট লেনদেন',
+                          style: AppTypography.caption.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        AppSpacing.boxHXS,
+                        Text(
+                          '${summary.totalTransactions} টি',
+                          style: AppTypography.subtitle1.copyWith(
+                            color: AppColors.textPrimary,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
