@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
@@ -247,22 +248,29 @@ class TransactionDetailView extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
-        child: Image.file(
-          File(imagePath),
-          width: double.infinity,
-          height: 240,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) => Container(
-            height: 240,
-            color: AppColors.chipBackground,
-            child: const Center(
-              child: Icon(
-                Icons.broken_image_rounded,
-                size: 48,
-                color: AppColors.textHint,
+        child: kIsWeb
+            ? _webImagePlaceholder()
+            : Image.file(
+                File(imagePath),
+                width: double.infinity,
+                height: 240,
+                fit: BoxFit.cover,
+                errorBuilder: (_, _, _) => _webImagePlaceholder(),
               ),
-            ),
-          ),
+      ),
+    );
+  }
+
+  Widget _webImagePlaceholder() {
+    return Container(
+      width: double.infinity,
+      height: 240,
+      color: AppColors.chipBackground,
+      child: const Center(
+        child: Icon(
+          Icons.broken_image_rounded,
+          size: 48,
+          color: AppColors.textHint,
         ),
       ),
     );
@@ -282,23 +290,6 @@ class TransactionDetailView extends StatelessWidget {
   }
 
   String _paymentText() {
-    switch (paymentMethod) {
-      case 'cash':
-        return 'নগদ';
-      case 'bank':
-        return 'ব্যাংক';
-      case 'bkash':
-        return 'বিকাশ';
-      case 'nagad':
-        return 'নগদ (নগদ)';
-      case 'rocket':
-        return 'রকেট';
-      case 'card':
-        return 'কার্ড';
-      case 'check':
-        return 'চেক';
-      default:
-        return paymentMethod ?? 'নগদ';
-    }
+    return AppNumberUtils.formatPaymentMethod(paymentMethod ?? 'cash');
   }
 }

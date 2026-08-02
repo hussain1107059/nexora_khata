@@ -95,8 +95,12 @@ class _IncomeMonthlyReportPageState extends ConsumerState<IncomeMonthlyReportPag
                               ],
                             ),
                           ),
-                          Text(AppNumberUtils.formatCurrency(total), style: AppTypography.subtitle1.copyWith(
-                            color: AppColors.success, fontWeight: FontWeight.w700)),
+                          Flexible(
+                            child: Text(AppNumberUtils.formatCurrency(total),
+                              style: AppTypography.subtitle1.copyWith(
+                                color: AppColors.success, fontWeight: FontWeight.w700),
+                              maxLines: 1, overflow: TextOverflow.ellipsis),
+                          ),
                         ],
                       ),
                     );

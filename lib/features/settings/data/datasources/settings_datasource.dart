@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:nexora_khata/core/services/database_helper.dart';
 
 class SettingsDataSource {
@@ -42,6 +43,7 @@ class SettingsDataSource {
   }
 
   Future<bool> exportDatabase(String destinationPath) async {
+    if (kIsWeb) return false;
     try {
       final source = File(_dbHelper.db.path);
       await source.copy(destinationPath);
@@ -52,6 +54,7 @@ class SettingsDataSource {
   }
 
   Future<bool> importDatabase(String sourcePath) async {
+    if (kIsWeb) return false;
     try {
       final dbPath = _dbHelper.db.path;
       await _dbHelper.close();

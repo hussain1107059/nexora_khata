@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/utils/date_utils.dart';
 import '../../domain/entities/income.dart';
 
 class IncomeModel extends Income {
@@ -39,7 +40,7 @@ class IncomeModel extends Income {
     'category_id': categoryId, 'amount': amount,
     'description': description, 'reference': reference,
     'image_path': imagePath,
-    'income_date': incomeDate.toIso8601String(),
+    'income_date': AppDateUtils.formatDate(incomeDate, format: AppDateUtils.dateFormat),
     'payment_method': paymentMethod,
     'is_recurring': isRecurring ? 1 : 0, 'status': status,
     'created_at': createdAt.toIso8601String(),

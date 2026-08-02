@@ -1,4 +1,5 @@
 import 'package:nexora_khata/core/services/database_helper.dart';
+import 'package:nexora_khata/core/utils/date_utils.dart';
 
 class TransactionTableConfig<T> {
   final String table;
@@ -126,19 +127,17 @@ class TransactionDataSource<T> {
   Future<List<T>> getByMonth(int year, int month) async {
     final c = _config;
     final db = _dbHelper.db;
-    final m = month.toString().padLeft(2, '0');
     final rows = await db.rawQuery('''
       $_select
-      WHERE strftime('%Y', ${c.alias}.${c.dateColumn}) = ? AND strftime('%m', ${c.alias}.${c.dateColumn}) = ?
+      WHERE ${c.alias}.${c.dateColumn} >= ? AND ${c.alias}.${c.dateColumn} < ?
       ORDER BY ${c.alias}.${c.dateColumn} DESC, ${c.alias}.id DESC
-    ''', [year.toString(), m]);
+    ''', [AppDateUtils.monthStart(year, month), AppDateUtils.monthEndExclusive(year, month)]);
     return rows.map((r) => c.fromMap(r)).toList();
   }
 
   Future<Map<String, dynamic>> getMonthlySummary(int year, int month) async {
     final c = _config;
     final db = _dbHelper.db;
-    final m = month.toString().padLeft(2, '0');
     final rows = await db.rawQuery('''
       SELECT
         COUNT(*) AS count,
@@ -146,9 +145,9 @@ class TransactionDataSource<T> {
         COALESCE(AVG(amount), 0) AS avgAmount
       FROM ${c.table}
       WHERE status = 'completed'
-        AND strftime('%Y', ${c.dateColumn}) = ?
-        AND strftime('%m', ${c.dateColumn}) = ?
-    ''', [year.toString(), m]);
+        AND ${c.dateColumn} >= ?
+        AND ${c.dateColumn} < ?
+    ''', [AppDateUtils.monthStart(year, month), AppDateUtils.monthEndExclusive(year, month)]);
     if (rows.isEmpty) {
       return {'total': 0.0, 'count': 0, 'avgAmount': 0.0};
     }
@@ -169,10 +168,10 @@ class TransactionDataSource<T> {
         COUNT(*) AS count,
         COALESCE(SUM(amount), 0) AS total
       FROM ${c.table}
-      WHERE status = 'completed' AND strftime('%Y', ${c.dateColumn}) = ?
+      WHERE status = 'completed' AND ${c.dateColumn} >= ? AND ${c.dateColumn} < ?
       GROUP BY month
       ORDER BY month
-    ''', [year.toString()]);
+    ''', [AppDateUtils.yearStart(year), AppDateUtils.yearEndExclusive(year)]);
   }
 
   Future<List<T>> search(String query) async {

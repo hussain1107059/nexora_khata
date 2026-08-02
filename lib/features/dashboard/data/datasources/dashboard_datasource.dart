@@ -95,21 +95,23 @@ class DashboardDataSource {
 
   Future<List<RecentTransaction>> getRecentTransactions() async {
     final rows = await _dbHelper.db.rawQuery('''
-      SELECT 'income' as type, i.id, i.amount, i.description,
-        i.income_date as txn_date, i.category_id, i.customer_id as party_id,
-        ic.name as cat_name, c.name as party_name
-      FROM incomes i
-      LEFT JOIN income_categories ic ON ic.id = i.category_id
-      LEFT JOIN customers c ON c.id = i.customer_id
-      WHERE i.status = 'completed'
-      UNION ALL
-      SELECT 'expense' as type, e.id, e.amount, e.description,
-        e.expense_date as txn_date, e.category_id, e.supplier_id as party_id,
-        ec.name as cat_name, s.name as party_name
-      FROM expenses e
-      LEFT JOIN expense_categories ec ON ec.id = e.category_id
-      LEFT JOIN suppliers s ON s.id = e.supplier_id
-      WHERE e.status = 'completed'
+      SELECT * FROM (
+        SELECT 'income' as type, i.id, i.amount, i.description,
+          i.income_date as txn_date, i.category_id, i.customer_id as party_id,
+          ic.name as cat_name, c.name as party_name
+        FROM incomes i
+        LEFT JOIN income_categories ic ON ic.id = i.category_id
+        LEFT JOIN customers c ON c.id = i.customer_id
+        WHERE i.status = 'completed'
+        UNION ALL
+        SELECT 'expense' as type, e.id, e.amount, e.description,
+          e.expense_date as txn_date, e.category_id, e.supplier_id as party_id,
+          ec.name as cat_name, s.name as party_name
+        FROM expenses e
+        LEFT JOIN expense_categories ec ON ec.id = e.category_id
+        LEFT JOIN suppliers s ON s.id = e.supplier_id
+        WHERE e.status = 'completed'
+      ) r
       ORDER BY txn_date DESC, id DESC
       LIMIT 10
     ''');

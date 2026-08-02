@@ -118,6 +118,26 @@ abstract final class AppDateUtils {
     return DateTime(date.year, 12, 31, 23, 59, 59, 999);
   }
 
+  /// Inclusive start of a month as an index-friendly `yyyy-MM-dd` string.
+  static String monthStart(int year, int month) {
+    return '${year.toString().padLeft(4, '0')}-'
+        '${month.toString().padLeft(2, '0')}-01';
+  }
+
+  /// Exclusive end of a month as an index-friendly `yyyy-MM-dd` string.
+  static String monthEndExclusive(int year, int month) {
+    final next = month == 12
+        ? DateTime(year + 1, 1, 1)
+        : DateTime(year, month + 1, 1);
+    return formatDate(next, format: dateFormat);
+  }
+
+  /// Inclusive start of a year as an index-friendly `yyyy-MM-dd` string.
+  static String yearStart(int year) => '$year-01-01';
+
+  /// Exclusive end of a year as an index-friendly `yyyy-MM-dd` string.
+  static String yearEndExclusive(int year) => '${year + 1}-01-01';
+
   static List<DateTime> getDaysInMonth(int year, int month) {
     final lastDay = DateTime(year, month + 1, 0);
     return List.generate(

@@ -162,11 +162,15 @@ class _DashboardContent extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'ব্যালেন্স',
-                style: AppTypography.subtitle2.copyWith(
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
+              Flexible(
+                child: Text(
+                  'ব্যালেন্স',
+                  style: AppTypography.subtitle2.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
               Container(

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -15,6 +16,9 @@ class BackupService {
   String get dbPath => _dbHelper.db.path;
 
   Future<File> manualBackup() async {
+    if (kIsWeb) {
+      throw UnsupportedError('ওয়েব সংস্করণে ব্যাকআপ সমর্থিত নয়');
+    }
     final dir = await getApplicationDocumentsDirectory();
     final backupDir = Directory(p.join(dir.path, 'backups'));
     if (!await backupDir.exists()) await backupDir.create(recursive: true);
@@ -38,6 +42,7 @@ class BackupService {
   }
 
   Future<bool> restore(String backupPath) async {
+    if (kIsWeb) return false;
     try {
       final dbPath = _dbHelper.db.path;
       await _dbHelper.close();
@@ -50,6 +55,9 @@ class BackupService {
   }
 
   Future<void> shareBackup(String filePath) async {
+    if (kIsWeb) {
+      throw UnsupportedError('ওয়েব সংস্করণে ব্যাকআপ শেয়ার সমর্থিত নয়');
+    }
     await Share.shareXFiles([XFile(filePath)], text: 'নেক্সোরা খাতা ব্যাকআপ');
   }
 
@@ -73,7 +81,7 @@ class BackupService {
       final log = await _dbHelper.byId('backup_logs', id);
       if (log != null) {
         final path = log['file_path'] as String?;
-        if (path != null) {
+        if (path != null && !kIsWeb) {
           final f = File(path);
           if (await f.exists()) await f.delete();
         }
@@ -130,7 +138,7 @@ class BackupService {
     );
     for (final r in old) {
       final path = r['file_path'] as String?;
-      if (path != null) {
+      if (path != null && !kIsWeb) {
         final f = File(path);
         if (await f.exists()) await f.delete();
       }

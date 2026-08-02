@@ -1,4 +1,5 @@
 import 'package:nexora_khata/core/services/database_helper.dart';
+import 'package:nexora_khata/core/utils/date_utils.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
 
 class ReportDataSource {
@@ -105,8 +106,8 @@ class ReportDataSource {
   }
 
   Future<List<DailyReportItem>> getMonthlyReport(int year, int month) async {
-    final yearStr = year.toString();
-    final monthStr = month.toString().padLeft(2, '0');
+    final startStr = AppDateUtils.monthStart(year, month);
+    final endStr = AppDateUtils.monthEndExclusive(year, month);
     final daysInMonth = DateTime(year, month + 1, 0).day;
 
     final db = _dbHelper.db;
@@ -115,17 +116,17 @@ class ReportDataSource {
       FROM (
         SELECT income_date AS date, SUM(amount) AS income, 0 AS expense
         FROM incomes
-        WHERE status = 'completed' AND strftime('%Y', income_date) = ? AND strftime('%m', income_date) = ?
+        WHERE status = 'completed' AND income_date >= ? AND income_date < ?
         GROUP BY income_date
         UNION ALL
         SELECT expense_date AS date, 0 AS income, SUM(amount) AS expense
         FROM expenses
-        WHERE status = 'completed' AND strftime('%Y', expense_date) = ? AND strftime('%m', expense_date) = ?
+        WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
         GROUP BY expense_date
       )
       GROUP BY date
       ORDER BY date
-    ''', [yearStr, monthStr, yearStr, monthStr]);
+    ''', [startStr, endStr, startStr, endStr]);
 
     final dateMap = <String, DailyReportItem>{};
     for (var day = 1; day <= daysInMonth; day++) {
@@ -150,8 +151,8 @@ class ReportDataSource {
   }
 
   Future<ReportSummary> getMonthlySummary(int year, int month) async {
-    final yearStr = year.toString();
-    final monthStr = month.toString().padLeft(2, '0');
+    final startStr = AppDateUtils.monthStart(year, month);
+    final endStr = AppDateUtils.monthEndExclusive(year, month);
 
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
@@ -160,11 +161,11 @@ class ReportDataSource {
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS total_expense,
         COUNT(*) AS total_transactions
       FROM (
-        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND strftime('%Y', income_date) = ? AND strftime('%m', income_date) = ?
+        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
         UNION ALL
-        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND strftime('%Y', expense_date) = ? AND strftime('%m', expense_date) = ?
+        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
       )
-    ''', [yearStr, monthStr, yearStr, monthStr]);
+    ''', [startStr, endStr, startStr, endStr]);
 
     final r = rows.first;
     final totalIncome = (r['total_income'] as num).toDouble();
@@ -174,12 +175,13 @@ class ReportDataSource {
       totalExpense: totalExpense,
       netAmount: totalIncome - totalExpense,
       totalTransactions: (r['total_transactions'] as int),
-      period: '$yearStr-${month.toString().padLeft(2, '0')}',
+      period: '${year.toString()}-${month.toString().padLeft(2, '0')}',
     );
   }
 
   Future<List<MonthlyReportItem>> getYearlyReport(int year) async {
-    final yearStr = year.toString();
+    final startStr = AppDateUtils.yearStart(year);
+    final endStr = AppDateUtils.yearEndExclusive(year);
 
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
@@ -188,13 +190,13 @@ class ReportDataSource {
         SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END) AS income,
         SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS expense
       FROM (
-        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND strftime('%Y', income_date) = ?
+        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
         UNION ALL
-        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND strftime('%Y', expense_date) = ?
+        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
       ) t
       GROUP BY month
       ORDER BY month
-    ''', [yearStr, yearStr]);
+    ''', [startStr, endStr, startStr, endStr]);
 
     final monthMap = <int, MonthlyReportItem>{};
     for (var m = 1; m <= 12; m++) {
@@ -218,7 +220,8 @@ class ReportDataSource {
   }
 
   Future<ReportSummary> getYearlySummary(int year) async {
-    final yearStr = year.toString();
+    final startStr = AppDateUtils.yearStart(year);
+    final endStr = AppDateUtils.yearEndExclusive(year);
 
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
@@ -227,11 +230,11 @@ class ReportDataSource {
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS total_expense,
         COUNT(*) AS total_transactions
       FROM (
-        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND strftime('%Y', income_date) = ?
+        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
         UNION ALL
-        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND strftime('%Y', expense_date) = ?
+        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
       )
-    ''', [yearStr, yearStr]);
+    ''', [startStr, endStr, startStr, endStr]);
 
     final r = rows.first;
     final totalIncome = (r['total_income'] as num).toDouble();
@@ -241,7 +244,7 @@ class ReportDataSource {
       totalExpense: totalExpense,
       netAmount: totalIncome - totalExpense,
       totalTransactions: (r['total_transactions'] as int),
-      period: yearStr,
+      period: year.toString(),
     );
   }
 
@@ -251,12 +254,17 @@ class ReportDataSource {
     final args = <Object?>[];
 
     if (year != null) {
-      conditions.add("strftime('%Y', i.income_date) = ?");
-      args.add(year.toString());
-    }
-    if (month != null) {
-      conditions.add("strftime('%m', i.income_date) = ?");
-      args.add(month.toString().padLeft(2, '0'));
+      if (month != null) {
+        conditions.add('i.income_date >= ?');
+        conditions.add('i.income_date < ?');
+        args.add(AppDateUtils.monthStart(year, month));
+        args.add(AppDateUtils.monthEndExclusive(year, month));
+      } else {
+        conditions.add('i.income_date >= ?');
+        conditions.add('i.income_date < ?');
+        args.add(AppDateUtils.yearStart(year));
+        args.add(AppDateUtils.yearEndExclusive(year));
+      }
     }
 
     final where = conditions.join(' AND ');
@@ -292,12 +300,17 @@ class ReportDataSource {
     final args = <Object?>[];
 
     if (year != null) {
-      conditions.add("strftime('%Y', e.expense_date) = ?");
-      args.add(year.toString());
-    }
-    if (month != null) {
-      conditions.add("strftime('%m', e.expense_date) = ?");
-      args.add(month.toString().padLeft(2, '0'));
+      if (month != null) {
+        conditions.add('e.expense_date >= ?');
+        conditions.add('e.expense_date < ?');
+        args.add(AppDateUtils.monthStart(year, month));
+        args.add(AppDateUtils.monthEndExclusive(year, month));
+      } else {
+        conditions.add('e.expense_date >= ?');
+        conditions.add('e.expense_date < ?');
+        args.add(AppDateUtils.yearStart(year));
+        args.add(AppDateUtils.yearEndExclusive(year));
+      }
     }
 
     final where = conditions.join(' AND ');
@@ -328,7 +341,8 @@ class ReportDataSource {
   }
 
   Future<List<IncomeVsExpenseItem>> getIncomeVsExpense(int year) async {
-    final yearStr = year.toString();
+    final startStr = AppDateUtils.yearStart(year);
+    final endStr = AppDateUtils.yearEndExclusive(year);
 
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
@@ -337,13 +351,13 @@ class ReportDataSource {
         SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END) AS income,
         SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS expense
       FROM (
-        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND strftime('%Y', income_date) = ?
+        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
         UNION ALL
-        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND strftime('%Y', expense_date) = ?
+        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
       ) t
       GROUP BY month
       ORDER BY month
-    ''', [yearStr, yearStr]);
+    ''', [startStr, endStr, startStr, endStr]);
 
     const monthNames = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -370,16 +384,16 @@ class ReportDataSource {
   }
 
   Future<List<CashFlowItem>> getCashFlow(int year, int month) async {
-    final yearStr = year.toString();
-    final monthStr = month.toString().padLeft(2, '0');
+    final startStr = AppDateUtils.monthStart(year, month);
+    final endStr = AppDateUtils.monthEndExclusive(year, month);
 
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
       SELECT date, total_cash, total_bank, net_balance
       FROM daily_balance
-      WHERE strftime('%Y', date) = ? AND strftime('%m', date) = ?
+      WHERE date >= ? AND date < ?
       ORDER BY date ASC
-    ''', [yearStr, monthStr]);
+    ''', [startStr, endStr]);
 
     final daysInMonth = DateTime(year, month + 1, 0).day;
     final dateMap = <String, CashFlowItem>{};
@@ -408,9 +422,9 @@ class ReportDataSource {
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
       SELECT DISTINCT year FROM (
-        SELECT DISTINCT CAST(strftime('%Y', income_date) AS INTEGER) AS year FROM incomes WHERE status = 'completed'
+        SELECT DISTINCT CAST(substr(income_date, 1, 4) AS INTEGER) AS year FROM incomes WHERE status = 'completed'
         UNION
-        SELECT DISTINCT CAST(strftime('%Y', expense_date) AS INTEGER) AS year FROM expenses WHERE status = 'completed'
+        SELECT DISTINCT CAST(substr(expense_date, 1, 4) AS INTEGER) AS year FROM expenses WHERE status = 'completed'
       )
       ORDER BY year DESC
     ''');

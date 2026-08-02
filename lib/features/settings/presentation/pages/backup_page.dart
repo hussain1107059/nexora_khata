@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
+import 'package:nexora_khata/core/services/logger.dart';
 import 'package:nexora_khata/core/widgets/app_dialog.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text.dart';
@@ -91,7 +92,14 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
                 const Spacer(),
                 Switch(
                   value: autoEnabled,
-                  activeTrackColor: AppColors.info,
+                  thumbColor: const WidgetStatePropertyAll(Colors.white),
+                  trackColor: WidgetStateProperty.resolveWith(
+                    (states) => states.contains(WidgetState.selected)
+                        ? AppColors.info
+                        : AppColors.disabled.withValues(alpha: 0.45),
+                  ),
+                  trackOutlineColor: const WidgetStatePropertyAll(Colors.transparent),
+                  trackOutlineWidth: const WidgetStatePropertyAll(0),
                   onChanged: (v) => ref.read(autoBackupEnabledProvider.notifier).toggle(v),
                 ),
               ],
@@ -128,14 +136,13 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
 
   Widget _buildFrequencySelector() {
     final freq = ref.watch(autoBackupFrequencyProvider);
-    return Row(
+    return Wrap(
+      spacing: AppSpacing.sm,
+      runSpacing: AppSpacing.sm,
       children: [
         _freqChip('প্রতি ঘন্টা', 'hourly', freq),
-        AppSpacing.boxWSM,
         _freqChip('দৈনিক', 'daily', freq),
-        AppSpacing.boxWSM,
         _freqChip('সাপ্তাহিক', 'weekly', freq),
-        AppSpacing.boxWSM,
         _freqChip('মাসিক', 'monthly', freq),
       ],
     );
@@ -572,6 +579,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
         );
       }
     } catch (e) {
+      log.e('Restore failed: $e');
       if (mounted) {
         AppSnackBar.error(context, 'ত্রুটি: $e');
       }
@@ -587,6 +595,7 @@ class _BackupPageState extends ConsumerState<BackupPage> with WidgetsBindingObse
       final file = await service.manualBackup();
       await service.shareBackup(file.path);
     } catch (e) {
+      log.e('Export failed: $e');
       if (mounted) {
         AppSnackBar.error(context, 'ত্রুটি: $e');
       }

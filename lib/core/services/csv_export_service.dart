@@ -1,6 +1,6 @@
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart' as share;
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:nexora_khata/core/services/file_share_service.dart';
 
 class CsvExportService {
   CsvExportService._();
@@ -24,13 +24,11 @@ class CsvExportService {
       buffer.writeln('${monthName(month)},$count,$total');
     }
 
-    final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/$fileName');
-    await file.writeAsString(buffer.toString());
-
-    await share.Share.shareXFiles(
-      [share.XFile(file.path)],
-      text: shareText,
+    final bytes = Uint8List.fromList(utf8.encode(buffer.toString()));
+    await shareOrDownloadFile(
+      bytes: bytes,
+      fileName: fileName,
+      shareText: shareText,
     );
   }
 }

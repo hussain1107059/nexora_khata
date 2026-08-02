@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/utils/date_utils.dart';
 import '../../domain/entities/expense.dart';
 
 class ExpenseModel extends Expense {
@@ -40,7 +41,7 @@ class ExpenseModel extends Expense {
     'category_id': categoryId, 'amount': amount,
     'description': description, 'reference': reference,
     'image_path': imagePath,
-    'expense_date': expenseDate.toIso8601String(),
+    'expense_date': AppDateUtils.formatDate(expenseDate, format: AppDateUtils.dateFormat),
     'payment_method': paymentMethod,
     'is_recurring': isRecurring ? 1 : 0, 'status': status,
     'created_at': createdAt.toIso8601String(),

@@ -1,11 +1,11 @@
 {
-    "name": "nexora_khata",
-    "short_name": "nexora_khata",
+    "name": "নেক্সোরা খাতা",
+    "short_name": "Nexora Khata",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
-    "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "background_color": "#FFFFFF",
+    "theme_color": "#E53935",
+    "description": "নেক্সোরা খাতা - একটি আধুনিক হিসাব সংরক্ষণ অ্যাপ্লিকেশন",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -5,6 +6,7 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
+import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
 
 class CategoryOption {
@@ -75,6 +77,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
   late final TextEditingController _amountCtrl;
   late final TextEditingController _descriptionCtrl;
   late final TextEditingController _referenceCtrl;
+  late final TextEditingController _dateCtrl;
   late DateTime _selectedDate;
   int? _categoryId;
   late String _paymentMethod;
@@ -90,6 +93,8 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     );
     _descriptionCtrl = TextEditingController(text: widget.initialDescription ?? '');
     _referenceCtrl = TextEditingController(text: widget.initialReference ?? '');
+    _dateCtrl = TextEditingController();
+    _updateDateText();
     _selectedDate = widget.initialDate;
     _categoryId = widget.initialCategoryId;
     _paymentMethod = widget.initialPaymentMethod;
@@ -102,7 +107,14 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     _amountCtrl.dispose();
     _descriptionCtrl.dispose();
     _referenceCtrl.dispose();
+    _dateCtrl.dispose();
     super.dispose();
+  }
+
+  void _updateDateText() {
+    _dateCtrl.text = '${_selectedDate.year}-'
+        '${_selectedDate.month.toString().padLeft(2, '0')}-'
+        '${_selectedDate.day.toString().padLeft(2, '0')}';
   }
 
   Future<void> _pickDate() async {
@@ -113,18 +125,31 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
       lastDate: DateTime(2030),
       locale: const Locale('bn', 'BD'),
     );
-    if (picked != null) setState(() => _selectedDate = picked);
+    if (picked != null) {
+      setState(() {
+        _selectedDate = picked;
+        _updateDateText();
+      });
+    }
   }
 
   Future<void> _pickImage() async {
+    if (kIsWeb) {
+      AppSnackBar.warning(context, 'ওয়েব সংস্করণে ছবি সংযুক্তি সমর্থিত নয়');
+      return;
+    }
     final picker = ImagePicker();
     final picked = await picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
     if (picked != null) setState(() => _imagePath = picked.path);
   }
 
   Future<void> _submit() async {
+    if (_isSubmitting) return;
     if (!_formKey.currentState!.validate()) return;
-    if (_categoryId == null) return;
+    if (_categoryId == null) {
+      AppSnackBar.warning(context, 'ক্যাটাগরি নির্বাচন করুন');
+      return;
+    }
     final amount = double.tryParse(_amountCtrl.text) ?? 0;
     setState(() => _isSubmitting = true);
     await widget.onSubmit(
@@ -168,9 +193,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
           AppSpacing.boxLG,
           AppTextField(
             label: 'তারিখ',
-            controller: TextEditingController(
-              text: '${_selectedDate.year}-${_selectedDate.month.toString().padLeft(2, '0')}-${_selectedDate.day.toString().padLeft(2, '0')}',
-            ),
+            controller: _dateCtrl,
             readOnly: true,
             onTap: _pickDate,
             suffixIcon: Icon(Icons.calendar_month_rounded, color: AppColors.primary),
@@ -239,7 +262,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
         DropdownMenuItem(value: 'cash', child: Text('নগদ')),
         DropdownMenuItem(value: 'bank', child: Text('ব্যাংক')),
         DropdownMenuItem(value: 'bkash', child: Text('বিকাশ')),
-        DropdownMenuItem(value: 'nagad', child: Text('নগদ')),
+        DropdownMenuItem(value: 'nagad', child: Text('নগদ (Nagad)')),
         DropdownMenuItem(value: 'rocket', child: Text('রকেট')),
         DropdownMenuItem(value: 'card', child: Text('কার্ড')),
         DropdownMenuItem(value: 'check', child: Text('চেক')),

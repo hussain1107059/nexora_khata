@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/utils/date_utils.dart';
 import '../../domain/entities/transfer.dart';
 
 class TransferModel extends Transfer {
@@ -40,7 +41,7 @@ class TransferModel extends Transfer {
     'to_bank_account_id': toBankAccountId,
     'amount': amount, 'description': description,
     'reference': reference,
-    'transfer_date': transferDate.toIso8601String(),
+    'transfer_date': AppDateUtils.formatDate(transferDate, format: AppDateUtils.dateFormat),
     'fee': fee, 'status': status,
     'created_at': createdAt.toIso8601String(),
     'updated_at': updatedAt.toIso8601String(),

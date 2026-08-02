@@ -1,8 +1,10 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
+import 'package:sqflite_common_ffi_web/sqflite_ffi_web.dart';
 import 'database_config.dart';
 import 'logger.dart';
 
@@ -26,6 +28,26 @@ class DatabaseHelper {
   Future<Database> open({String? dbName}) async {
     if (_db != null) return _db!;
     final name = dbName ?? DatabaseConfig.dbName;
+
+    if (kIsWeb) {
+      databaseFactory = databaseFactoryFfiWebNoWebWorker;
+      try {
+        _db = await openDatabase(
+          name,
+          version: DatabaseConfig.dbVersion,
+          onCreate: _createSchema,
+          onUpgrade: _upgradeSchema,
+          onConfigure: _configure,
+          singleInstance: true,
+        );
+      } catch (e) {
+        log.e('[DB] web open failed: $e');
+        rethrow;
+      }
+      await _applyMigrations();
+      return _db!;
+    }
+
     final dir = await getApplicationDocumentsDirectory();
     final path = p.join(dir.path, name);
     if (Platform.isWindows || Platform.isLinux || Platform.isMacOS) {
@@ -555,6 +577,34 @@ class DatabaseHelper {
 
   Future<void> _seedDefaults(Database db) async {
     final batch = db.batch();
+
+    final userCount = await db
+        .rawQuery('SELECT COUNT(*) AS c FROM users WHERE id = 0');
+    if (Sqflite.firstIntValue(userCount) == 0) {
+      batch.insert('users', {
+        'id': 0,
+        'name': 'ডিফল্ট',
+        'is_active': 1,
+        'status': 'active',
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+    }
+
+    final bizCount = await db
+        .rawQuery('SELECT COUNT(*) AS c FROM businesses WHERE id = 0');
+    if (Sqflite.firstIntValue(bizCount) == 0) {
+      batch.insert('businesses', {
+        'id': 0,
+        'user_id': 0,
+        'name': 'আমার ব্যবসা',
+        'currency': 'BDT',
+        'status': 'active',
+        'created_at': DateTime.now().toIso8601String(),
+        'updated_at': DateTime.now().toIso8601String(),
+      });
+    }
+
     final incomeCats = [
       'বেতন', 'ব্যবসা', 'ফ্রিল্যান্সিং', 'বিনিয়োগ',
       'উপহার', 'কমিশন', 'অন্যান্য আয়',
@@ -627,6 +677,20 @@ class DatabaseHelper {
     }
     if (version == 3) {
       await db.execute('ALTER TABLE expenses ADD COLUMN image_path TEXT');
+    }
+    if (version == 4) {
+      await db.execute(
+        "UPDATE incomes SET income_date = substr(income_date, 1, 10) "
+        "WHERE length(income_date) > 10",
+      );
+      await db.execute(
+        "UPDATE expenses SET expense_date = substr(expense_date, 1, 10) "
+        "WHERE length(expense_date) > 10",
+      );
+      await db.execute(
+        "UPDATE transfers SET transfer_date = substr(transfer_date, 1, 10) "
+        "WHERE length(transfer_date) > 10",
+      );
     }
   }
 

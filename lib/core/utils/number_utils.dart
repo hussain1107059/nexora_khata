@@ -84,7 +84,7 @@ abstract final class AppNumberUtils {
       case 'bkash':
         return 'বিকাশ';
       case 'nagad':
-        return 'নগদ';
+        return 'নগদ (Nagad)';
       case 'rocket':
         return 'রকেট';
       case 'card':

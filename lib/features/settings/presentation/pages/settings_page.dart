@@ -142,12 +142,10 @@ class _LanguageTile extends ConsumerWidget {
             children: [
               RadioListTile<Locale>(
                 title: AppText('বাংলা'),
-                activeColor: AppColors.primary,
                 value: Locale('bn', 'BD'),
               ),
               RadioListTile<Locale>(
                 title: AppText('English'),
-                activeColor: AppColors.primary,
                 value: Locale('en', 'US'),
               ),
             ],
