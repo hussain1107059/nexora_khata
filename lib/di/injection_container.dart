@@ -2,12 +2,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
 import '../core/network/connectivity_service.dart';
 import '../core/services/database_helper.dart';
+import '../core/services/logger.dart';
 import '../features/categories/data/datasources/expense_category_datasource.dart';
 import '../features/categories/data/datasources/income_category_datasource.dart';
 import '../features/categories/data/repositories/expense_category_repository_impl.dart';
 import '../features/categories/data/repositories/income_category_repository_impl.dart';
 import '../features/categories/domain/repositories/expense_category_repository.dart';
 import '../features/categories/domain/repositories/income_category_repository.dart';
+import '../features/dashboard/data/datasources/dashboard_datasource.dart';
+import '../features/dashboard/data/repositories/dashboard_repository_impl.dart';
+import '../features/dashboard/domain/repositories/dashboard_repository.dart';
 import '../features/transactions/data/datasources/expense_datasource.dart';
 import '../features/transactions/data/datasources/income_datasource.dart';
 import '../features/transactions/data/repositories/expense_repository_impl.dart';
@@ -26,11 +30,11 @@ final getIt = GetIt.instance;
 Future<void> initializeDependencies() async {
   final dbHelper = DatabaseHelper();
   try {
-    print('[INIT] Opening database...');
+    log.i('[INIT] Opening database...');
     await dbHelper.open();
-    print('[INIT] Database opened successfully');
+    log.i('[INIT] Database opened successfully');
   } catch (e) {
-    print('[INIT] Database open failed: $e');
+    log.e('[INIT] Database open failed: $e');
   }
 
   getIt.registerLazySingleton<DatabaseHelper>(() => dbHelper);
@@ -76,6 +80,12 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<SettingsDataSource>(() => settingsDataSource);
   getIt.registerLazySingleton<SettingsRepository>(
     () => SettingsRepositoryImpl(settingsDataSource),
+  );
+
+  final dashboardDataSource = DashboardDataSource(dbHelper);
+  getIt.registerLazySingleton<DashboardDataSource>(() => dashboardDataSource);
+  getIt.registerLazySingleton<DashboardRepository>(
+    () => DashboardRepositoryImpl(dashboardDataSource),
   );
 }
 

@@ -26,7 +26,6 @@ dependencies:
 
   # Dependency Injection
   get_it: ^8.0.3
-  injectable: ^2.5.1
 
   # Utilities
   intl: ^0.20.2
@@ -72,7 +71,6 @@ dev_dependencies:
   freezed: ^2.5.8
   json_serializable: ^6.9.4
   riverpod_generator: ^2.6.3
-  injectable_generator: ^2.6.2
   mockito: ^5.4.6
   mocktail: ^1.0.4
 

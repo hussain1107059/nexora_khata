@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
+import '../../../../core/router/route_names.dart';
 import '../../../../core/utils/number_utils.dart';
 import '../../../../core/utils/date_utils.dart';
 import '../../domain/entities/dashboard_summary.dart';
@@ -43,7 +45,7 @@ class RecentTransactionsList extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () => context.push(RouteNames.incomeList),
                 child: Text(
                   'সব দেখুন',
                   style: AppTypography.labelMedium.copyWith(
@@ -88,7 +90,13 @@ class _TransactionTile extends StatelessWidget {
         color: Colors.transparent,
         child: InkWell(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-          onTap: () {},
+          onTap: () {
+            if (tx.type == 'income') {
+              context.push('${RouteNames.incomeDetail}/${tx.id}');
+            } else {
+              context.push('${RouteNames.expenseDetail}/${tx.id}');
+            }
+          },
           child: Padding(
             padding: AppSpacing.paddingHVXl.copyWith(
               left: AppSpacing.lg,

@@ -8,7 +8,7 @@ import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/expense_provider.dart';
-import 'package:nexora_khata/features/transactions/presentation/widgets/expense_card.dart';
+import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_card.dart';
 
 class ExpenseDailyReportPage extends ConsumerStatefulWidget {
   const ExpenseDailyReportPage({super.key});
@@ -83,7 +83,18 @@ class _ExpenseDailyReportPageState extends ConsumerState<ExpenseDailyReportPage>
                     itemCount: expenses.length,
                     itemBuilder: (context, index) {
                       final expense = expenses[index];
-                      return ExpenseCard(expense: expense);
+                      return TransactionCard(
+                        description: expense.description ?? '',
+                        date: expense.expenseDate,
+                        categoryName: expense.catName,
+                        amount: expense.amount,
+                        status: expense.status,
+                        iconBackground: AppColors.errorLight,
+                        iconColor: AppColors.error,
+                        icon: Icons.arrow_upward_rounded,
+                        amountColor: AppColors.error,
+                        completedStatusText: 'পরিশোধিত',
+                      );
                     },
                   ),
                 );

@@ -4,6 +4,7 @@ import '../../../../core/config/theme/app_colors.dart';
 import '../../../../core/config/theme/app_spacing.dart';
 import '../../../../core/config/theme/app_typography.dart';
 import '../../../../core/utils/number_utils.dart';
+import '../../../../core/widgets/core_card.dart';
 import '../../domain/entities/dashboard_summary.dart';
 
 class MonthlyChart extends StatelessWidget {
@@ -15,40 +16,24 @@ class MonthlyChart extends StatelessWidget {
   Widget build(BuildContext context) {
     if (data.isEmpty) return const SizedBox.shrink();
 
-    return Container(
+    return CoreCard(
       margin: AppSpacing.paddingHSm,
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
+      title: 'মাসিক রিপোর্ট',
+      trailing: const Row(
+        children: [
+          ChartLegend(
+            color: AppColors.success,
+            label: 'আয়',
+            padding: EdgeInsets.only(left: 8),
+          ),
+          ChartLegend(
+            color: AppColors.error,
+            label: 'ব্যয়',
+            padding: EdgeInsets.only(left: 8),
           ),
         ],
       ),
-      child: Padding(
-        padding: AppSpacing.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'মাসিক রিপোর্ট',
-                  style: AppTypography.subtitle2.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                _Legend(color: AppColors.success, label: 'আয়'),
-                _Legend(color: AppColors.error, label: 'ব্যয়'),
-              ],
-            ),
-            AppSpacing.boxHLG,
-            SizedBox(
+      child: SizedBox(
               height: 180,
               child: BarChart(
                 BarChartData(
@@ -147,7 +132,7 @@ class MonthlyChart extends StatelessWidget {
                     show: true,
                     drawVerticalLine: false,
                     horizontalInterval: _maxValue / 4,
-                    getDrawingHorizontalLine: (value) => FlLine(
+                    getDrawingHorizontalLine: (value) => const FlLine(
                       color: AppColors.divider,
                       strokeWidth: 1,
                     ),
@@ -155,9 +140,6 @@ class MonthlyChart extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
     );
   }
 
@@ -186,37 +168,5 @@ class MonthlyChart extends StatelessWidget {
       'সেপ', 'অক্টো', 'নভে', 'ডিসে',
     ];
     return months[m - 1];
-  }
-}
-
-class _Legend extends StatelessWidget {
-  final Color color;
-  final String label;
-  const _Legend({required this.color, required this.label});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(left: 8),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Container(
-            width: 8, height: 8,
-            decoration: BoxDecoration(
-              color: color,
-              borderRadius: BorderRadius.circular(2),
-            ),
-          ),
-          AppSpacing.boxWXS,
-          Text(
-            label,
-            style: AppTypography.caption.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

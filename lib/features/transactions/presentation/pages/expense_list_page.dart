@@ -11,8 +11,8 @@ import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/features/transactions/domain/entities/expense.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/expense_provider.dart';
-import 'package:nexora_khata/features/transactions/presentation/widgets/expense_card.dart';
-import 'package:nexora_khata/features/transactions/presentation/widgets/expense_filter_bar.dart';
+import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_card.dart';
+import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_filter_bar.dart';
 
 class ExpenseListPage extends ConsumerStatefulWidget {
   const ExpenseListPage({super.key});
@@ -95,7 +95,13 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
     return Column(
       children: [
         AppSpacing.boxSM,
-        ExpenseFilterBar(),
+        TransactionFilterBar(
+          searchHint: 'ব্যয় অনুসন্ধান করুন...',
+          completedLabel: 'পরিশোধিত',
+          searchProvider: expenseSearchProvider,
+          statusProvider: expenseStatusFilterProvider,
+          refreshProvider: expenseRefreshProvider,
+        ),
         AppSpacing.boxSM,
         Expanded(
           child: expensesAsync.when(
@@ -121,8 +127,17 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> with SingleTi
                   itemCount: expenses.length,
                   itemBuilder: (context, index) {
                     final expense = expenses[index];
-                    return ExpenseCard(
-                      expense: expense,
+                    return TransactionCard(
+                      description: expense.description ?? '',
+                      date: expense.expenseDate,
+                      categoryName: expense.catName,
+                      amount: expense.amount,
+                      status: expense.status,
+                      iconBackground: AppColors.errorLight,
+                      iconColor: AppColors.error,
+                      icon: Icons.arrow_upward_rounded,
+                      amountColor: AppColors.error,
+                      completedStatusText: 'পরিশোধিত',
                       onTap: () => context.push('${RouteNames.expenseDetail}/${expense.id}'),
                     );
                   },

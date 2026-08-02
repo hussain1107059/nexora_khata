@@ -9,8 +9,8 @@ import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/income_provider.dart';
-import 'package:nexora_khata/features/transactions/presentation/widgets/income_card.dart';
-import 'package:nexora_khata/features/transactions/presentation/widgets/income_filter_bar.dart';
+import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_card.dart';
+import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_filter_bar.dart';
 
 class IncomeListPage extends ConsumerWidget {
   const IncomeListPage({super.key});
@@ -40,7 +40,13 @@ class IncomeListPage extends ConsumerWidget {
       body: Column(
         children: [
           AppSpacing.boxSM,
-          IncomeFilterBar(),
+          TransactionFilterBar(
+            searchHint: 'আয় অনুসন্ধান করুন...',
+            completedLabel: 'গৃহীত',
+            searchProvider: incomeSearchProvider,
+            statusProvider: incomeStatusFilterProvider,
+            refreshProvider: incomeRefreshProvider,
+          ),
           AppSpacing.boxSM,
           Expanded(
             child: incomesAsync.when(
@@ -66,8 +72,17 @@ class IncomeListPage extends ConsumerWidget {
                     itemCount: incomes.length,
                     itemBuilder: (context, index) {
                       final income = incomes[index];
-                      return IncomeCard(
-                        income: income,
+                      return TransactionCard(
+                        description: income.description ?? '',
+                        date: income.incomeDate,
+                        categoryName: income.catName,
+                        amount: income.amount,
+                        status: income.status,
+                        iconBackground: AppColors.successLight,
+                        iconColor: AppColors.success,
+                        icon: Icons.arrow_downward_rounded,
+                        amountColor: AppColors.success,
+                        completedStatusText: 'গৃহীত',
                         onTap: () => context.push('${RouteNames.incomeDetail}/${income.id}'),
                       );
                     },

@@ -75,21 +75,6 @@ class MonthlyReportItem extends Equatable {
   List<Object?> get props => [month, year, income, expense, net];
 }
 
-class YearlyReportItem extends Equatable {
-  final int year;
-  final double income;
-  final double expense;
-  final double net;
-  final int transactionCount;
-
-  const YearlyReportItem({
-    required this.year, this.income = 0, this.expense = 0, this.net = 0, this.transactionCount = 0,
-  });
-
-  @override
-  List<Object?> get props => [year, income, expense, net, transactionCount];
-}
-
 class CashFlowItem extends Equatable {
   final DateTime date;
   final double cashBalance;

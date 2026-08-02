@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../config/theme/app_colors.dart';
 import '../config/theme/app_spacing.dart';
 
 class AppTextField extends StatefulWidget {
@@ -138,54 +137,3 @@ class _AppTextFieldState extends State<AppTextField> {
   }
 }
 
-class AppSearchField extends StatelessWidget {
-  final TextEditingController? controller;
-  final ValueChanged<String>? onChanged;
-  final String? hint;
-
-  const AppSearchField({
-    super.key,
-    this.controller,
-    this.onChanged,
-    this.hint,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TextField(
-      controller: controller,
-      onChanged: onChanged,
-      decoration: InputDecoration(
-        hintText: hint ?? 'অনুসন্ধান করুন...',
-        prefixIcon: const Icon(Icons.search_rounded, size: 20),
-        suffixIcon: controller != null && controller!.text.isNotEmpty
-            ? IconButton(
-                icon: const Icon(Icons.close_rounded, size: 20),
-                onPressed: () {
-                  controller!.clear();
-                  onChanged?.call('');
-                },
-              )
-            : null,
-        filled: true,
-        fillColor: AppColors.background,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.lg,
-          vertical: AppSpacing.md,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusCircular),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusCircular),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(AppSpacing.radiusCircular),
-          borderSide: const BorderSide(color: AppColors.primary),
-        ),
-      ),
-    );
-  }
-}

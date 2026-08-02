@@ -1,11 +1,9 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart' as share;
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/services/csv_export_service.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
@@ -147,22 +145,13 @@ class _ExpenseMonthlyReportPageState extends ConsumerState<ExpenseMonthlyReportP
     }
 
     try {
-      final buffer = StringBuffer();
-      buffer.writeln('মাস,লেনদেন সংখ্যা,মোট ব্যয়');
-      for (final r in data) {
-        final month = _monthName(int.tryParse(r['month']?.toString() ?? '0') ?? 0);
-        final count = r['count'] as int? ?? 0;
-        final total = (r['total'] as num?)?.toDouble() ?? 0;
-        buffer.writeln('$month,$count,$total');
-      }
-
-      final dir = await getTemporaryDirectory();
-      final file = File('${dir.path}/expense_report_$_selectedYear.csv');
-      await file.writeAsString(buffer.toString());
-
-      await share.Share.shareXFiles(
-        [share.XFile(file.path)],
-        text: 'ব্যয়ের মাসিক রিপোর্ট $_selectedYear',
+      await CsvExportService.exportMonthlyReport(
+        data: data,
+        year: _selectedYear,
+        fileName: 'expense_report_$_selectedYear.csv',
+        header: 'মাস,লেনদেন সংখ্যা,মোট ব্যয়',
+        shareText: 'ব্যয়ের মাসিক রিপোর্ট $_selectedYear',
+        monthName: _monthName,
       );
     } catch (e) {
       if (!mounted) return;

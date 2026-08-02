@@ -4,6 +4,7 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
+import 'package:nexora_khata/core/widgets/core_card.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
 
 class ReportPieChart extends StatelessWidget {
@@ -33,91 +34,70 @@ class ReportPieChart extends StatelessWidget {
 
     final total = data.fold<double>(0, (sum, item) => sum + item.amount);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: AppSpacing.paddingLg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: AppTypography.subtitle2.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-            AppSpacing.boxHLG,
-            SizedBox(
-              height: 220,
-              child: Row(
-                children: [
-                  Expanded(
-                    child: PieChart(
-                      PieChartData(
-                        sections: _buildSections(total),
-                        centerSpaceRadius: 40,
-                        sectionsSpace: 2,
-                        pieTouchData: PieTouchData(
-                          touchCallback: (event, response) {},
-                        ),
+    return CoreCard(
+      title: title,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 220,
+            child: Row(
+              children: [
+                Expanded(
+                  child: PieChart(
+                    PieChartData(
+                      sections: _buildSections(total),
+                      centerSpaceRadius: 40,
+                      sectionsSpace: 2,
+                      pieTouchData: PieTouchData(
+                        touchCallback: (event, response) {},
                       ),
                     ),
                   ),
-                  AppSpacing.boxWLG,
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'মোট',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
+                ),
+                AppSpacing.boxWLG,
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'মোট',
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textSecondary,
                       ),
-                      AppSpacing.boxHXS,
-                      Text(
-                        AppNumberUtils.formatCompactBn(total),
-                        style: AppTypography.subtitle1.copyWith(
-                          color: AppColors.textPrimary,
-                          fontWeight: FontWeight.w700,
-                        ),
+                    ),
+                    AppSpacing.boxHXS,
+                    Text(
+                      AppNumberUtils.formatCompactBn(total),
+                      style: AppTypography.subtitle1.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w700,
                       ),
-                      AppSpacing.boxHSM,
-                      Text(
-                        '${data.length} টি ক্যাটাগরি',
-                        style: AppTypography.caption.copyWith(
-                          color: AppColors.textHint,
-                        ),
+                    ),
+                    AppSpacing.boxHSM,
+                    Text(
+                      '${data.length} টি ক্যাটাগরি',
+                      style: AppTypography.caption.copyWith(
+                        color: AppColors.textHint,
                       ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
+                  ],
+                ),
+              ],
             ),
-            AppSpacing.boxHLG,
-            ...data.asMap().entries.map((entry) {
-              final item = entry.value;
-              final color = chartColors[entry.key % chartColors.length];
-              return _LegendRow(
-                color: color,
-                label: item.category,
-                amount: item.amount,
-                percentage: item.percentage,
-              );
-            }),
-          ],
-        ),
+          ),
+          AppSpacing.boxHLG,
+          ...data.asMap().entries.map((entry) {
+            final item = entry.value;
+            final color = chartColors[entry.key % chartColors.length];
+            return _LegendRow(
+              color: color,
+              label: item.category,
+              amount: item.amount,
+              percentage: item.percentage,
+            );
+          }),
+        ],
       ),
     );
   }

@@ -4,6 +4,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'database_config.dart';
+import 'logger.dart';
 
 typedef DbBatchCallback = Future<void> Function(Batch batch);
 typedef DbTxnCallback<T> = Future<T> Function(Transaction txn);
@@ -41,11 +42,11 @@ class DatabaseHelper {
         singleInstance: true,
       );
     } catch (e) {
-      print('[DB] open failed: $e');
+      log.w('[DB] open failed: $e');
       try {
         final f = File(path);
         if (await f.exists()) await f.delete();
-        print('[DB] deleted db file, retrying...');
+        log.i('[DB] deleted db file, retrying...');
         _db = await openDatabase(
           path,
           version: DatabaseConfig.dbVersion,
@@ -55,7 +56,7 @@ class DatabaseHelper {
           singleInstance: true,
         );
       } catch (e2) {
-        print('[DB] retry also failed: $e2');
+        log.e('[DB] retry also failed: $e2');
         rethrow;
       }
     }

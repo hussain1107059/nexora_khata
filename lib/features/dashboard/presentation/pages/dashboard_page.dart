@@ -41,10 +41,6 @@ class DashboardPage extends ConsumerWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.notifications_outlined),
-            onPressed: () {},
-          ),
-          IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => ref.invalidate(dashboardProvider),
           ),
