@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexora_khata/features/loans/presentation/providers/loan_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/models/transaction_entry.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/expense_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/income_provider.dart';
@@ -11,6 +12,7 @@ final allTxRefreshProvider = StateProvider<int>((ref) => 0);
 final allTransactionsProvider = FutureProvider<List<TransactionEntry>>((ref) async {
   final incomeRepo = ref.read(incomeRepositoryProvider);
   final expenseRepo = ref.read(expenseRepositoryProvider);
+  final loanRepo = ref.read(loanRepositoryProvider);
   final search = ref.watch(allTxSearchProvider);
   final status = ref.watch(allTxStatusProvider);
   final type = ref.watch(allTxTypeProvider);
@@ -18,9 +20,15 @@ final allTransactionsProvider = FutureProvider<List<TransactionEntry>>((ref) asy
 
   final incomeResult = await incomeRepo.getAll();
   final expenseResult = await expenseRepo.getAll();
+  final loanContactsResult = await loanRepo.getContacts();
+  final loanTxnResult = await loanRepo.getAllTransactions();
 
   final incomes = incomeResult.fold((l) => throw l, (r) => r);
   final expenses = expenseResult.fold((l) => throw l, (r) => r);
+  final loanContacts = loanContactsResult.fold((l) => throw l, (r) => r);
+  final loanTxns = loanTxnResult.fold((l) => throw l, (r) => r);
+
+  final contactNames = {for (final c in loanContacts) c.id: c.name};
 
   var list = <TransactionEntry>[
     for (final inc in incomes)
@@ -42,6 +50,19 @@ final allTransactionsProvider = FutureProvider<List<TransactionEntry>>((ref) asy
         date: exp.expenseDate,
         categoryName: exp.catName,
         status: exp.status,
+      ),
+    for (final txn in loanTxns)
+      TransactionEntry(
+        type: 'loan',
+        id: txn.id,
+        amount: txn.amount,
+        description: txn.note,
+        date: txn.date,
+        categoryName: contactNames[txn.contactId],
+        status: 'completed',
+        contactName: contactNames[txn.contactId],
+        contactId: txn.contactId,
+        loanType: txn.isRepay ? 'repay' : (txn.isBorrow ? 'borrow' : 'lend'),
       ),
   ];
 

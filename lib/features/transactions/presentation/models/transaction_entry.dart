@@ -6,6 +6,9 @@ class TransactionEntry {
   final DateTime date;
   final String? categoryName;
   final String status;
+  final String? contactName;
+  final String? loanType;
+  final int? contactId;
 
   const TransactionEntry({
     required this.type,
@@ -15,9 +18,20 @@ class TransactionEntry {
     required this.date,
     this.categoryName,
     required this.status,
+    this.contactName,
+    this.loanType,
+    this.contactId,
   });
 
   bool get isIncome => type == 'income';
 
   bool get isExpense => type == 'expense';
+
+  bool get isLoan => type == 'loan';
+
+  bool get isLoanBorrow => isLoan && loanType == 'borrow';
+
+  bool get isLoanLend => isLoan && loanType == 'lend';
+
+  bool get isLoanRepay => isLoan && loanType == 'repay';
 }

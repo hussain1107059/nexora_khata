@@ -8,10 +8,10 @@ import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
+import 'package:nexora_khata/core/widgets/app_search_field.dart';
 import 'package:nexora_khata/features/transactions/presentation/models/transaction_entry.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/all_transactions_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_card.dart';
-import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_filter_bar.dart';
 
 class AllTransactionsPage extends ConsumerStatefulWidget {
   const AllTransactionsPage({super.key});
@@ -21,11 +21,12 @@ class AllTransactionsPage extends ConsumerStatefulWidget {
 }
 
 class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
-  String? _selectedType;
-
   @override
   Widget build(BuildContext context) {
     final txnsAsync = ref.watch(allTransactionsProvider);
+    final selectedType = ref.watch(allTxTypeProvider);
+    final selectedStatus = ref.watch(allTxStatusProvider);
+    final hasFilter = selectedType != null || selectedStatus != null;
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
@@ -43,15 +44,25 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
       body: Column(
         children: [
           AppSpacing.boxSM,
-          TransactionFilterBar(
-            searchHint: 'লেনদেন অনুসন্ধান করুন...',
-            completedLabel: 'সম্পন্ন',
-            searchProvider: allTxSearchProvider,
-            statusProvider: allTxStatusProvider,
-            refreshProvider: allTxRefreshProvider,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Row(
+              children: [
+                Expanded(
+                  child: AppSearchField(
+                    hintText: 'লেনদেন অনুসন্ধান করুন...',
+                    onChanged: (v) =>
+                        ref.read(allTxSearchProvider.notifier).state = v,
+                  ),
+                ),
+                AppSpacing.boxMD,
+                _FilterButton(
+                  active: hasFilter,
+                  onTap: () => _showFilterSheet(),
+                ),
+              ],
+            ),
           ),
-          AppSpacing.boxSM,
-          _buildTypeFilter(),
           AppSpacing.boxSM,
           Expanded(
             child: txnsAsync.when(
@@ -96,55 +107,72 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
     );
   }
 
-  Widget _buildTypeFilter() {
-    return SizedBox(
-      height: 40,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
-        children: [
-          _buildChip('সব', null),
-          AppSpacing.boxSM,
-          _buildChip('আয়', 'income'),
-          AppSpacing.boxSM,
-          _buildChip('ব্যয়', 'expense'),
-        ],
+  void _showFilterSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      barrierColor: AppColors.scrim,
+      backgroundColor: AppColors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXxl)),
       ),
-    );
-  }
-
-  Widget _buildChip(String label, String? type) {
-    final selected = _selectedType == type;
-    return GestureDetector(
-      onTap: () {
-        setState(() => _selectedType = selected ? null : type);
-        ref.read(allTxTypeProvider.notifier).state = _selectedType;
-      },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        curve: Curves.easeOut,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.background,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
-          ),
-        ),
-        child: Center(
-          child: Text(
-            label,
-            style: AppTypography.labelMedium.copyWith(
-              color: selected ? AppColors.white : AppColors.textPrimary,
-              fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-            ),
-          ),
-        ),
+      builder: (ctx) => _FilterSheet(
+        selectedType: ref.read(allTxTypeProvider),
+        selectedStatus: ref.read(allTxStatusProvider),
+        onTypeChanged: (v) {
+          ref.read(allTxTypeProvider.notifier).state = v;
+          ref.read(allTxRefreshProvider.notifier).state++;
+          Navigator.pop(ctx);
+        },
+        onStatusChanged: (v) {
+          ref.read(allTxStatusProvider.notifier).state = v;
+          ref.read(allTxRefreshProvider.notifier).state++;
+          Navigator.pop(ctx);
+        },
+        onClear: () {
+          ref.read(allTxTypeProvider.notifier).state = null;
+          ref.read(allTxStatusProvider.notifier).state = null;
+          ref.read(allTxRefreshProvider.notifier).state++;
+          Navigator.pop(ctx);
+        },
       ),
     );
   }
 
   Widget _buildCard(TransactionEntry entry) {
+    if (entry.isLoan) {
+      final isRepay = entry.isLoanRepay;
+      final isBorrow = entry.isLoanBorrow;
+      final color = isRepay
+          ? AppColors.info
+          : (isBorrow ? AppColors.error : AppColors.success);
+      final icon = isRepay
+          ? Icons.autorenew_rounded
+          : (isBorrow
+              ? Icons.arrow_upward_rounded
+              : Icons.arrow_downward_rounded);
+      final title = isRepay
+          ? 'পরিশোধ'
+          : (isBorrow ? 'নিয়েছি' : 'দিয়েছি');
+      return TransactionCard(
+        description: entry.contactName ?? '',
+        date: entry.date,
+        categoryName: title,
+        amount: entry.amount,
+        status: entry.status,
+        iconBackground: color.withValues(alpha: 0.1),
+        iconColor: color,
+        icon: icon,
+        amountColor: color,
+        completedStatusText: 'সম্পন্ন',
+        onTap: () {
+          final contactId = entry.contactId;
+          if (contactId == null) return;
+          context.push('${RouteNames.loanDetail}/$contactId');
+        },
+      );
+    }
     final isIncome = entry.isIncome;
     final color = isIncome ? AppColors.success : AppColors.error;
     return TransactionCard(
@@ -295,6 +323,201 @@ class _SheetAction extends StatelessWidget {
             ),
             const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class _FilterButton extends StatelessWidget {
+  final bool active;
+  final VoidCallback onTap;
+
+  const _FilterButton({required this.active, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Material(
+          color: active ? AppColors.primary : AppColors.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            side: BorderSide(
+              color: active ? AppColors.primary : AppColors.border,
+            ),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Icon(
+                Icons.filter_alt_rounded,
+                color: active ? AppColors.white : AppColors.textPrimary,
+                size: 22,
+              ),
+            ),
+          ),
+        ),
+        if (active)
+          Positioned(
+            top: -4,
+            right: -4,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: AppColors.error,
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.scaffoldBackground, width: 2),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _FilterSheet extends StatefulWidget {
+  final String? selectedType;
+  final String? selectedStatus;
+  final ValueChanged<String?> onTypeChanged;
+  final ValueChanged<String?> onStatusChanged;
+  final VoidCallback onClear;
+
+  const _FilterSheet({
+    required this.selectedType,
+    required this.selectedStatus,
+    required this.onTypeChanged,
+    required this.onStatusChanged,
+    required this.onClear,
+  });
+
+  @override
+  State<_FilterSheet> createState() => _FilterSheetState();
+}
+
+class _FilterSheetState extends State<_FilterSheet> {
+  late String? _type = widget.selectedType;
+  late String? _status = widget.selectedStatus;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: AppSpacing.paddingLg,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'ফিল্টার',
+                  style: AppTypography.subtitle1.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (_type != null || _status != null)
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _type = null;
+                        _status = null;
+                      });
+                      widget.onClear();
+                    },
+                    child: const Text('সব মুছুন'),
+                  ),
+              ],
+            ),
+            AppSpacing.boxMD,
+            Text('ধরন', style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary)),
+            AppSpacing.boxSM,
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                _buildOption(label: 'সব', value: null, selected: _type, onSelected: (v) {
+                  setState(() => _type = v);
+                  widget.onTypeChanged(v);
+                }),
+                _buildOption(label: 'আয়', value: 'income', selected: _type, onSelected: (v) {
+                  setState(() => _type = v);
+                  widget.onTypeChanged(v);
+                }),
+                _buildOption(label: 'ব্যয়', value: 'expense', selected: _type, onSelected: (v) {
+                  setState(() => _type = v);
+                  widget.onTypeChanged(v);
+                }),
+                _buildOption(label: 'ঋণ', value: 'loan', selected: _type, onSelected: (v) {
+                  setState(() => _type = v);
+                  widget.onTypeChanged(v);
+                }),
+              ],
+            ),
+            AppSpacing.boxMD,
+            Text('স্ট্যাটাস', style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary)),
+            AppSpacing.boxSM,
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                _buildOption(label: 'সব', value: null, selected: _status, onSelected: (v) {
+                  setState(() => _status = v);
+                  widget.onStatusChanged(v);
+                }),
+                _buildOption(label: 'সম্পন্ন', value: 'completed', selected: _status, onSelected: (v) {
+                  setState(() => _status = v);
+                  widget.onStatusChanged(v);
+                }),
+                _buildOption(label: 'বকেয়া', value: 'pending', selected: _status, onSelected: (v) {
+                  setState(() => _status = v);
+                  widget.onStatusChanged(v);
+                }),
+                _buildOption(label: 'বাতিল', value: 'cancelled', selected: _status, onSelected: (v) {
+                  setState(() => _status = v);
+                  widget.onStatusChanged(v);
+                }),
+              ],
+            ),
+            AppSpacing.boxLG,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildOption({
+    required String label,
+    required String? value,
+    required String? selected,
+    required ValueChanged<String?> onSelected,
+  }) {
+    final isSelected = selected == value;
+    return GestureDetector(
+      onTap: () => onSelected(value),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.primary : AppColors.background,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+          ),
+        ),
+        child: Text(
+          label,
+          style: AppTypography.labelMedium.copyWith(
+            color: isSelected ? AppColors.white : AppColors.textPrimary,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+          ),
         ),
       ),
     );

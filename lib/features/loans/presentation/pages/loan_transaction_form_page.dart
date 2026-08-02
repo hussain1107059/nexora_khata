@@ -236,17 +236,6 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                       }),
                     ),
                   ),
-                  AppSpacing.boxWMD,
-                  Expanded(
-                    child: _TypeButton(
-                      label: 'পরিশোধ',
-                      subtitle: 'টাকা ফেরত/জমা',
-                      icon: Icons.autorenew_rounded,
-                      color: AppColors.info,
-                      selected: _type == 'repay',
-                      onTap: () => setState(() => _type = 'repay'),
-                    ),
-                  ),
                 ],
               ),
               if (_type == 'repay') ...[

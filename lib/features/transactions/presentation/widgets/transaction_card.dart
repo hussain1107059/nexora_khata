@@ -133,40 +133,39 @@ class TransactionCard extends StatelessWidget {
                 ),
               ),
               AppSpacing.boxMD,
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      AppNumberUtils.formatCurrency(amount),
-                      style: AppTypography.subtitle1.copyWith(
-                        color: amountColor,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    AppNumberUtils.formatCurrency(amount),
+                    style: AppTypography.subtitle1.copyWith(
+                      color: amountColor,
+                      fontWeight: FontWeight.w700,
                     ),
-                    AppSpacing.boxXS,
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: _statusColor.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        _statusText,
-                        style: AppTypography.overline.copyWith(
-                          color: _statusColor,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  AppSpacing.boxXS,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: _statusColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      _statusText,
+                      style: AppTypography.overline.copyWith(
+                        color: _statusColor,
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),

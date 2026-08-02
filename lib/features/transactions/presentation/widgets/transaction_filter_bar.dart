@@ -11,6 +11,7 @@ class TransactionFilterBar extends ConsumerStatefulWidget {
   final StateProvider<String> searchProvider;
   final StateProvider<String?> statusProvider;
   final StateProvider<int> refreshProvider;
+  final List<Widget>? extraChips;
 
   const TransactionFilterBar({
     super.key,
@@ -19,6 +20,7 @@ class TransactionFilterBar extends ConsumerStatefulWidget {
     required this.searchProvider,
     required this.statusProvider,
     required this.refreshProvider,
+    this.extraChips,
   });
 
   @override
@@ -53,6 +55,17 @@ class _TransactionFilterBarState extends ConsumerState<TransactionFilterBar> {
               _buildFilterChip('বকেয়া', 'pending'),
               AppSpacing.boxSM,
               _buildFilterChip('বাতিল', 'cancelled'),
+              if (widget.extraChips != null && widget.extraChips!.isNotEmpty) ...[
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: AppSpacing.sm),
+                  child: SizedBox(
+                    width: 1,
+                    height: 24,
+                    child: VerticalDivider(color: AppColors.divider),
+                  ),
+                ),
+                ...widget.extraChips!,
+              ],
             ],
           ),
         ),
