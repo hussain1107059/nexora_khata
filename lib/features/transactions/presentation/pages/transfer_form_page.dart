@@ -122,11 +122,16 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
     required String? value,
     required List<AccountOption> accounts,
     required ValueChanged<String?> onChanged,
-    bool exclude = false,
+    String? excludeKey,
   }) {
-    final options = exclude
-        ? accounts.where((a) => a.key != value).toList()
-        : accounts;
+    var options = accounts;
+    if (excludeKey != null) {
+      options = accounts.where((a) => a.key != excludeKey).toList();
+    }
+    if (value != null && !options.any((a) => a.key == value)) {
+      final selected = accounts.where((a) => a.key == value).toList();
+      options = [...selected, ...options];
+    }
     return DropdownButtonFormField<String>(
       initialValue: value,
       isExpanded: true,
@@ -222,7 +227,7 @@ class _TransferFormPageState extends ConsumerState<TransferFormPage> {
                           label: 'হিসাবে',
                           value: _toKey,
                           accounts: accounts,
-                          exclude: true,
+                          excludeKey: _fromKey,
                           onChanged: (v) => setState(() => _toKey = v),
                         ),
                       ],
