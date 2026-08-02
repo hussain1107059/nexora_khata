@@ -568,5 +568,17 @@
   "logoutConfirmTitle": "লগআউট",
   "logoutConfirmMsg": "আপনি কি নিশ্চিতভাবে লগআউট করতে চান?",
   "logoutConfirmYes": "লগআউট",
-  "logoutConfirmNo": "বাতিল"
+  "logoutConfirmNo": "বাতিল",
+
+  "notifGoodMorningTitle": "সুপ্রভাত",
+  "notifGoodMorningBody": "নতুন দিন শুরু হোক ভালোভাবে। আজকের আয়-ব্যয় লিখতে ভুলবেন না।",
+  "notifGoodAfternoonTitle": "শুভ অপরাহ্ন",
+  "notifGoodAfternoonBody": "আপনার খাতা হালনাগাদ রাখুন। আজকের যেকোনো আয় বা খরচ নোট করে নিন।",
+  "notifGoodNightTitle": "শুভ রাত্রি",
+  "notifGoodNightBody": "ঘুমানোর আগে আজকের হিসাব দেখে নিন। ভালো ঘুম হোক!",
+  "notifDaySummaryTitle": "আজকের হিসাব",
+  "notifDaySummaryBody": "আয়: {income} | খরচ: {expense} | ব্যালেন্স: {balance}",
+  "notifLoanTitle": "ধারের রিমাইন্ডার",
+  "notifLoanBorrowBody": "আপনি {date} তারিখে {name} এর কাছ থেকে {amount} ধার নিয়েছিলেন। তা ফেরত দেওয়ার কথা ভাবছেন কি?",
+  "notifLoanLendBody": "আপনি {date} তারিখে {name} কে {amount} ধার দিয়েছিলেন। সে কি টাকা ফেরত দিয়েছে?"
 }

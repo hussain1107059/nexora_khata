@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/services/current_user_scope.dart';
 import 'package:nexora_khata/core/services/database_helper.dart';
 import 'package:nexora_khata/features/dashboard/domain/entities/dashboard_summary.dart';
 
@@ -5,17 +6,20 @@ class DashboardDataSource {
   final DatabaseHelper _dbHelper;
   DashboardDataSource(this._dbHelper);
 
+  int get _tenantId => CurrentUserScope.activeId;
+
   Future<double> getTodayIncome(String date) async {
     final r = await _dbHelper.db.rawQuery(
       '''
       SELECT COALESCE(SUM(amount),0) as t FROM (
-        SELECT amount FROM incomes WHERE income_date = ? AND status = 'completed'
+        SELECT amount FROM incomes WHERE income_date = ? AND status = 'completed' AND business_id = ?
         UNION ALL
         SELECT amount FROM loan_transactions
         WHERE date = ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+          AND business_id = ?
       )
       ''',
-      [date, date],
+      [date, _tenantId, date, _tenantId],
     );
     return (r.first['t'] as num?)?.toDouble() ?? 0;
   }
@@ -24,13 +28,14 @@ class DashboardDataSource {
     final r = await _dbHelper.db.rawQuery(
       '''
       SELECT COALESCE(SUM(amount),0) as t FROM (
-        SELECT amount FROM expenses WHERE expense_date = ? AND status = 'completed'
+        SELECT amount FROM expenses WHERE expense_date = ? AND status = 'completed' AND business_id = ?
         UNION ALL
         SELECT amount FROM loan_transactions
         WHERE date = ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+          AND business_id = ?
       )
       ''',
-      [date, date],
+      [date, _tenantId, date, _tenantId],
     );
     return (r.first['t'] as num?)?.toDouble() ?? 0;
   }
@@ -39,15 +44,18 @@ class DashboardDataSource {
     final r = await _dbHelper.db.rawQuery(
       '''
       SELECT
-        COALESCE((SELECT SUM(balance) FROM cash_accounts WHERE status = 'active'), 0)
+        COALESCE((SELECT SUM(balance) FROM cash_accounts WHERE status = 'active' AND business_id = ?), 0)
         + COALESCE((SELECT SUM(amount) FROM loan_transactions
             WHERE cash_account_id IS NOT NULL
-              AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))), 0)
+              AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+              AND business_id = ?), 0)
         - COALESCE((SELECT SUM(amount) FROM loan_transactions
             WHERE cash_account_id IS NOT NULL
-              AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))), 0)
+              AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+              AND business_id = ?), 0)
         AS t
       ''',
+      [_tenantId, _tenantId, _tenantId],
     );
     return (r.first['t'] as num?)?.toDouble() ?? 0;
   }
@@ -56,15 +64,18 @@ class DashboardDataSource {
     final r = await _dbHelper.db.rawQuery(
       '''
       SELECT
-        COALESCE((SELECT SUM(balance) FROM bank_accounts WHERE status = 'active'), 0)
+        COALESCE((SELECT SUM(balance) FROM bank_accounts WHERE status = 'active' AND business_id = ?), 0)
         + COALESCE((SELECT SUM(amount) FROM loan_transactions
             WHERE bank_account_id IS NOT NULL
-              AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))), 0)
+              AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+              AND business_id = ?), 0)
         - COALESCE((SELECT SUM(amount) FROM loan_transactions
             WHERE bank_account_id IS NOT NULL
-              AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))), 0)
+              AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+              AND business_id = ?), 0)
         AS t
       ''',
+      [_tenantId, _tenantId, _tenantId],
     );
     return (r.first['t'] as num?)?.toDouble() ?? 0;
   }
@@ -73,12 +84,13 @@ class DashboardDataSource {
     final r = await _dbHelper.db.rawQuery(
       '''
       SELECT COALESCE(SUM(amount),0) as t FROM (
-        SELECT amount FROM incomes WHERE status = 'completed'
+        SELECT amount FROM incomes WHERE status = 'completed' AND business_id = ?
         UNION ALL
         SELECT amount FROM loan_transactions
-        WHERE (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
       )
       ''',
+      [_tenantId, _tenantId],
     );
     return (r.first['t'] as num?)?.toDouble() ?? 0;
   }
@@ -87,12 +99,13 @@ class DashboardDataSource {
     final r = await _dbHelper.db.rawQuery(
       '''
       SELECT COALESCE(SUM(amount),0) as t FROM (
-        SELECT amount FROM expenses WHERE status = 'completed'
+        SELECT amount FROM expenses WHERE status = 'completed' AND business_id = ?
         UNION ALL
         SELECT amount FROM loan_transactions
-        WHERE (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
       )
       ''',
+      [_tenantId, _tenantId],
     );
     return (r.first['t'] as num?)?.toDouble() ?? 0;
   }
@@ -108,28 +121,28 @@ class DashboardDataSource {
         COALESCE(SUM(amount),0) as t
       FROM (
         SELECT income_date as txn_date, amount FROM incomes
-        WHERE status = 'completed' AND income_date >= ?
+        WHERE status = 'completed' AND income_date >= ? AND business_id = ?
         UNION ALL
         SELECT date as txn_date, amount FROM loan_transactions
         WHERE (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
-          AND date >= ?
+          AND date >= ? AND business_id = ?
       )
       GROUP BY y,m ORDER BY y DESC, m DESC
-    ''', [last6.last + '-01', last6.last + '-01']);
+    ''', [last6.last + '-01', _tenantId, last6.last + '-01', _tenantId]);
 
     final expenseRows = await _dbHelper.db.rawQuery('''
       SELECT strftime('%Y',txn_date) as y, strftime('%m',txn_date) as m,
         COALESCE(SUM(amount),0) as t
       FROM (
         SELECT expense_date as txn_date, amount FROM expenses
-        WHERE status = 'completed' AND expense_date >= ?
+        WHERE status = 'completed' AND expense_date >= ? AND business_id = ?
         UNION ALL
         SELECT date as txn_date, amount FROM loan_transactions
         WHERE (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
-          AND date >= ?
+          AND date >= ? AND business_id = ?
       )
       GROUP BY y,m ORDER BY y DESC, m DESC
-    ''', [last6.last + '-01', last6.last + '-01']);
+    ''', [last6.last + '-01', _tenantId, last6.last + '-01', _tenantId]);
 
     final incomeMap = <String, double>{};
     final expenseMap = <String, double>{};
@@ -163,7 +176,7 @@ class DashboardDataSource {
         FROM incomes i
         LEFT JOIN income_categories ic ON ic.id = i.category_id
         LEFT JOIN customers c ON c.id = i.customer_id
-        WHERE i.status = 'completed'
+        WHERE i.status = 'completed' AND i.business_id = ?
         UNION ALL
         SELECT 'expense' as type, e.id, e.amount, e.description,
           e.expense_date as txn_date, e.category_id, e.supplier_id as party_id,
@@ -172,7 +185,7 @@ class DashboardDataSource {
         FROM expenses e
         LEFT JOIN expense_categories ec ON ec.id = e.category_id
         LEFT JOIN suppliers s ON s.id = e.supplier_id
-        WHERE e.status = 'completed'
+        WHERE e.status = 'completed' AND e.business_id = ?
         UNION ALL
         SELECT 'loan' as type, lt.id, lt.amount, lt.note,
           lt.date as txn_date, NULL as category_id, lt.contact_id as party_id,
@@ -180,10 +193,11 @@ class DashboardDataSource {
           lt.contact_id as contact_id
         FROM loan_transactions lt
         LEFT JOIN loan_contacts lc ON lc.id = lt.contact_id
+        WHERE lt.business_id = ?
       ) r
       ORDER BY txn_date DESC, id DESC
       LIMIT 10
-    ''');
+    ''', [_tenantId, _tenantId, _tenantId]);
 
     return rows.map((r) => RecentTransaction(
       id: r['id'] as int,

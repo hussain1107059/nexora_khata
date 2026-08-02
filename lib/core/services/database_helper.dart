@@ -707,6 +707,127 @@ class DatabaseHelper {
     await batch.commit(noResult: true);
   }
 
+  /// Claims the legacy `business_id = 0` data (existing records and the
+  /// original seeded defaults) for [userId], and seeds per-user default
+  /// accounts/categories if that user has none yet. Ensures a matching
+  /// `businesses` row exists so the foreign keys stay valid.
+  Future<void> claimLegacyDataForUser(int userId) async {
+    final db = _db;
+    if (db == null) return;
+    final now = DateTime.now().toIso8601String();
+    await db.rawInsert(
+      'INSERT OR IGNORE INTO businesses '
+      '(id, user_id, name, currency, status, created_at, updated_at) '
+      "VALUES (?, ?, ?, 'BDT', 'active', ?, ?)",
+      [userId, userId, 'Business $userId', now, now],
+    );
+
+    const tables = [
+      'customers',
+      'suppliers',
+      'cash_accounts',
+      'bank_accounts',
+      'income_categories',
+      'expense_categories',
+      'incomes',
+      'expenses',
+      'transfers',
+      'loan_contacts',
+      'loan_transactions',
+      'daily_balance',
+      'notes',
+      'attachments',
+    ];
+    for (final table in tables) {
+      try {
+        await db.rawUpdate(
+          'UPDATE $table SET business_id = ? WHERE business_id = 0',
+          [userId],
+        );
+      } catch (e) {
+        log.w('[DB] claim legacy data for $table failed: $e');
+      }
+    }
+    await _seedDefaultsForUser(db, userId);
+  }
+
+  Future<void> _seedDefaultsForUser(Database db, int businessId) async {
+    final now = DateTime.now().toIso8601String();
+    final cashCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM cash_accounts WHERE business_id = ?',
+        [businessId]);
+    if (Sqflite.firstIntValue(cashCount) == 0) {
+      await db.insert('cash_accounts', {
+        'business_id': businessId,
+        'name': 'নগদ',
+        'balance': 0.0,
+        'currency': 'BDT',
+        'is_default': 1,
+        'status': 'active',
+        'created_at': now,
+        'updated_at': now,
+      });
+    }
+    final bankCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM bank_accounts WHERE business_id = ?',
+        [businessId]);
+    if (Sqflite.firstIntValue(bankCount) == 0) {
+      await db.insert('bank_accounts', {
+        'business_id': businessId,
+        'bank_name': 'ব্যাংক',
+        'account_name': 'ব্যাংক',
+        'balance': 0.0,
+        'currency': 'BDT',
+        'is_default': 1,
+        'status': 'active',
+        'created_at': now,
+        'updated_at': now,
+      });
+    }
+
+    final incomeCats = [
+      'বেতন', 'ব্যবসা', 'ফ্রিল্যান্সিং', 'বিনিয়োগ',
+      'উপহার', 'কমিশন', 'অন্যান্য আয়',
+    ];
+    final incomeCatCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM income_categories WHERE business_id = ?',
+        [businessId]);
+    if (Sqflite.firstIntValue(incomeCatCount) == 0) {
+      for (var i = 0; i < incomeCats.length; i++) {
+        await db.insert('income_categories', {
+          'business_id': businessId,
+          'name': incomeCats[i],
+          'icon': _incomeIcon(i),
+          'color': _incomeColor(i),
+          'sort_order': i + 1,
+          'created_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      }
+    }
+    final expenseCats = [
+      'খাদ্য', 'পরিবহন', 'বাসা ভাড়া', 'ইউটিলিটি',
+      'বিনোদন', 'স্বাস্থ্য', 'শিক্ষা', 'শপিং',
+      'ইন্টারনেট', 'ফোন বিল', 'অন্যান্য ব্যয়',
+    ];
+    final expenseCatCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM expense_categories WHERE business_id = ?',
+        [businessId]);
+    if (Sqflite.firstIntValue(expenseCatCount) == 0) {
+      for (var i = 0; i < expenseCats.length; i++) {
+        await db.insert('expense_categories', {
+          'business_id': businessId,
+          'name': expenseCats[i],
+          'icon': _expenseIcon(i),
+          'color': _expenseColor(i),
+          'sort_order': i + 1,
+          'created_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      }
+    }
+  }
+
   String _incomeIcon(int i) {
     const icons = ['work', 'store', 'laptop', 'trending_up', 'card_giftcard', 'paid', 'more_horiz'];
     return icons[i % icons.length];

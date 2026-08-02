@@ -1,4 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexora_khata/core/services/logger.dart';
+import 'package:nexora_khata/core/services/notification_service.dart';
 import 'package:nexora_khata/di/injection_container.dart';
 import 'package:nexora_khata/features/loans/domain/entities/loan_contact.dart';
 import 'package:nexora_khata/features/loans/domain/entities/loan_transaction.dart';
@@ -161,7 +163,29 @@ class LoanTransactionFormNotifier extends StateNotifier<AsyncValue<void>> {
       (l) => AsyncError(l.message, StackTrace.current),
       (_) => const AsyncData(null),
     );
-    return result.isRight();
+    final success = result.isRight();
+    if (success) {
+      final created = result.getOrElse(() => transaction);
+      await _scheduleLoanReminder(created);
+    }
+    return success;
+  }
+
+  Future<void> _scheduleLoanReminder(LoanTransaction txn) async {
+    if (txn.type != 'borrow' && txn.type != 'lend') return;
+    try {
+      final contactResult = await _repo.getContact(txn.contactId);
+      final name = contactResult.fold((l) => '', (r) => r?.name ?? '');
+      await getIt<NotificationService>().scheduleLoanReminder(
+        txnId: txn.id,
+        contactName: name,
+        amount: txn.amount,
+        date: txn.date,
+        type: txn.type,
+      );
+    } catch (e) {
+      log.e('Failed to schedule loan reminder: $e');
+    }
   }
 
   Future<bool> delete(int id) async {
@@ -171,7 +195,15 @@ class LoanTransactionFormNotifier extends StateNotifier<AsyncValue<void>> {
       (l) => AsyncError(l.message, StackTrace.current),
       (_) => const AsyncData(null),
     );
-    return result.isRight();
+    final success = result.isRight();
+    if (success) {
+      try {
+        await getIt<NotificationService>().cancelLoanReminder(id);
+      } catch (e) {
+        log.e('Failed to cancel loan reminder: $e');
+      }
+    }
+    return success;
   }
 }
 

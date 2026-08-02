@@ -90,6 +90,10 @@ class AuthDataSource {
     await _setSetting(_sessionActiveKey, DateTime.now().toIso8601String());
   }
 
+  Future<void> claimLegacyData(int userId) async {
+    await _dbHelper.claimLegacyDataForUser(userId);
+  }
+
   Future<void> _setSetting(String key, String value) async {
     final rows = await _dbHelper.query('settings',
         where: 'key = ?', whereArgs: [key], limit: 1);

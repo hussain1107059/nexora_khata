@@ -78,14 +78,11 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(AppSpacing.radiusXl),
-                      child: Image.asset(
-                        'assets/images/NexoraKhata.png',
-                        width: 96,
-                        height: 96,
-                        fit: BoxFit.cover,
-                      ),
+                    Image.asset(
+                      'assets/images/NexoraKhata.png',
+                      width: 80,
+                      height: 80,
+                      fit: BoxFit.contain,
                     ),
                     AppSpacing.boxHXL,
                     Text(

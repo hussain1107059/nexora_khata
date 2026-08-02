@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/services/current_user_scope.dart';
 import 'package:nexora_khata/core/services/database_helper.dart';
 import 'package:nexora_khata/features/categories/data/models/income_category_model.dart';
 
@@ -5,10 +6,12 @@ class IncomeCategoryDataSource {
   final DatabaseHelper _dbHelper;
   IncomeCategoryDataSource(this._dbHelper);
 
+  int get _tenantId => CurrentUserScope.activeId;
+
   Future<List<IncomeCategoryModel>> getAll({String? status}) async {
     final db = _dbHelper.db;
-    final conditions = <String>[];
-    final args = <Object?>[];
+    final conditions = <String>['business_id = ?'];
+    final args = <Object?>[_tenantId];
 
     if (status != null && status.isNotEmpty) {
       conditions.add('status = ?');
@@ -31,8 +34,8 @@ class IncomeCategoryDataSource {
   Future<IncomeCategoryModel?> getById(int id) async {
     final db = _dbHelper.db;
     final rows = await db.rawQuery(
-      'SELECT * FROM income_categories WHERE id = ?',
-      [id],
+      'SELECT * FROM income_categories WHERE id = ? AND business_id = ?',
+      [id, _tenantId],
     );
     if (rows.isEmpty) return null;
     return IncomeCategoryModel.fromMap(rows.first);
@@ -40,6 +43,7 @@ class IncomeCategoryDataSource {
 
   Future<IncomeCategoryModel> create(Map<String, dynamic> data) async {
     final db = _dbHelper.db;
+    data['business_id'] = _tenantId;
     final id = await db.insert('income_categories', data);
     return (await getById(id))!;
   }
@@ -51,8 +55,8 @@ class IncomeCategoryDataSource {
     await db.update(
       'income_categories',
       data,
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'id = ? AND business_id = ?',
+      whereArgs: [id, _tenantId],
     );
     return (await getById(id))!;
   }
@@ -61,8 +65,8 @@ class IncomeCategoryDataSource {
     final db = _dbHelper.db;
     await db.delete(
       'income_categories',
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'id = ? AND business_id = ?',
+      whereArgs: [id, _tenantId],
     );
   }
 }

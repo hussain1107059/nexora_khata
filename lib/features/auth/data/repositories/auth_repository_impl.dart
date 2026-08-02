@@ -51,6 +51,7 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       await _dataSource.touchLogin(user.id);
       await _dataSource.saveSession(user.id);
+      await _dataSource.claimLegacyData(user.id);
       return Right(user);
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
@@ -80,6 +81,7 @@ class AuthRepositoryImpl implements AuthRepository {
         phone: phone?.trim(),
       );
       await _dataSource.saveSession(user.id);
+      await _dataSource.claimLegacyData(user.id);
       return Right(user);
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));

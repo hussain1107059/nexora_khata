@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexora_khata/core/services/notification_service.dart';
 import 'package:nexora_khata/di/injection_container.dart';
+import 'package:nexora_khata/features/auth/presentation/providers/auth_provider.dart';
 import 'package:nexora_khata/features/settings/domain/repositories/settings_repository.dart';
 
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
@@ -58,5 +60,8 @@ class LocaleNotifier extends StateNotifier<Locale> {
     state = locale;
     final repo = _ref.read(settingsRepositoryProvider);
     await repo.setValue('locale', '${locale.languageCode}_${locale.countryCode ?? ''}');
+    if (authUserNotifier.value != null) {
+      getIt<NotificationService>().syncSchedules();
+    }
   }
 }

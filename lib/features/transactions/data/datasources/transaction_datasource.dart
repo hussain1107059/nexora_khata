@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/services/current_user_scope.dart';
 import 'package:nexora_khata/core/services/database_helper.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 
@@ -33,6 +34,8 @@ class TransactionDataSource<T> {
 
   TransactionDataSource(this._dbHelper, this._config);
 
+  int get _tenantId => CurrentUserScope.activeId;
+
   String get _select {
     final c = _config;
     return '''
@@ -54,8 +57,8 @@ class TransactionDataSource<T> {
   }) async {
     final c = _config;
     final db = _dbHelper.db;
-    final conditions = <String>[];
-    final args = <Object?>[];
+    final conditions = <String>['${c.alias}.business_id = ?'];
+    final args = <Object?>[_tenantId];
 
     if (search != null && search.isNotEmpty) {
       conditions.add('(${c.alias}.description LIKE ? OR ${c.alias}.reference LIKE ?)');
@@ -101,13 +104,16 @@ class TransactionDataSource<T> {
   Future<T?> getById(int id) async {
     final db = _dbHelper.db;
     final c = _config;
-    final rows = await db.rawQuery('$_select WHERE ${c.alias}.id = ?', [id]);
+    final rows = await db.rawQuery(
+        '$_select WHERE ${c.alias}.id = ? AND ${c.alias}.business_id = ?',
+        [id, _tenantId]);
     if (rows.isEmpty) return null;
     return c.fromMap(rows.first);
   }
 
   Future<T> create(Map<String, dynamic> data) async {
     final db = _dbHelper.db;
+    data['business_id'] = _tenantId;
     final id = await db.insert(_config.table, data);
     return (await getById(id))!;
   }
@@ -115,13 +121,15 @@ class TransactionDataSource<T> {
   Future<T> update(int id, Map<String, dynamic> data) async {
     final db = _dbHelper.db;
     data['updated_at'] = DateTime.now().toIso8601String();
-    await db.update(_config.table, data, where: 'id = ?', whereArgs: [id]);
+    await db.update(_config.table, data,
+        where: 'id = ? AND business_id = ?', whereArgs: [id, _tenantId]);
     return (await getById(id))!;
   }
 
   Future<void> delete(int id) async {
     final db = _dbHelper.db;
-    await db.delete(_config.table, where: 'id = ?', whereArgs: [id]);
+    await db.delete(_config.table,
+        where: 'id = ? AND business_id = ?', whereArgs: [id, _tenantId]);
   }
 
   Future<List<T>> getByMonth(int year, int month) async {
@@ -130,8 +138,13 @@ class TransactionDataSource<T> {
     final rows = await db.rawQuery('''
       $_select
       WHERE ${c.alias}.${c.dateColumn} >= ? AND ${c.alias}.${c.dateColumn} < ?
+        AND ${c.alias}.business_id = ?
       ORDER BY ${c.alias}.${c.dateColumn} DESC, ${c.alias}.id DESC
-    ''', [AppDateUtils.monthStart(year, month), AppDateUtils.monthEndExclusive(year, month)]);
+    ''', [
+      AppDateUtils.monthStart(year, month),
+      AppDateUtils.monthEndExclusive(year, month),
+      _tenantId,
+    ]);
     return rows.map((r) => c.fromMap(r)).toList();
   }
 
@@ -147,7 +160,12 @@ class TransactionDataSource<T> {
       WHERE status = 'completed'
         AND ${c.dateColumn} >= ?
         AND ${c.dateColumn} < ?
-    ''', [AppDateUtils.monthStart(year, month), AppDateUtils.monthEndExclusive(year, month)]);
+        AND business_id = ?
+    ''', [
+      AppDateUtils.monthStart(year, month),
+      AppDateUtils.monthEndExclusive(year, month),
+      _tenantId,
+    ]);
     if (rows.isEmpty) {
       return {'total': 0.0, 'count': 0, 'avgAmount': 0.0};
     }
@@ -169,9 +187,14 @@ class TransactionDataSource<T> {
         COALESCE(SUM(amount), 0) AS total
       FROM ${c.table}
       WHERE status = 'completed' AND ${c.dateColumn} >= ? AND ${c.dateColumn} < ?
+        AND business_id = ?
       GROUP BY month
       ORDER BY month
-    ''', [AppDateUtils.yearStart(year), AppDateUtils.yearEndExclusive(year)]);
+    ''', [
+      AppDateUtils.yearStart(year),
+      AppDateUtils.yearEndExclusive(year),
+      _tenantId,
+    ]);
   }
 
   Future<List<T>> search(String query) async {
@@ -180,9 +203,10 @@ class TransactionDataSource<T> {
     final p = '%$query%';
     final rows = await db.rawQuery('''
       $_select
-      WHERE ${c.alias}.description LIKE ? OR ${c.alias}.reference LIKE ?
+      WHERE (${c.alias}.description LIKE ? OR ${c.alias}.reference LIKE ?)
+        AND ${c.alias}.business_id = ?
       ORDER BY ${c.alias}.${c.dateColumn} DESC, ${c.alias}.id DESC
-    ''', [p, p]);
+    ''', [p, p, _tenantId]);
     return rows.map((r) => c.fromMap(r)).toList();
   }
 
@@ -191,9 +215,9 @@ class TransactionDataSource<T> {
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
       $_select
-      WHERE ${c.alias}.${c.dateColumn} = ?
+      WHERE ${c.alias}.${c.dateColumn} = ? AND ${c.alias}.business_id = ?
       ORDER BY ${c.alias}.id DESC
-    ''', [date]);
+    ''', [date, _tenantId]);
     return rows.map((r) => c.fromMap(r)).toList();
   }
 
@@ -206,8 +230,8 @@ class TransactionDataSource<T> {
         COALESCE(SUM(amount), 0) AS total,
         COALESCE(AVG(amount), 0) AS avgAmount
       FROM ${c.table}
-      WHERE status = 'completed' AND ${c.dateColumn} = ?
-    ''', [date]);
+      WHERE status = 'completed' AND ${c.dateColumn} = ? AND business_id = ?
+    ''', [date, _tenantId]);
     if (rows.isEmpty) {
       return {'total': 0.0, 'count': 0, 'avgAmount': 0.0};
     }

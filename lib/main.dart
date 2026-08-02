@@ -8,7 +8,9 @@ import 'core/config/theme/app_typography.dart';
 import 'core/router/app_router.dart';
 import 'core/services/app_strings.dart';
 import 'core/services/database_helper.dart';
+import 'core/services/notification_service.dart';
 import 'di/injection_container.dart';
+import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/settings/presentation/providers/settings_provider.dart';
 import 'generated/l10n/app_localizations.dart';
 
@@ -96,14 +98,29 @@ class _AppInitializer extends ConsumerStatefulWidget {
   ConsumerState<_AppInitializer> createState() => _AppInitializerState();
 }
 
-class _AppInitializerState extends ConsumerState<_AppInitializer> {
+class _AppInitializerState extends ConsumerState<_AppInitializer>
+    with WidgetsBindingObserver {
   bool _ready = false;
   String? _error;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _init();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _syncNotifications();
+    }
   }
 
   Future<void> _init() async {
@@ -122,6 +139,7 @@ class _AppInitializerState extends ConsumerState<_AppInitializer> {
           _error = 'DB open: $e';
         }
       }
+      _initNotifications();
     } catch (e) {
       _error = 'Init: $e';
     }
@@ -131,6 +149,28 @@ class _AppInitializerState extends ConsumerState<_AppInitializer> {
       } else {
         setState(() => _ready = true);
       }
+    }
+  }
+
+  Future<void> _initNotifications() async {
+    try {
+      final service = getIt<NotificationService>();
+      await service.init();
+      if (authUserNotifier.value != null) {
+        await service.syncSchedules();
+      }
+    } catch (e) {
+      debugPrint('Notification init FAILED: $e');
+    }
+  }
+
+  Future<void> _syncNotifications() async {
+    try {
+      if (authUserNotifier.value != null) {
+        await getIt<NotificationService>().syncSchedules();
+      }
+    } catch (e) {
+      debugPrint('Notification sync FAILED: $e');
     }
   }
 

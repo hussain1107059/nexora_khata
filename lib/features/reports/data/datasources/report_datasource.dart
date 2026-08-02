@@ -1,4 +1,5 @@
 import 'package:nexora_khata/core/services/app_strings.dart';
+import 'package:nexora_khata/core/services/current_user_scope.dart';
 import 'package:nexora_khata/core/services/database_helper.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
@@ -7,6 +8,8 @@ class ReportDataSource {
   final DatabaseHelper _dbHelper;
   ReportDataSource(this._dbHelper);
 
+  int get _tenantId => CurrentUserScope.activeId;
+
   Future<List<DailyReportItem>> getDailyReport(String date) async {
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
@@ -14,17 +17,17 @@ class ReportDataSource {
         COALESCE(SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END), 0) AS income,
         COALESCE(SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END), 0) AS expense
       FROM (
-        SELECT amount, 'income' AS type FROM incomes WHERE income_date = ? AND status = 'completed'
+        SELECT amount, 'income' AS type FROM incomes WHERE income_date = ? AND status = 'completed' AND business_id = ?
         UNION ALL
-        SELECT amount, 'expense' AS type FROM expenses WHERE expense_date = ? AND status = 'completed'
+        SELECT amount, 'expense' AS type FROM expenses WHERE expense_date = ? AND status = 'completed' AND business_id = ?
         UNION ALL
         SELECT amount, 'income' AS type FROM loan_transactions
-        WHERE date = ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date = ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         UNION ALL
         SELECT amount, 'expense' AS type FROM loan_transactions
-        WHERE date = ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date = ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
       ) t
-    ''', [date, date, date, date]);
+    ''', [date, _tenantId, date, _tenantId, date, _tenantId, date, _tenantId]);
     final income = (rows.first['income'] as num).toDouble();
     final expense = (rows.first['expense'] as num).toDouble();
     final parsedDate = DateTime.parse(date);
@@ -48,27 +51,27 @@ class ReportDataSource {
       FROM (
         SELECT income_date AS date, SUM(amount) AS income, 0 AS expense
         FROM incomes
-        WHERE income_date >= ? AND income_date <= ? AND status = 'completed'
+        WHERE income_date >= ? AND income_date <= ? AND status = 'completed' AND business_id = ?
         GROUP BY income_date
         UNION ALL
         SELECT expense_date AS date, 0 AS income, SUM(amount) AS expense
         FROM expenses
-        WHERE expense_date >= ? AND expense_date <= ? AND status = 'completed'
+        WHERE expense_date >= ? AND expense_date <= ? AND status = 'completed' AND business_id = ?
         GROUP BY expense_date
         UNION ALL
         SELECT date AS date, SUM(amount) AS income, 0 AS expense
         FROM loan_transactions
-        WHERE date >= ? AND date <= ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date >= ? AND date <= ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         GROUP BY date
         UNION ALL
         SELECT date AS date, 0 AS income, SUM(amount) AS expense
         FROM loan_transactions
-        WHERE date >= ? AND date <= ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date >= ? AND date <= ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
         GROUP BY date
       )
       GROUP BY date
       ORDER BY date
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId]);
 
     final dateMap = <String, DailyReportItem>{};
     for (var i = 0; i < 7; i++) {
@@ -108,17 +111,17 @@ class ReportDataSource {
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS total_expense,
         COUNT(*) AS total_transactions
       FROM (
-        SELECT amount, 'income' AS type FROM incomes WHERE income_date >= ? AND income_date <= ? AND status = 'completed'
+        SELECT amount, 'income' AS type FROM incomes WHERE income_date >= ? AND income_date <= ? AND status = 'completed' AND business_id = ?
         UNION ALL
-        SELECT amount, 'expense' AS type FROM expenses WHERE expense_date >= ? AND expense_date <= ? AND status = 'completed'
+        SELECT amount, 'expense' AS type FROM expenses WHERE expense_date >= ? AND expense_date <= ? AND status = 'completed' AND business_id = ?
         UNION ALL
         SELECT amount, 'income' AS type FROM loan_transactions
-        WHERE date >= ? AND date <= ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date >= ? AND date <= ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         UNION ALL
         SELECT amount, 'expense' AS type FROM loan_transactions
-        WHERE date >= ? AND date <= ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date >= ? AND date <= ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
       )
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId]);
 
     final r = rows.first;
     final totalIncome = (r['total_income'] as num).toDouble();
@@ -143,27 +146,27 @@ class ReportDataSource {
       FROM (
         SELECT income_date AS date, SUM(amount) AS income, 0 AS expense
         FROM incomes
-        WHERE status = 'completed' AND income_date >= ? AND income_date < ?
+        WHERE status = 'completed' AND income_date >= ? AND income_date < ? AND business_id = ?
         GROUP BY income_date
         UNION ALL
         SELECT expense_date AS date, 0 AS income, SUM(amount) AS expense
         FROM expenses
-        WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
+        WHERE status = 'completed' AND expense_date >= ? AND expense_date < ? AND business_id = ?
         GROUP BY expense_date
         UNION ALL
         SELECT date AS date, SUM(amount) AS income, 0 AS expense
         FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         GROUP BY date
         UNION ALL
         SELECT date AS date, 0 AS income, SUM(amount) AS expense
         FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
         GROUP BY date
       )
       GROUP BY date
       ORDER BY date
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId]);
 
     final dateMap = <String, DailyReportItem>{};
     for (var day = 1; day <= daysInMonth; day++) {
@@ -198,17 +201,17 @@ class ReportDataSource {
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS total_expense,
         COUNT(*) AS total_transactions
       FROM (
-        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
+        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ? AND business_id = ?
         UNION ALL
-        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
+        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ? AND business_id = ?
         UNION ALL
         SELECT amount, 'income' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         UNION ALL
         SELECT amount, 'expense' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
       )
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId]);
 
     final r = rows.first;
     final totalIncome = (r['total_income'] as num).toDouble();
@@ -233,19 +236,19 @@ class ReportDataSource {
         SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END) AS income,
         SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS expense
       FROM (
-        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
+        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ? AND business_id = ?
         UNION ALL
-        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
+        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ? AND business_id = ?
         UNION ALL
         SELECT date AS date, amount, 'income' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         UNION ALL
         SELECT date AS date, amount, 'expense' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
       ) t
       GROUP BY month
       ORDER BY month
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId]);
 
     final monthMap = <int, MonthlyReportItem>{};
     for (var m = 1; m <= 12; m++) {
@@ -279,17 +282,17 @@ class ReportDataSource {
         COALESCE(SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END), 0) AS total_expense,
         COUNT(*) AS total_transactions
       FROM (
-        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
+        SELECT amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ? AND business_id = ?
         UNION ALL
-        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
+        SELECT amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ? AND business_id = ?
         UNION ALL
         SELECT amount, 'income' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         UNION ALL
         SELECT amount, 'expense' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
       )
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId]);
 
     final r = rows.first;
     final totalIncome = (r['total_income'] as num).toDouble();
@@ -305,8 +308,8 @@ class ReportDataSource {
 
   Future<List<CategoryReportItem>> getCategoryWiseIncome({int? year, int? month}) async {
     final db = _dbHelper.db;
-    final conditions = <String>["i.status = 'completed'"];
-    final args = <Object?>[];
+    final conditions = <String>["i.status = 'completed'", 'i.business_id = ?'];
+    final args = <Object?>[_tenantId];
 
     if (year != null) {
       if (month != null) {
@@ -333,7 +336,7 @@ class ReportDataSource {
       ORDER BY amount DESC
     ''', args);
 
-    final loanArgs = <Object?>[];
+    final loanArgs = <Object?>[_tenantId];
     if (year != null) {
       if (month != null) {
         loanArgs.add(AppDateUtils.monthStart(year, month));
@@ -343,9 +346,9 @@ class ReportDataSource {
         loanArgs.add(AppDateUtils.yearEndExclusive(year));
       }
     }
-    final loanWhere = loanArgs.isEmpty
-        ? ''
-        : 'AND date >= ? AND date < ?';
+    final loanWhere = year == null
+        ? 'AND business_id = ?'
+        : 'AND date >= ? AND date < ? AND business_id = ?';
     final loanRows = await db.rawQuery('''
       SELECT SUM(amount) AS amount, COUNT(*) AS count
       FROM loan_transactions
@@ -386,8 +389,8 @@ class ReportDataSource {
 
   Future<List<CategoryReportItem>> getCategoryWiseExpense({int? year, int? month}) async {
     final db = _dbHelper.db;
-    final conditions = <String>["e.status = 'completed'"];
-    final args = <Object?>[];
+    final conditions = <String>["e.status = 'completed'", 'e.business_id = ?'];
+    final args = <Object?>[_tenantId];
 
     if (year != null) {
       if (month != null) {
@@ -414,7 +417,7 @@ class ReportDataSource {
       ORDER BY amount DESC
     ''', args);
 
-    final loanArgs = <Object?>[];
+    final loanArgs = <Object?>[_tenantId];
     if (year != null) {
       if (month != null) {
         loanArgs.add(AppDateUtils.monthStart(year, month));
@@ -424,9 +427,9 @@ class ReportDataSource {
         loanArgs.add(AppDateUtils.yearEndExclusive(year));
       }
     }
-    final loanWhere = loanArgs.isEmpty
-        ? ''
-        : 'AND date >= ? AND date < ?';
+    final loanWhere = year == null
+        ? 'AND business_id = ?'
+        : 'AND date >= ? AND date < ? AND business_id = ?';
     final loanRows = await db.rawQuery('''
       SELECT SUM(amount) AS amount, COUNT(*) AS count
       FROM loan_transactions
@@ -476,19 +479,19 @@ class ReportDataSource {
         SUM(CASE WHEN t.type = 'income' THEN t.amount ELSE 0 END) AS income,
         SUM(CASE WHEN t.type = 'expense' THEN t.amount ELSE 0 END) AS expense
       FROM (
-        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
+        SELECT income_date AS date, amount, 'income' AS type FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ? AND business_id = ?
         UNION ALL
-        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
+        SELECT expense_date AS date, amount, 'expense' AS type FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ? AND business_id = ?
         UNION ALL
         SELECT date AS date, amount, 'income' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
+        WHERE date >= ? AND date < ? AND (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend')) AND business_id = ?
         UNION ALL
         SELECT date AS date, amount, 'expense' AS type FROM loan_transactions
-        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
+        WHERE date >= ? AND date < ? AND (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow')) AND business_id = ?
       ) t
       GROUP BY month
       ORDER BY month
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId, startStr, endStr, _tenantId]);
 
     const monthNames = [
       'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
@@ -519,18 +522,19 @@ class ReportDataSource {
     final endStr = AppDateUtils.monthEndExclusive(year, month);
 
     final db = _dbHelper.db;
+    final biz = _tenantId;
     final rows = await db.rawQuery('''
       SELECT date, SUM(cash_delta) AS cash_delta, SUM(bank_delta) AS bank_delta
       FROM (
         SELECT income_date AS date,
           CASE WHEN cash_account_id IS NOT NULL THEN amount ELSE 0 END AS cash_delta,
           CASE WHEN bank_account_id IS NOT NULL THEN amount ELSE 0 END AS bank_delta
-        FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ?
+        FROM incomes WHERE status = 'completed' AND income_date >= ? AND income_date < ? AND business_id = ?
         UNION ALL
         SELECT expense_date AS date,
           CASE WHEN cash_account_id IS NOT NULL THEN -amount ELSE 0 END AS cash_delta,
           CASE WHEN bank_account_id IS NOT NULL THEN -amount ELSE 0 END AS bank_delta
-        FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ?
+        FROM expenses WHERE status = 'completed' AND expense_date >= ? AND expense_date < ? AND business_id = ?
         UNION ALL
         SELECT transfer_date AS date,
           CASE
@@ -543,25 +547,25 @@ class ReportDataSource {
             WHEN to_type = 'bank' THEN amount
             ELSE 0
           END AS bank_delta
-        FROM transfers WHERE status = 'completed' AND transfer_date >= ? AND transfer_date < ?
+        FROM transfers WHERE status = 'completed' AND transfer_date >= ? AND transfer_date < ? AND business_id = ?
         UNION ALL
         SELECT date AS date,
           CASE WHEN cash_account_id IS NOT NULL THEN amount ELSE 0 END AS cash_delta,
           CASE WHEN bank_account_id IS NOT NULL THEN amount ELSE 0 END AS bank_delta
         FROM loan_transactions
         WHERE (type = 'borrow' OR (type = 'repay' AND repay_type = 'lend'))
-          AND date >= ? AND date < ?
+          AND date >= ? AND date < ? AND business_id = ?
         UNION ALL
         SELECT date AS date,
           CASE WHEN cash_account_id IS NOT NULL THEN -amount ELSE 0 END AS cash_delta,
           CASE WHEN bank_account_id IS NOT NULL THEN -amount ELSE 0 END AS bank_delta
         FROM loan_transactions
         WHERE (type = 'lend' OR (type = 'repay' AND repay_type = 'borrow'))
-          AND date >= ? AND date < ?
+          AND date >= ? AND date < ? AND business_id = ?
       )
       GROUP BY date
       ORDER BY date
-    ''', [startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr, startStr, endStr]);
+    ''', [startStr, endStr, biz, startStr, endStr, biz, startStr, endStr, biz, startStr, endStr, biz, startStr, endStr, biz]);
 
     final daysInMonth = DateTime(year, month + 1, 0).day;
     final dateMap = <String, CashFlowItem>{};
@@ -594,14 +598,14 @@ class ReportDataSource {
     final db = _dbHelper.db;
     final rows = await db.rawQuery('''
       SELECT DISTINCT year FROM (
-        SELECT DISTINCT CAST(substr(income_date, 1, 4) AS INTEGER) AS year FROM incomes WHERE status = 'completed'
+        SELECT DISTINCT CAST(substr(income_date, 1, 4) AS INTEGER) AS year FROM incomes WHERE status = 'completed' AND business_id = ?
         UNION
-        SELECT DISTINCT CAST(substr(expense_date, 1, 4) AS INTEGER) AS year FROM expenses WHERE status = 'completed'
+        SELECT DISTINCT CAST(substr(expense_date, 1, 4) AS INTEGER) AS year FROM expenses WHERE status = 'completed' AND business_id = ?
         UNION
-        SELECT DISTINCT CAST(substr(date, 1, 4) AS INTEGER) AS year FROM loan_transactions
+        SELECT DISTINCT CAST(substr(date, 1, 4) AS INTEGER) AS year FROM loan_transactions WHERE business_id = ?
       )
       ORDER BY year DESC
-    ''');
+    ''', [_tenantId, _tenantId, _tenantId]);
     return rows.map((r) => r['year'] as int).toList();
   }
 }

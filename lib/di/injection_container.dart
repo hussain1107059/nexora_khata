@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import '../core/network/connectivity_service.dart';
 import '../core/services/database_helper.dart';
 import '../core/services/logger.dart';
+import '../core/services/notification_service.dart';
 import '../features/auth/data/datasources/auth_datasource.dart';
 import '../features/auth/data/repositories/auth_repository_impl.dart';
 import '../features/auth/domain/repositories/auth_repository.dart';
@@ -49,6 +50,9 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<DatabaseHelper>(() => dbHelper);
   getIt.registerLazySingleton<ConnectivityService>(
     () => ConnectivityService(),
+  );
+  getIt.registerLazySingleton<NotificationService>(
+    () => NotificationService(dbHelper),
   );
 
   final authDataSource = AuthDataSource(dbHelper);

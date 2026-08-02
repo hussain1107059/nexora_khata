@@ -3354,6 +3354,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancel'**
   String get logoutConfirmNo;
+
+  /// No description provided for @notifGoodMorningTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Morning'**
+  String get notifGoodMorningTitle;
+
+  /// No description provided for @notifGoodMorningBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your day fresh. Don\'t forget to record today\'s income and expenses.'**
+  String get notifGoodMorningBody;
+
+  /// No description provided for @notifGoodAfternoonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Afternoon'**
+  String get notifGoodAfternoonTitle;
+
+  /// No description provided for @notifGoodAfternoonBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep your khata up to date. Note any income or expense you made today.'**
+  String get notifGoodAfternoonBody;
+
+  /// No description provided for @notifGoodNightTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Good Night'**
+  String get notifGoodNightTitle;
+
+  /// No description provided for @notifGoodNightBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Review today\'s records before you sleep. Rest well!'**
+  String get notifGoodNightBody;
+
+  /// No description provided for @notifDaySummaryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Summary'**
+  String get notifDaySummaryTitle;
+
+  /// No description provided for @notifDaySummaryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Income: {income} | Expense: {expense} | Balance: {balance}'**
+  String notifDaySummaryBody(Object balance, Object expense, Object income);
+
+  /// No description provided for @notifLoanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Loan Reminder'**
+  String get notifLoanTitle;
+
+  /// No description provided for @notifLoanBorrowBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You took a loan of {amount} from {name} on {date}. Have you thought about paying it back?'**
+  String notifLoanBorrowBody(Object amount, Object date, Object name);
+
+  /// No description provided for @notifLoanLendBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You lent {amount} to {name} on {date}. Has the money been returned?'**
+  String notifLoanLendBody(Object amount, Object date, Object name);
 }
 
 class _AppLocalizationsDelegate

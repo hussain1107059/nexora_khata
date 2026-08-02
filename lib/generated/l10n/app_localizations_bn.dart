@@ -1761,4 +1761,46 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get logoutConfirmNo => 'বাতিল';
+
+  @override
+  String get notifGoodMorningTitle => 'সুপ্রভাত';
+
+  @override
+  String get notifGoodMorningBody =>
+      'নতুন দিন শুরু হোক ভালোভাবে। আজকের আয়-ব্যয় লিখতে ভুলবেন না।';
+
+  @override
+  String get notifGoodAfternoonTitle => 'শুভ অপরাহ্ন';
+
+  @override
+  String get notifGoodAfternoonBody =>
+      'আপনার খাতা হালনাগাদ রাখুন। আজকের যেকোনো আয় বা খরচ নোট করে নিন।';
+
+  @override
+  String get notifGoodNightTitle => 'শুভ রাত্রি';
+
+  @override
+  String get notifGoodNightBody =>
+      'ঘুমানোর আগে আজকের হিসাব দেখে নিন। ভালো ঘুম হোক!';
+
+  @override
+  String get notifDaySummaryTitle => 'আজকের হিসাব';
+
+  @override
+  String notifDaySummaryBody(Object balance, Object expense, Object income) {
+    return 'আয়: $income | খরচ: $expense | ব্যালেন্স: $balance';
+  }
+
+  @override
+  String get notifLoanTitle => 'ধারের রিমাইন্ডার';
+
+  @override
+  String notifLoanBorrowBody(Object amount, Object date, Object name) {
+    return 'আপনি $date তারিখে $name এর কাছ থেকে $amount ধার নিয়েছিলেন। তা ফেরত দেওয়ার কথা ভাবছেন কি?';
+  }
+
+  @override
+  String notifLoanLendBody(Object amount, Object date, Object name) {
+    return 'আপনি $date তারিখে $name কে $amount ধার দিয়েছিলেন। সে কি টাকা ফেরত দিয়েছে?';
+  }
 }

@@ -1,3 +1,4 @@
+import 'package:nexora_khata/core/services/current_user_scope.dart';
 import 'package:nexora_khata/core/services/database_helper.dart';
 import 'package:nexora_khata/features/categories/data/models/expense_category_model.dart';
 
@@ -5,10 +6,12 @@ class ExpenseCategoryDataSource {
   final DatabaseHelper _dbHelper;
   ExpenseCategoryDataSource(this._dbHelper);
 
+  int get _tenantId => CurrentUserScope.activeId;
+
   Future<List<ExpenseCategoryModel>> getAll({String? status}) async {
     final db = _dbHelper.db;
-    final conditions = <String>[];
-    final args = <Object?>[];
+    final conditions = <String>['business_id = ?'];
+    final args = <Object?>[_tenantId];
 
     if (status != null && status.isNotEmpty) {
       conditions.add('status = ?');
@@ -31,8 +34,8 @@ class ExpenseCategoryDataSource {
   Future<ExpenseCategoryModel?> getById(int id) async {
     final db = _dbHelper.db;
     final rows = await db.rawQuery(
-      'SELECT * FROM expense_categories WHERE id = ?',
-      [id],
+      'SELECT * FROM expense_categories WHERE id = ? AND business_id = ?',
+      [id, _tenantId],
     );
     if (rows.isEmpty) return null;
     return ExpenseCategoryModel.fromMap(rows.first);
@@ -40,6 +43,7 @@ class ExpenseCategoryDataSource {
 
   Future<ExpenseCategoryModel> create(Map<String, dynamic> data) async {
     final db = _dbHelper.db;
+    data['business_id'] = _tenantId;
     final id = await db.insert('expense_categories', data);
     return (await getById(id))!;
   }
@@ -51,8 +55,8 @@ class ExpenseCategoryDataSource {
     await db.update(
       'expense_categories',
       data,
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'id = ? AND business_id = ?',
+      whereArgs: [id, _tenantId],
     );
     return (await getById(id))!;
   }
@@ -61,8 +65,8 @@ class ExpenseCategoryDataSource {
     final db = _dbHelper.db;
     await db.delete(
       'expense_categories',
-      where: 'id = ?',
-      whereArgs: [id],
+      where: 'id = ? AND business_id = ?',
+      whereArgs: [id, _tenantId],
     );
   }
 }

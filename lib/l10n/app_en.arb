@@ -573,5 +573,17 @@
   "logoutConfirmTitle": "Logout",
   "logoutConfirmMsg": "Are you sure you want to log out?",
   "logoutConfirmYes": "Logout",
-  "logoutConfirmNo": "Cancel"
+  "logoutConfirmNo": "Cancel",
+
+  "notifGoodMorningTitle": "Good Morning",
+  "notifGoodMorningBody": "Start your day fresh. Don't forget to record today's income and expenses.",
+  "notifGoodAfternoonTitle": "Good Afternoon",
+  "notifGoodAfternoonBody": "Keep your khata up to date. Note any income or expense you made today.",
+  "notifGoodNightTitle": "Good Night",
+  "notifGoodNightBody": "Review today's records before you sleep. Rest well!",
+  "notifDaySummaryTitle": "Today's Summary",
+  "notifDaySummaryBody": "Income: {income} | Expense: {expense} | Balance: {balance}",
+  "notifLoanTitle": "Loan Reminder",
+  "notifLoanBorrowBody": "You took a loan of {amount} from {name} on {date}. Have you thought about paying it back?",
+  "notifLoanLendBody": "You lent {amount} to {name} on {date}. Has the money been returned?"
 }

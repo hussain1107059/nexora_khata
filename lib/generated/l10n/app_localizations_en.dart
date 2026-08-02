@@ -1761,4 +1761,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get logoutConfirmNo => 'Cancel';
+
+  @override
+  String get notifGoodMorningTitle => 'Good Morning';
+
+  @override
+  String get notifGoodMorningBody =>
+      'Start your day fresh. Don\'t forget to record today\'s income and expenses.';
+
+  @override
+  String get notifGoodAfternoonTitle => 'Good Afternoon';
+
+  @override
+  String get notifGoodAfternoonBody =>
+      'Keep your khata up to date. Note any income or expense you made today.';
+
+  @override
+  String get notifGoodNightTitle => 'Good Night';
+
+  @override
+  String get notifGoodNightBody =>
+      'Review today\'s records before you sleep. Rest well!';
+
+  @override
+  String get notifDaySummaryTitle => 'Today\'s Summary';
+
+  @override
+  String notifDaySummaryBody(Object balance, Object expense, Object income) {
+    return 'Income: $income | Expense: $expense | Balance: $balance';
+  }
+
+  @override
+  String get notifLoanTitle => 'Loan Reminder';
+
+  @override
+  String notifLoanBorrowBody(Object amount, Object date, Object name) {
+    return 'You took a loan of $amount from $name on $date. Have you thought about paying it back?';
+  }
+
+  @override
+  String notifLoanLendBody(Object amount, Object date, Object name) {
+    return 'You lent $amount to $name on $date. Has the money been returned?';
+  }
 }
