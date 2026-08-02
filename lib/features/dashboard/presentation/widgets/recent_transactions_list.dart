@@ -69,10 +69,31 @@ class _TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isIncome = tx.type == 'income';
-    final color = isIncome ? AppColors.success : AppColors.error;
-    final icon = isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
-    final label = isIncome ? AppStrings.s.dashboardIncome : AppStrings.s.dashboardExpense;
+    final isLoan = tx.type == 'loan';
+    final isRepay = isLoan && tx.loanType == 'repay';
+    final isBorrow = isLoan && tx.loanType == 'borrow';
+
+    final Color color;
+    final IconData icon;
+    final String label;
+    if (isLoan) {
+      color = isRepay
+          ? AppColors.info
+          : (isBorrow ? AppColors.error : AppColors.success);
+      icon = isRepay
+          ? Icons.autorenew_rounded
+          : (isBorrow
+              ? Icons.arrow_upward_rounded
+              : Icons.arrow_downward_rounded);
+      label = isRepay
+          ? AppStrings.s.txnRepay
+          : (isBorrow ? AppStrings.s.loanBorrowLabel : AppStrings.s.loanLendLabel);
+    } else {
+      final isIncome = tx.type == 'income';
+      color = isIncome ? AppColors.success : AppColors.error;
+      icon = isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded;
+      label = isIncome ? AppStrings.s.dashboardIncome : AppStrings.s.dashboardExpense;
+    }
 
     return Container(
       margin: AppSpacing.paddingHSm.copyWith(bottom: AppSpacing.sm),
@@ -92,7 +113,12 @@ class _TransactionTile extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           onTap: () {
-            if (tx.type == 'income') {
+            if (isLoan) {
+              final contactId = tx.contactId;
+              if (contactId != null) {
+                context.push('${RouteNames.loanDetail}/$contactId');
+              }
+            } else if (tx.type == 'income') {
               context.push('${RouteNames.incomeDetail}/${tx.id}');
             } else {
               context.push('${RouteNames.expenseDetail}/${tx.id}');
@@ -122,7 +148,7 @@ class _TransactionTile extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        tx.description ?? tx.categoryName ?? label,
+                        tx.description ?? tx.categoryName ?? tx.contactName ?? label,
                         style: AppTypography.bodyText2.copyWith(
                           color: AppColors.textPrimary,
                           fontWeight: FontWeight.w500,

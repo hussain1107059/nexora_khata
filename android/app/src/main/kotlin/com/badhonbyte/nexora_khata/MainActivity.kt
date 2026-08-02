@@ -1,4 +1,4 @@
-package com.example.nexora_khata
+package com.badhonbyte.nexora_khata
 
 import io.flutter.embedding.android.FlutterActivity
 

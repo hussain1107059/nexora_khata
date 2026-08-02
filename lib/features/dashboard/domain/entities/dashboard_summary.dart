@@ -77,6 +77,9 @@ class RecentTransaction extends Equatable {
   final String? categoryName;
   final String? customerName;
   final String? supplierName;
+  final String? loanType;
+  final int? contactId;
+  final String? contactName;
 
   const RecentTransaction({
     required this.id,
@@ -90,12 +93,15 @@ class RecentTransaction extends Equatable {
     this.categoryName,
     this.customerName,
     this.supplierName,
+    this.loanType,
+    this.contactId,
+    this.contactName,
   });
 
   @override
   List<Object?> get props => [
     id, type, amount, description, date, categoryId,
     customerId, supplierId, categoryName, customerName,
-    supplierName,
+    supplierName, loanType, contactId, contactName,
   ];
 }
