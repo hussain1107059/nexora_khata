@@ -4,7 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
+import 'package:nexora_khata/di/injection_container.dart';
+import 'package:nexora_khata/features/categories/domain/entities/expense_category.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/expense_category_provider.dart';
+import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard_provider.dart';
+import 'package:nexora_khata/features/transactions/data/datasources/transfer_datasource.dart';
 import 'package:nexora_khata/features/transactions/domain/entities/expense.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/expense_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_form_fields.dart';
@@ -38,14 +42,39 @@ class ExpenseFormPage extends ConsumerWidget {
             ?.map((c) => CategoryOption(c.id, c.name))
             .toList() ??
             const [],
+        onAddCategory: (name) async {
+          final now = DateTime.now();
+          final cat = ExpenseCategory(
+            id: 0,
+            businessId: 0,
+            name: name,
+            sortOrder: 0,
+            status: 'active',
+            createdAt: now,
+            updatedAt: now,
+          );
+          final repo = ref.read(expenseCategoryRepositoryProvider);
+          final result = await repo.create(cat);
+          final id = result.fold((l) => null, (r) => r.id);
+          if (id != null) ref.invalidate(expenseCategoryListProvider);
+          return id;
+        },
         onSubmit: (data) async {
           final now = DateTime.now();
+          final accountDs = getIt<TransferDataSource>();
+          int? cashId;
+          int? bankId;
+          if (data.paymentMethod == 'cash') {
+            cashId = await accountDs.getDefaultCashAccountId();
+          } else {
+            bankId = await accountDs.getDefaultBankAccountId();
+          }
           final item = Expense(
             id: expense?.id ?? 0,
-            businessId: 1,
+            businessId: 0,
             supplierId: null,
-            cashAccountId: null,
-            bankAccountId: null,
+            cashAccountId: expense?.cashAccountId ?? cashId,
+            bankAccountId: expense?.bankAccountId ?? bankId,
             categoryId: data.categoryId!,
             amount: data.amount,
             description: data.description,
@@ -73,6 +102,8 @@ class ExpenseFormPage extends ConsumerWidget {
             AppSnackBar.success(context, editing ? 'ব্যয় আপডেট হয়েছে' : 'নতুন ব্যয় যোগ হয়েছে');
             ref.invalidate(expenseFilteredListProvider);
             ref.invalidate(expenseRefreshProvider);
+            ref.invalidate(dashboardProvider);
+            ref.invalidate(dashboardRefreshProvider);
             context.pop(true);
           }
         },

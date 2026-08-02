@@ -43,9 +43,9 @@ class AppShell extends ConsumerWidget {
                 label: 'লেনদেন',
               ),
               NavigationDestination(
-                icon: Icon(Icons.people_outline),
-                selectedIcon: Icon(Icons.people_rounded),
-                label: 'গ্রাহক',
+                icon: Icon(Icons.currency_exchange_outlined),
+                selectedIcon: Icon(Icons.currency_exchange_rounded),
+                label: 'ঋণ',
               ),
               NavigationDestination(
                 icon: Icon(Icons.bar_chart_outlined),
@@ -73,7 +73,7 @@ class AppShell extends ConsumerWidget {
         context.go('/transactions');
         break;
       case 2:
-        context.go('/customers');
+        context.go('/loans');
         break;
       case 3:
         context.go('/reports');

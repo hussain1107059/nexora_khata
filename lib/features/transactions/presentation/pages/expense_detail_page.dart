@@ -7,6 +7,7 @@ import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
+import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/expense_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_detail_view.dart';
 
@@ -36,6 +37,8 @@ class ExpenseDetailPage extends ConsumerWidget {
               if (result == true) {
                 ref.invalidate(expenseDetailProvider(id));
                 ref.invalidate(expenseFilteredListProvider);
+                ref.invalidate(dashboardProvider);
+                ref.invalidate(dashboardRefreshProvider);
               }
             },
           ),
@@ -88,6 +91,8 @@ class ExpenseDetailPage extends ConsumerWidget {
             if (!context.mounted) return;
             AppSnackBar.success(context, 'ব্যয় মুছে ফেলা হয়েছে');
             ref.invalidate(expenseFilteredListProvider);
+            ref.invalidate(dashboardProvider);
+            ref.invalidate(dashboardRefreshProvider);
             context.pop();
           }, child: Text('মুছুন', style: AppTypography.button.copyWith(color: AppColors.error))),
         ],

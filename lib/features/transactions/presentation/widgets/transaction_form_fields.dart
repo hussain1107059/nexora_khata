@@ -50,6 +50,7 @@ class TransactionFormFields extends ConsumerStatefulWidget {
   final String completedStatusLabel;
   final bool categoriesLoading;
   final List<CategoryOption> categories;
+  final Future<int?> Function(String name)? onAddCategory;
   final Future<void> Function(TransactionFormData data) onSubmit;
 
   const TransactionFormFields({
@@ -65,6 +66,7 @@ class TransactionFormFields extends ConsumerStatefulWidget {
     required this.completedStatusLabel,
     required this.categoriesLoading,
     required this.categories,
+    this.onAddCategory,
     required this.onSubmit,
   });
 
@@ -84,6 +86,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
   late String _status;
   String? _imagePath;
   bool _isSubmitting = false;
+  final List<CategoryOption> _localCategories = [];
 
   @override
   void initState() {
@@ -94,8 +97,8 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     _descriptionCtrl = TextEditingController(text: widget.initialDescription ?? '');
     _referenceCtrl = TextEditingController(text: widget.initialReference ?? '');
     _dateCtrl = TextEditingController();
-    _updateDateText();
     _selectedDate = widget.initialDate;
+    _updateDateText();
     _categoryId = widget.initialCategoryId;
     _paymentMethod = widget.initialPaymentMethod;
     _status = widget.initialStatus;
@@ -232,6 +235,10 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
     if (widget.categoriesLoading) {
       return const Center(child: CircularProgressIndicator());
     }
+
+    final allCategories = _allCategories;
+    const newCategoryValue = -1;
+
     return DropdownButtonFormField<int>(
       initialValue: _categoryId,
       decoration: InputDecoration(
@@ -240,13 +247,82 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
         contentPadding: EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
       ),
-      items: widget.categories.map((c) => DropdownMenuItem(
-        value: c.id,
-        child: Text(c.name, style: AppTypography.bodyText2),
-      )).toList(),
-      onChanged: (v) => setState(() => _categoryId = v),
+      items: [
+        for (final c in allCategories)
+          DropdownMenuItem(
+            value: c.id,
+            child: Text(c.name, style: AppTypography.bodyText2),
+          ),
+        if (widget.onAddCategory != null)
+          DropdownMenuItem(
+            value: newCategoryValue,
+            child: Row(
+              children: [
+                const Icon(Icons.add_rounded, size: 18, color: AppColors.primary),
+                const SizedBox(width: AppSpacing.sm),
+                Text('নতুন ক্যাটাগরি', style: AppTypography.bodyText2),
+              ],
+            ),
+          ),
+      ],
+      onChanged: (v) {
+        if (v == newCategoryValue) {
+          _showAddCategoryDialog();
+        } else {
+          setState(() => _categoryId = v);
+        }
+      },
       validator: (v) => v == null ? 'ক্যাটাগরি নির্বাচন করুন' : null,
     );
+  }
+
+  List<CategoryOption> get _allCategories {
+    final existing = widget.categories;
+    final local = _localCategories
+        .where((c) => !existing.any((w) => w.id == c.id))
+        .toList();
+    return [...existing, ...local];
+  }
+
+  Future<void> _showAddCategoryDialog() async {
+    final controller = TextEditingController();
+    final name = await showDialog<String>(
+      context: context,
+      barrierColor: AppColors.scrim,
+      builder: (ctx) => AlertDialog(
+        title: const Text('নতুন ক্যাটাগরি'),
+        content: AppTextField(
+          label: 'ক্যাটাগরির নাম',
+          hint: 'যেমন: কাপড়, বিল, চিকিৎসা',
+          controller: controller,
+          autofocus: true,
+          textInputAction: TextInputAction.done,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('বাতিল'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(ctx, controller.text.trim()),
+            child: const Text('যোগ করুন'),
+          ),
+        ],
+      ),
+    );
+    controller.dispose();
+
+    if (name == null || name.isEmpty || widget.onAddCategory == null) return;
+    final id = await widget.onAddCategory!(name);
+    if (!mounted) return;
+    if (id == null) {
+      AppSnackBar.error(context, 'ক্যাটাগরি যোগ করা যায়নি');
+      return;
+    }
+    setState(() {
+      _localCategories.add(CategoryOption(id, name));
+      _categoryId = id;
+    });
   }
 
   Widget _buildPaymentMethodDropdown() {

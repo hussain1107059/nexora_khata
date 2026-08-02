@@ -119,6 +119,7 @@ class DatabaseHelper {
     _createIncomesTable(batch);
     _createExpensesTable(batch);
     _createTransfersTable(batch);
+    _createLoanTables(batch);
     _createDailyBalanceTable(batch);
     _createNotesTable(batch);
     _createAttachmentsTable(batch);
@@ -405,6 +406,36 @@ class DatabaseHelper {
     ''');
   }
 
+  void _createLoanTables(Batch b) {
+    b.execute('''
+      CREATE TABLE loan_contacts (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        business_id INTEGER NOT NULL,
+        name TEXT NOT NULL,
+        phone TEXT,
+        note TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE
+      )
+    ''');
+    b.execute('''
+      CREATE TABLE loan_transactions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        business_id INTEGER NOT NULL,
+        contact_id INTEGER NOT NULL,
+        type TEXT NOT NULL CHECK(type IN ('borrow','lend')),
+        amount REAL NOT NULL CHECK(amount > 0),
+        date TEXT NOT NULL,
+        note TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE,
+        FOREIGN KEY (contact_id) REFERENCES loan_contacts(id) ON DELETE CASCADE
+      )
+    ''');
+  }
+
   void _createDailyBalanceTable(Batch b) {
     b.execute('''
       CREATE TABLE daily_balance (
@@ -548,6 +579,10 @@ class DatabaseHelper {
       () => b.execute('CREATE INDEX idx_expenses_date_status ON expenses(expense_date, status)'),
       () => b.execute('CREATE INDEX idx_transfers_business ON transfers(business_id)'),
       () => b.execute('CREATE INDEX idx_transfers_date ON transfers(transfer_date)'),
+      () => b.execute('CREATE INDEX idx_loan_contacts_business ON loan_contacts(business_id)'),
+      () => b.execute('CREATE INDEX idx_loan_txn_business ON loan_transactions(business_id)'),
+      () => b.execute('CREATE INDEX idx_loan_txn_contact ON loan_transactions(contact_id)'),
+      () => b.execute('CREATE INDEX idx_loan_txn_date ON loan_transactions(date)'),
       () => b.execute('CREATE INDEX idx_daily_balance_business ON daily_balance(business_id)'),
       () => b.execute('CREATE INDEX idx_daily_balance_date ON daily_balance(date)'),
       () => b.execute('CREATE INDEX idx_notes_business ON notes(business_id)'),
@@ -573,6 +608,7 @@ class DatabaseHelper {
     for (final sql in triggers) {
       try { db.execute(sql); } catch (_) {}
     }
+    _createBalanceUpdateTriggers(db);
   }
 
   Future<void> _seedDefaults(Database db) async {
@@ -602,6 +638,37 @@ class DatabaseHelper {
         'status': 'active',
         'created_at': DateTime.now().toIso8601String(),
         'updated_at': DateTime.now().toIso8601String(),
+      });
+    }
+
+    final now = DateTime.now().toIso8601String();
+    final cashCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM cash_accounts WHERE business_id = 0');
+    if (Sqflite.firstIntValue(cashCount) == 0) {
+      batch.insert('cash_accounts', {
+        'business_id': 0,
+        'name': 'নগদ',
+        'balance': 0.0,
+        'currency': 'BDT',
+        'is_default': 1,
+        'status': 'active',
+        'created_at': now,
+        'updated_at': now,
+      });
+    }
+    final bankCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM bank_accounts WHERE business_id = 0');
+    if (Sqflite.firstIntValue(bankCount) == 0) {
+      batch.insert('bank_accounts', {
+        'business_id': 0,
+        'bank_name': 'ব্যাংক',
+        'account_name': 'ব্যাংক',
+        'balance': 0.0,
+        'currency': 'BDT',
+        'is_default': 1,
+        'status': 'active',
+        'created_at': now,
+        'updated_at': now,
       });
     }
 
@@ -692,6 +759,175 @@ class DatabaseHelper {
         "WHERE length(transfer_date) > 10",
       );
     }
+    if (version == 5) {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS loan_contacts (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          business_id INTEGER NOT NULL,
+          name TEXT NOT NULL,
+          phone TEXT,
+          note TEXT,
+          created_at TEXT NOT NULL DEFAULT (datetime('now')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+          FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE
+        )
+      ''');
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS loan_transactions (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          business_id INTEGER NOT NULL,
+          contact_id INTEGER NOT NULL,
+          type TEXT NOT NULL CHECK(type IN ('borrow','lend')),
+          amount REAL NOT NULL CHECK(amount > 0),
+          date TEXT NOT NULL,
+          note TEXT,
+          created_at TEXT NOT NULL DEFAULT (datetime('now')),
+          updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+          FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE,
+          FOREIGN KEY (contact_id) REFERENCES loan_contacts(id) ON DELETE CASCADE
+        )
+      ''');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_loan_contacts_business ON loan_contacts(business_id)');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_loan_txn_business ON loan_transactions(business_id)');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_loan_txn_contact ON loan_transactions(contact_id)');
+      await db.execute('CREATE INDEX IF NOT EXISTS idx_loan_txn_date ON loan_transactions(date)');
+    }
+    if (version == 6) {
+      final now = DateTime.now().toIso8601String();
+      final cashCount = await db.rawQuery(
+        'SELECT COUNT(*) c FROM cash_accounts WHERE business_id = 0');
+      if (Sqflite.firstIntValue(cashCount) == 0) {
+        await db.insert('cash_accounts', {
+          'business_id': 0,
+          'name': 'নগদ',
+          'balance': 0.0,
+          'currency': 'BDT',
+          'is_default': 1,
+          'status': 'active',
+          'created_at': now,
+          'updated_at': now,
+        });
+      }
+      final bankCount = await db.rawQuery(
+        'SELECT COUNT(*) c FROM bank_accounts WHERE business_id = 0');
+      if (Sqflite.firstIntValue(bankCount) == 0) {
+        await db.insert('bank_accounts', {
+          'business_id': 0,
+          'bank_name': 'ব্যাংক',
+          'account_name': 'ব্যাংক',
+          'balance': 0.0,
+          'currency': 'BDT',
+          'is_default': 1,
+          'status': 'active',
+          'created_at': now,
+          'updated_at': now,
+        });
+      }
+    }
+    if (version == 7) {
+      _createBalanceUpdateTriggers(db);
+      await _backfillUnlinkedTransactions(db);
+    }
+    if (version == 8) {
+      await _relinkAllTransactions(db);
+    }
+  }
+
+  void _createBalanceUpdateTriggers(Database db) {
+    final triggers = <String>[      'CREATE TRIGGER IF NOT EXISTS trg_cash_balance_income_update AFTER UPDATE ON incomes BEGIN UPDATE cash_accounts SET balance = balance - OLD.amount WHERE id = OLD.cash_account_id AND OLD.cash_account_id IS NOT NULL AND OLD.status = \'completed\'; UPDATE cash_accounts SET balance = balance + NEW.amount WHERE id = NEW.cash_account_id AND NEW.cash_account_id IS NOT NULL AND NEW.status = \'completed\'; END',
+      'CREATE TRIGGER IF NOT EXISTS trg_cash_balance_income_delete AFTER DELETE ON incomes BEGIN UPDATE cash_accounts SET balance = balance - OLD.amount WHERE id = OLD.cash_account_id AND OLD.cash_account_id IS NOT NULL AND OLD.status = \'completed\'; END',
+      'CREATE TRIGGER IF NOT EXISTS trg_cash_balance_expense_update AFTER UPDATE ON expenses BEGIN UPDATE cash_accounts SET balance = balance + OLD.amount WHERE id = OLD.cash_account_id AND OLD.cash_account_id IS NOT NULL AND OLD.status = \'completed\'; UPDATE cash_accounts SET balance = balance - NEW.amount WHERE id = NEW.cash_account_id AND NEW.cash_account_id IS NOT NULL AND NEW.status = \'completed\'; END',
+      'CREATE TRIGGER IF NOT EXISTS trg_cash_balance_expense_delete AFTER DELETE ON expenses BEGIN UPDATE cash_accounts SET balance = balance + OLD.amount WHERE id = OLD.cash_account_id AND OLD.cash_account_id IS NOT NULL AND OLD.status = \'completed\'; END',
+      'CREATE TRIGGER IF NOT EXISTS trg_bank_balance_income_update AFTER UPDATE ON incomes BEGIN UPDATE bank_accounts SET balance = balance - OLD.amount WHERE id = OLD.bank_account_id AND OLD.bank_account_id IS NOT NULL AND OLD.status = \'completed\'; UPDATE bank_accounts SET balance = balance + NEW.amount WHERE id = NEW.bank_account_id AND NEW.bank_account_id IS NOT NULL AND NEW.status = \'completed\'; END',
+      'CREATE TRIGGER IF NOT EXISTS trg_bank_balance_income_delete AFTER DELETE ON incomes BEGIN UPDATE bank_accounts SET balance = balance - OLD.amount WHERE id = OLD.bank_account_id AND OLD.bank_account_id IS NOT NULL AND OLD.status = \'completed\'; END',
+      'CREATE TRIGGER IF NOT EXISTS trg_bank_balance_expense_update AFTER UPDATE ON expenses BEGIN UPDATE bank_accounts SET balance = balance + OLD.amount WHERE id = OLD.bank_account_id AND OLD.bank_account_id IS NOT NULL AND OLD.status = \'completed\'; UPDATE bank_accounts SET balance = balance - NEW.amount WHERE id = NEW.bank_account_id AND NEW.bank_account_id IS NOT NULL AND NEW.status = \'completed\'; END',
+      'CREATE TRIGGER IF NOT EXISTS trg_bank_balance_expense_delete AFTER DELETE ON expenses BEGIN UPDATE bank_accounts SET balance = balance + OLD.amount WHERE id = OLD.bank_account_id AND OLD.bank_account_id IS NOT NULL AND OLD.status = \'completed\'; END',
+    ];
+    for (final sql in triggers) {
+      try { db.execute(sql); } catch (_) {}
+    }
+  }
+
+  Future<void> _backfillUnlinkedTransactions(Database db) async {
+    final cashId = await _defaultAccountId(db, 'cash_accounts');
+    final bankId = await _defaultAccountId(db, 'bank_accounts');
+    if (cashId == null && bankId == null) return;
+
+    for (final table in ['incomes', 'expenses']) {
+      final rows = await db.query(table,
+        where: 'cash_account_id IS NULL AND bank_account_id IS NULL',
+      );
+      for (final row in rows) {
+        final method = row['payment_method'] as String?;
+        final status = row['status'] as String?;
+        if (status != 'completed') continue;
+        final isBank = method != null && method != 'cash';
+        if (isBank) {
+          if (bankId != null) {
+            await db.update(table, {'bank_account_id': bankId},
+              where: 'id = ?', whereArgs: [row['id']]);
+          }
+        } else {
+          if (cashId != null) {
+            await db.update(table, {'cash_account_id': cashId},
+              where: 'id = ?', whereArgs: [row['id']]);
+          }
+        }
+      }
+    }
+
+    final transfers = await db.query('transfers',
+      where: 'from_cash_account_id IS NULL AND from_bank_account_id IS NULL AND to_cash_account_id IS NULL AND to_bank_account_id IS NULL');
+    if (transfers.isNotEmpty && (cashId != null || bankId != null)) {
+      for (final row in transfers) {
+        final status = row['status'] as String?;
+        if (status != 'completed') continue;
+        final from = cashId != null ? {'from_cash_account_id': cashId} : {'from_bank_account_id': bankId};
+        final to = bankId != null ? {'to_bank_account_id': bankId} : {'to_cash_account_id': cashId};
+        await db.update('transfers', {...from, ...to},
+          where: 'id = ?', whereArgs: [row['id']]);
+      }
+    }
+  }
+
+  Future<void> _relinkAllTransactions(Database db) async {
+    final cashId = await _defaultAccountId(db, 'cash_accounts');
+    final bankId = await _defaultAccountId(db, 'bank_accounts');
+
+    for (final table in ['incomes', 'expenses']) {
+      final rows = await db.query(table);
+      for (final row in rows) {
+        final status = row['status'] as String?;
+        if (status != 'completed') continue;
+        final method = row['payment_method'] as String?;
+        final isBank = method != null && method != 'cash';
+        final targetCash = isBank ? null : cashId;
+        final targetBank = isBank ? bankId : null;
+        final rowId = row['id'] as int;
+        final updates = <String, Object?>{};
+        if ((row['cash_account_id'] as int?) != targetCash) {
+          updates['cash_account_id'] = targetCash;
+        }
+        if ((row['bank_account_id'] as int?) != targetBank) {
+          updates['bank_account_id'] = targetBank;
+        }
+        if (updates.isNotEmpty) {
+          await db.update(table, updates,
+            where: 'id = ?', whereArgs: [rowId]);
+        }
+      }
+    }
+  }
+
+  Future<int?> _defaultAccountId(Database db, String table) async {
+    final r = await db.rawQuery(
+        'SELECT id FROM $table WHERE is_default = 1 AND status = \'active\' LIMIT 1');
+    if (r.isEmpty) {
+      final any = await db.rawQuery('SELECT id FROM $table LIMIT 1');
+      if (any.isEmpty) return null;
+      return any.first['id'] as int;
+    }
+    return r.first['id'] as int?;
   }
 
   Future<T> runTxn<T>(DbTxnCallback<T> callback, {bool exclusive = false}) async {

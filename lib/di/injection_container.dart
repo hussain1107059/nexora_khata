@@ -12,12 +12,18 @@ import '../features/categories/domain/repositories/income_category_repository.da
 import '../features/dashboard/data/datasources/dashboard_datasource.dart';
 import '../features/dashboard/data/repositories/dashboard_repository_impl.dart';
 import '../features/dashboard/domain/repositories/dashboard_repository.dart';
+import '../features/loans/data/datasources/loan_datasource.dart';
+import '../features/loans/data/repositories/loan_repository_impl.dart';
+import '../features/loans/domain/repositories/loan_repository.dart';
 import '../features/transactions/data/datasources/expense_datasource.dart';
 import '../features/transactions/data/datasources/income_datasource.dart';
+import '../features/transactions/data/datasources/transfer_datasource.dart';
 import '../features/transactions/data/repositories/expense_repository_impl.dart';
 import '../features/transactions/data/repositories/income_repository_impl.dart';
+import '../features/transactions/data/repositories/transfer_repository_impl.dart';
 import '../features/transactions/domain/repositories/expense_repository.dart';
 import '../features/transactions/domain/repositories/income_repository.dart';
+import '../features/transactions/domain/repositories/transfer_repository.dart';
 import '../features/reports/data/datasources/report_datasource.dart';
 import '../features/reports/data/repositories/report_repository_impl.dart';
 import '../features/reports/domain/repositories/report_repository.dart';
@@ -70,6 +76,12 @@ Future<void> initializeDependencies() async {
     () => ExpenseCategoryRepositoryImpl(expenseCategoryDataSource),
   );
 
+  final transferDataSource = TransferDataSource(dbHelper);
+  getIt.registerLazySingleton<TransferDataSource>(() => transferDataSource);
+  getIt.registerLazySingleton<TransferRepository>(
+    () => TransferRepositoryImpl(transferDataSource),
+  );
+
   final reportDataSource = ReportDataSource(dbHelper);
   getIt.registerLazySingleton<ReportDataSource>(() => reportDataSource);
   getIt.registerLazySingleton<ReportRepository>(
@@ -86,6 +98,12 @@ Future<void> initializeDependencies() async {
   getIt.registerLazySingleton<DashboardDataSource>(() => dashboardDataSource);
   getIt.registerLazySingleton<DashboardRepository>(
     () => DashboardRepositoryImpl(dashboardDataSource),
+  );
+
+  final loanDataSource = LoanDataSource(dbHelper);
+  getIt.registerLazySingleton<LoanDataSource>(() => loanDataSource);
+  getIt.registerLazySingleton<LoanRepository>(
+    () => LoanRepositoryImpl(loanDataSource),
   );
 }
 

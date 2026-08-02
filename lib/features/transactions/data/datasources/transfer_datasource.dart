@@ -1,0 +1,80 @@
+import 'package:nexora_khata/core/services/database_helper.dart';
+import 'package:nexora_khata/features/transactions/data/models/transfer_model.dart';
+
+class TransferDataSource {
+  final DatabaseHelper _dbHelper;
+  TransferDataSource(this._dbHelper);
+
+  Future<List<Map<String, dynamic>>> getCashAccounts() async {
+    return _dbHelper.db.rawQuery(
+      '''
+      SELECT id, name, balance
+      FROM cash_accounts
+      WHERE business_id = 0 AND status = 'active'
+      ORDER BY id
+      ''',
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> getBankAccounts() async {
+    return _dbHelper.db.rawQuery(
+      '''
+      SELECT id, account_name, balance
+      FROM bank_accounts
+      WHERE business_id = 0 AND status = 'active'
+      ORDER BY id
+      ''',
+    );
+  }
+
+  Future<int?> getDefaultCashAccountId() async {
+    final rows = await _dbHelper.db.rawQuery(
+      '''
+      SELECT id FROM cash_accounts
+      WHERE business_id = 0 AND status = 'active'
+      ORDER BY is_default DESC, id ASC
+      LIMIT 1
+      ''',
+    );
+    if (rows.isEmpty) return null;
+    return rows.first['id'] as int;
+  }
+
+  Future<int?> getDefaultBankAccountId() async {
+    final rows = await _dbHelper.db.rawQuery(
+      '''
+      SELECT id FROM bank_accounts
+      WHERE business_id = 0 AND status = 'active'
+      ORDER BY is_default DESC, id ASC
+      LIMIT 1
+      ''',
+    );
+    if (rows.isEmpty) return null;
+    return rows.first['id'] as int;
+  }
+
+  Future<List<TransferModel>> getAll() async {
+    final rows = await _dbHelper.db.rawQuery(
+      '''
+      SELECT * FROM transfers
+      WHERE business_id = 0
+      ORDER BY transfer_date DESC, id DESC
+      ''',
+    );
+    return rows.map(TransferModel.fromMap).toList();
+  }
+
+  Future<TransferModel> create(Map<String, dynamic> data) async {
+    final db = _dbHelper.db;
+    final id = await db.insert('transfers', data);
+    final rows = await db.rawQuery(
+      'SELECT * FROM transfers WHERE id = ?',
+      [id],
+    );
+    return TransferModel.fromMap(rows.first);
+  }
+
+  Future<void> delete(int id) async {
+    await _dbHelper.db.delete('transfers', where: 'id = ?', whereArgs: [id]);
+  }
+}

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../config/theme/app_colors.dart';
 import '../widgets/app_shell.dart';
-import '../widgets/app_text.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
 import '../../features/settings/presentation/pages/about_page.dart';
@@ -10,7 +8,13 @@ import '../../features/settings/presentation/pages/privacy_page.dart';
 import '../../features/settings/presentation/pages/terms_page.dart';
 import '../../features/settings/presentation/pages/backup_page.dart';
 import '../../features/reports/presentation/pages/reports_page.dart';
+import '../../features/loans/presentation/pages/loan_list_page.dart';
+import '../../features/loans/presentation/pages/loan_contact_form_page.dart';
+import '../../features/loans/presentation/pages/loan_detail_page.dart';
+import '../../features/loans/presentation/pages/loan_transaction_form_page.dart';
+import '../../features/transactions/presentation/pages/all_transactions_page.dart';
 import '../../features/transactions/presentation/pages/income_list_page.dart';
+import '../../features/transactions/presentation/pages/transfer_form_page.dart';
 import '../../features/transactions/presentation/pages/income_form_page.dart';
 import '../../features/transactions/presentation/pages/income_detail_page.dart';
 import '../../features/transactions/presentation/pages/income_monthly_report_page.dart';
@@ -51,36 +55,14 @@ final GoRouter appRouter = GoRouter(
           path: RouteNames.transactions,
           name: RouteNames.transactions,
           pageBuilder: (context, state) => const NoTransitionPage(
-            child: Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.receipt_long_rounded, size: 48, color: AppColors.textHint),
-                    SizedBox(height: 16),
-                    AppText('শীঘ্রই আসছে', type: AppTextType.subtitle2, color: AppColors.textSecondary),
-                  ],
-                ),
-              ),
-            ),
+            child: AllTransactionsPage(),
           ),
         ),
         GoRoute(
-          path: RouteNames.customers,
-          name: RouteNames.customers,
+          path: RouteNames.loanList,
+          name: RouteNames.loanList,
           pageBuilder: (context, state) => const NoTransitionPage(
-            child: Scaffold(
-              body: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.people_outline_rounded, size: 48, color: AppColors.textHint),
-                    SizedBox(height: 16),
-                    AppText('শীঘ্রই আসছে', type: AppTextType.subtitle2, color: AppColors.textSecondary),
-                  ],
-                ),
-              ),
-            ),
+            child: LoanListPage(),
           ),
         ),
         GoRoute(
@@ -242,6 +224,52 @@ final GoRouter appRouter = GoRouter(
       name: RouteNames.backup,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const BackupPage(),
+    ),
+    GoRoute(
+      path: RouteNames.transferAdd,
+      name: RouteNames.transferAdd,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const TransferFormPage(),
+    ),
+    GoRoute(
+      path: '${RouteNames.loanDetail}/:id',
+      name: RouteNames.loanDetail,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final id = int.parse(state.pathParameters['id']!);
+        return LoanDetailPage(contactId: id);
+      },
+    ),
+    GoRoute(
+      path: RouteNames.loanContactAdd,
+      name: RouteNames.loanContactAdd,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const LoanContactFormPage(),
+    ),
+    GoRoute(
+      path: RouteNames.loanContactEdit,
+      name: RouteNames.loanContactEdit,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final contact = state.extra as dynamic;
+        return LoanContactFormPage(contact: contact);
+      },
+    ),
+    GoRoute(
+      path: RouteNames.loanTxnAdd,
+      name: RouteNames.loanTxnAdd,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final contactId = extra?['contactId'] as int? ?? 0;
+        final name = extra?['name'] as String? ?? '';
+        final type = extra?['type'] as String? ?? 'borrow';
+        return LoanTransactionFormPage(
+          contactId: contactId,
+          contactName: name,
+          initialType: type,
+        );
+      },
     ),
   ],
 );

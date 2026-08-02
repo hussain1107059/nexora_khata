@@ -45,7 +45,7 @@ class ExpenseCategoryFormPage extends ConsumerWidget {
           final now = DateTime.now();
           final item = ExpenseCategory(
             id: category?.id ?? 0,
-            businessId: 1,
+            businessId: 0,
             name: data.name,
             description: data.description,
             icon: data.icon,

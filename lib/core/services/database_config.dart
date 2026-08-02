@@ -2,7 +2,7 @@ abstract final class DatabaseConfig {
   DatabaseConfig._();
 
   static const String dbName = 'nexora_khata.db';
-  static const int dbVersion = 4;
+  static const int dbVersion = 8;
 
   static const bool foreignKeys = true;
   static const String journalMode = 'WAL';

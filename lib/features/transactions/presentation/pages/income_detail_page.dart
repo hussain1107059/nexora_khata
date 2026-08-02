@@ -7,6 +7,7 @@ import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
+import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/income_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_detail_view.dart';
 
@@ -36,6 +37,8 @@ class IncomeDetailPage extends ConsumerWidget {
               if (result == true) {
                 ref.invalidate(incomeDetailProvider(id));
                 ref.invalidate(incomeFilteredListProvider);
+                ref.invalidate(dashboardProvider);
+                ref.invalidate(dashboardRefreshProvider);
               }
             },
           ),
@@ -88,6 +91,8 @@ class IncomeDetailPage extends ConsumerWidget {
             if (!context.mounted) return;
             AppSnackBar.success(context, 'আয় মুছে ফেলা হয়েছে');
             ref.invalidate(incomeFilteredListProvider);
+            ref.invalidate(dashboardProvider);
+            ref.invalidate(dashboardRefreshProvider);
             context.pop();
           }, child: Text('মুছুন', style: AppTypography.button.copyWith(color: AppColors.error))),
         ],
