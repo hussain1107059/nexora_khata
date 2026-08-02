@@ -6,6 +6,7 @@ import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
 import 'package:nexora_khata/core/utils/number_utils.dart';
+import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
@@ -787,6 +788,14 @@ class _DailyBarChart extends StatelessWidget {
       final m = item.income > item.expense ? item.income : item.expense;
       return m > max ? m : max;
     });
+
+    if (maxVal == 0) {
+      return const AppEmptyState(
+        icon: Icons.insert_chart_rounded,
+        title: 'কোনো লেনদেন নেই',
+        subtitle: 'এই সময়ে কোনো আয় বা ব্যয়ের লেনদেন পাওয়া যায়নি',
+      );
+    }
 
     return Container(
       decoration: BoxDecoration(
