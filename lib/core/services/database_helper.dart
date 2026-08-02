@@ -64,23 +64,8 @@ class DatabaseHelper {
         singleInstance: true,
       );
     } catch (e) {
-      log.w('[DB] open failed: $e');
-      try {
-        final f = File(path);
-        if (await f.exists()) await f.delete();
-        log.i('[DB] deleted db file, retrying...');
-        _db = await openDatabase(
-          path,
-          version: DatabaseConfig.dbVersion,
-          onCreate: _createSchema,
-          onUpgrade: _upgradeSchema,
-          onConfigure: _configure,
-          singleInstance: true,
-        );
-      } catch (e2) {
-        log.e('[DB] retry also failed: $e2');
-        rethrow;
-      }
+      log.e('[DB] open failed (existing db preserved, no data deleted): $e');
+      rethrow;
     }
     await _applyMigrations();
     return _db!;
@@ -682,32 +667,40 @@ class DatabaseHelper {
       'বেতন', 'ব্যবসা', 'ফ্রিল্যান্সিং', 'বিনিয়োগ',
       'উপহার', 'কমিশন', 'অন্যান্য আয়',
     ];
-    for (var i = 0; i < incomeCats.length; i++) {
-      batch.insert('income_categories', {
-        'business_id': 0,
-        'name': incomeCats[i],
-        'icon': _incomeIcon(i),
-        'color': _incomeColor(i),
-        'sort_order': i + 1,
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      });
+    final incomeCatCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM income_categories WHERE business_id = 0');
+    if (Sqflite.firstIntValue(incomeCatCount) == 0) {
+      for (var i = 0; i < incomeCats.length; i++) {
+        batch.insert('income_categories', {
+          'business_id': 0,
+          'name': incomeCats[i],
+          'icon': _incomeIcon(i),
+          'color': _incomeColor(i),
+          'sort_order': i + 1,
+          'created_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      }
     }
     final expenseCats = [
       'খাদ্য', 'পরিবহন', 'বাসা ভাড়া', 'ইউটিলিটি',
       'বিনোদন', 'স্বাস্থ্য', 'শিক্ষা', 'শপিং',
       'ইন্টারনেট', 'ফোন বিল', 'অন্যান্য ব্যয়',
     ];
-    for (var i = 0; i < expenseCats.length; i++) {
-      batch.insert('expense_categories', {
-        'business_id': 0,
-        'name': expenseCats[i],
-        'icon': _expenseIcon(i),
-        'color': _expenseColor(i),
-        'sort_order': i + 1,
-        'created_at': DateTime.now().toIso8601String(),
-        'updated_at': DateTime.now().toIso8601String(),
-      });
+    final expenseCatCount = await db.rawQuery(
+        'SELECT COUNT(*) AS c FROM expense_categories WHERE business_id = 0');
+    if (Sqflite.firstIntValue(expenseCatCount) == 0) {
+      for (var i = 0; i < expenseCats.length; i++) {
+        batch.insert('expense_categories', {
+          'business_id': 0,
+          'name': expenseCats[i],
+          'icon': _expenseIcon(i),
+          'color': _expenseColor(i),
+          'sort_order': i + 1,
+          'created_at': DateTime.now().toIso8601String(),
+          'updated_at': DateTime.now().toIso8601String(),
+        });
+      }
     }
     await batch.commit(noResult: true);
   }
@@ -736,20 +729,55 @@ class DatabaseHelper {
     await db.insert('_migrations', {'version': version, 'name': name});
   }
 
-  Future<void> _applyMigrations() async {}
+  Future<void> _applyMigrations() async {
+    try {
+      await db.execute('''
+        CREATE TABLE IF NOT EXISTS _migrations (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          version INTEGER NOT NULL UNIQUE,
+          name TEXT NOT NULL,
+          applied_at TEXT NOT NULL DEFAULT (datetime('now'))
+        )
+      ''');
+      final rows = await db.query('_migrations', columns: ['version']);
+      final applied = rows.map((r) => r['version'] as int).toSet();
+      if (applied.contains(DatabaseConfig.dbVersion)) return;
+      for (var v = 1; v <= DatabaseConfig.dbVersion; v++) {
+        if (applied.contains(v)) continue;
+        try {
+          await _applyMigration(db, v);
+        } catch (e) {
+          log.e('[DB] migration v$v failed, retried on next launch: $e');
+          continue;
+        }
+        try {
+          await db
+              .insert('_migrations', {'version': v, 'name': 'migration_v$v'});
+        } catch (e) {
+          log.w('[DB] could not record migration v$v: $e');
+        }
+      }
+    } catch (e) {
+      log.w('[DB] _applyMigrations failed: $e');
+    }
+  }
 
   Future<void> _upgradeSchema(Database db, int oldVersion, int newVersion) async {
     for (var v = oldVersion + 1; v <= newVersion; v++) {
-      await _applyMigration(db, v);
+      try {
+        await _applyMigration(db, v);
+      } catch (e) {
+        log.w('[DB] onUpgrade migration v$v failed: $e');
+      }
     }
   }
 
   Future<void> _applyMigration(Database db, int version) async {
     if (version == 2) {
-      await db.execute('ALTER TABLE incomes ADD COLUMN image_path TEXT');
+      await _ensureColumn(db, 'incomes', 'image_path', 'TEXT');
     }
     if (version == 3) {
-      await db.execute('ALTER TABLE expenses ADD COLUMN image_path TEXT');
+      await _ensureColumn(db, 'expenses', 'image_path', 'TEXT');
     }
     if (version == 4) {
       await db.execute(
@@ -932,6 +960,15 @@ class DatabaseHelper {
   }
 
   Future<void> _rebuildLoanTransactions(Database db) async {
+    final cols = await db.rawQuery('PRAGMA table_info(loan_transactions)');
+    final names = cols.map((c) => c['name']).toSet();
+    if (names.contains('payment_method')) return;
+
+    final stale = await db.rawQuery(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='loan_transactions_new'");
+    if (stale.isNotEmpty) {
+      await db.execute('DROP TABLE loan_transactions_new');
+    }
     await db.execute('''
       CREATE TABLE loan_transactions_new (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -965,23 +1002,21 @@ class DatabaseHelper {
   }
 
   Future<void> _addLoanAccountColumns(Database db) async {
-    final columns = await db.rawQuery('PRAGMA table_info(loan_transactions)');
+    await _ensureColumn(db, 'loan_transactions', 'payment_method', 'TEXT');
+    await _ensureColumn(
+        db, 'loan_transactions', 'cash_account_id',
+        'INTEGER REFERENCES cash_accounts(id) ON DELETE SET NULL');
+    await _ensureColumn(
+        db, 'loan_transactions', 'bank_account_id',
+        'INTEGER REFERENCES bank_accounts(id) ON DELETE SET NULL');
+  }
+
+  Future<void> _ensureColumn(
+      Database db, String table, String column, String definition) async {
+    final columns = await db.rawQuery('PRAGMA table_info($table)');
     final names = columns.map((c) => c['name']).toSet();
-    if (!names.contains('payment_method')) {
-      await db.execute(
-          'ALTER TABLE loan_transactions ADD COLUMN payment_method TEXT');
-    }
-    if (!names.contains('cash_account_id')) {
-      await db.execute('''
-        ALTER TABLE loan_transactions ADD COLUMN cash_account_id INTEGER
-        REFERENCES cash_accounts(id) ON DELETE SET NULL
-      ''');
-    }
-    if (!names.contains('bank_account_id')) {
-      await db.execute('''
-        ALTER TABLE loan_transactions ADD COLUMN bank_account_id INTEGER
-        REFERENCES bank_accounts(id) ON DELETE SET NULL
-      ''');
+    if (!names.contains(column)) {
+      await db.execute('ALTER TABLE $table ADD COLUMN $column $definition');
     }
   }
 
