@@ -73,7 +73,7 @@ class TermsPage extends ConsumerWidget {
             AppText(AppStrings.s.termsContactTitle, type: AppTextType.subtitle2),
             AppSpacing.boxSM,
             AppText(
-              AppStrings.s.termsContactMsg + 'badhonbyte@email.com',
+              AppStrings.s.termsContactMsg + 'badhonbytebd@gmail.com',
               type: AppTextType.body2,
             ),
             AppSpacing.boxXXL,

@@ -1370,6 +1370,12 @@ abstract class AppLocalizations {
   /// **'Expense Categories'**
   String get expCategoryTitle;
 
+  /// No description provided for @expCsvHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Month,Transactions,Total Expense'**
+  String get expCsvHeader;
+
   /// No description provided for @expSupplier.
   ///
   /// In en, this message translates to:
@@ -1579,6 +1585,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Category deleted'**
   String get catDeleted;
+
+  /// No description provided for @catUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Category updated'**
+  String get catUpdated;
+
+  /// No description provided for @catAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'New category added'**
+  String get catAdded;
 
   /// No description provided for @catName.
   ///
@@ -2748,6 +2766,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Backup successful: {file}'**
   String setBackupSuccess(Object file);
+
+  /// No description provided for @setBackupWebUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup is not supported on web'**
+  String get setBackupWebUnsupported;
+
+  /// No description provided for @setBackupWebShareUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing backups is not supported on web'**
+  String get setBackupWebShareUnsupported;
 
   /// No description provided for @setFailed.
   ///

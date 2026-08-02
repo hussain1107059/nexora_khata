@@ -681,6 +681,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get expCategoryTitle => 'ব্যয়ের ক্যাটাগরি';
 
   @override
+  String get expCsvHeader => 'Month,Transactions,Total Expense';
+
+  @override
   String get expSupplier => 'সাপ্লায়ার';
 
   @override
@@ -787,6 +790,12 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get catDeleted => 'ক্যাটাগরি মুছে ফেলা হয়েছে';
+
+  @override
+  String get catUpdated => 'Category updated';
+
+  @override
+  String get catAdded => 'New category added';
 
   @override
   String get catName => 'নাম';
@@ -1419,6 +1428,13 @@ class AppLocalizationsBn extends AppLocalizations {
   String setBackupSuccess(Object file) {
     return 'ব্যাকআপ সফল: $file';
   }
+
+  @override
+  String get setBackupWebUnsupported => 'Backup is not supported on web';
+
+  @override
+  String get setBackupWebShareUnsupported =>
+      'Sharing backups is not supported on web';
 
   @override
   String setFailed(Object error) {

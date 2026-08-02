@@ -13,6 +13,7 @@ class AppShell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    AppStrings.dependOnLocale(context);
     final selectedIndex = ref.watch(_selectedIndexProvider);
 
     return Scaffold(

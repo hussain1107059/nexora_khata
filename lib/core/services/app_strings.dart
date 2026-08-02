@@ -18,4 +18,10 @@ class AppStrings {
   }
 
   static set current(AppLocalizations value) => _current = value;
+
+  /// Registers a dependency on the active locale so the calling widget is
+  /// rebuilt when the language changes.
+  static void dependOnLocale(BuildContext context) {
+    AppLocalizations.of(context);
+  }
 }

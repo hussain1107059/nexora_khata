@@ -17,6 +17,7 @@ class SettingsPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    AppStrings.dependOnLocale(context);
     final isDarkMode = ref.watch(darkModeProvider);
 
     return Scaffold(
@@ -162,6 +163,7 @@ class _AppVersionTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    AppStrings.dependOnLocale(context);
     final packageInfo = ref.watch(packageInfoProvider);
 
     return ListTile(

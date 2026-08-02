@@ -82,9 +82,18 @@ class AboutPage extends ConsumerWidget {
                     child: Column(
                       children: [
                         _InfoRow(label: AppStrings.s.aboutVersion, value: versionStr),
-                        _InfoRow(label: AppStrings.s.aboutDeveloper, value: 'BadhonByte'),
-                        _InfoRow(label: AppStrings.s.aboutEmail, value: 'badhonbyte@email.com'),
-                        _InfoRow(label: AppStrings.s.aboutWebsite, value: 'https://badhonbyte.com'),
+                        _InfoRow(
+                          label: AppStrings.s.aboutDeveloper,
+                          value: 'BadhonByte',
+                          valueIcon: Image.asset(
+                            'assets/images/BadhonByte.png',
+                            width: 18,
+                            height: 18,
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        _InfoRow(label: AppStrings.s.aboutEmail, value: 'badhonbytebd@gmail.com'),
+                        _InfoRow(label: AppStrings.s.aboutWebsite, value: 'https://badhonbyte.com/'),
                       ],
                     ),
                   ),
@@ -110,8 +119,9 @@ class AboutPage extends ConsumerWidget {
 class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
+  final Widget? valueIcon;
 
-  const _InfoRow({required this.label, required this.value});
+  const _InfoRow({required this.label, required this.value, this.valueIcon});
 
   @override
   Widget build(BuildContext context) {
@@ -129,10 +139,23 @@ class _InfoRow extends StatelessWidget {
             ),
           ),
           Expanded(
-            child: AppText(
-              value,
-              type: AppTextType.body2,
-            ),
+            child: valueIcon != null
+                ? Row(
+                    children: [
+                      valueIcon!,
+                      AppSpacing.boxWSM,
+                      Expanded(
+                        child: AppText(
+                          value,
+                          type: AppTextType.body2,
+                        ),
+                      ),
+                    ],
+                  )
+                : AppText(
+                    value,
+                    type: AppTextType.body2,
+                  ),
           ),
         ],
       ),

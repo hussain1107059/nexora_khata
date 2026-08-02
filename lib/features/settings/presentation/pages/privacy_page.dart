@@ -63,7 +63,7 @@ class PrivacyPage extends ConsumerWidget {
             AppText(AppStrings.s.privacyContactTitle, type: AppTextType.subtitle2),
             AppSpacing.boxSM,
             AppText(
-              AppStrings.s.privacyContactMsg + 'badhonbyte@email.com',
+              AppStrings.s.privacyContactMsg + 'badhonbytebd@gmail.com',
               type: AppTextType.body2,
             ),
             AppSpacing.boxXXL,
