@@ -41,10 +41,10 @@ class AboutPage extends ConsumerWidget {
                       ),
                     ],
                   ),
-                  child: const Icon(
-                    Icons.menu_book_rounded,
-                    size: 48,
-                    color: AppColors.white,
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
+                    'assets/images/NexoraKhata.png',
+                    fit: BoxFit.cover,
                   ),
                 ),
                 AppSpacing.boxLG,

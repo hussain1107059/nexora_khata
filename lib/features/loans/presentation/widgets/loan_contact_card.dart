@@ -21,22 +21,22 @@ class LoanContactCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final contact = summary.contact;
     final isReceivable = summary.isReceivable;
-    final color = summary.isSettled ? AppColors.textSecondary : (isReceivable ? AppColors.success : AppColors.error);
+    final color = summary.isSettled
+        ? AppColors.textSecondary
+        : (isReceivable ? AppColors.success : AppColors.error);
     final iconBackground = summary.isSettled
         ? AppColors.chipBackground
         : (isReceivable ? AppColors.successLight : AppColors.errorLight);
     final icon = summary.isSettled
         ? Icons.check_circle_rounded
         : (isReceivable ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded);
-    final tag = summary.isSettled
-        ? 'পরিশোধিত'
-        : (isReceivable ? 'পাওনা' : 'দেনা');
+    final tag = summary.isSettled ? 'পরিশোধিত' : (isReceivable ? 'পাওনা' : 'দেনা');
     final balanceText = summary.isSettled
         ? AppNumberUtils.formatCurrency(0, decimalDigits: 0)
         : AppNumberUtils.formatCurrency(summary.balance.abs(), decimalDigits: 0);
 
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 6),
+      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 5),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -50,11 +50,11 @@ class LoanContactCard extends StatelessWidget {
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
                   color: iconBackground,
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(14),
                 ),
                 child: Icon(icon, color: color, size: 22),
               ),
@@ -72,74 +72,64 @@ class LoanContactCard extends StatelessWidget {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    AppSpacing.boxXS,
-                    Row(
-                      children: [
-                        if (contact.phone != null && contact.phone!.isNotEmpty) ...[
-                          Text(
-                            contact.phone!,
-                            style: AppTypography.caption.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          AppSpacing.boxSM,
-                          const Icon(
-                            Icons.circle,
-                            size: 4,
-                            color: AppColors.textHint,
-                          ),
-                          AppSpacing.boxSM,
-                        ],
-                        Text(
-                          summary.isSettled
-                              ? 'সম্পূর্ণ পরিশোধ'
-                              : 'আমি ${isReceivable ? "পাবো" : "দেবো"}',
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                          overflow: TextOverflow.ellipsis,
+                    if (contact.phone != null && contact.phone!.isNotEmpty) ...[
+                      AppSpacing.boxXXS,
+                      Text(
+                        contact.phone!,
+                        style: AppTypography.caption.copyWith(
+                          color: AppColors.textSecondary,
                         ),
-                      ],
-                    ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                    if (summary.totalBorrow > 0 || summary.totalLend > 0) ...[
+                      AppSpacing.boxXXS,
+                      Text(
+                        'নিয়েছি ${AppNumberUtils.formatCurrency(summary.totalBorrow, decimalDigits: 0)} · দিয়েছি ${AppNumberUtils.formatCurrency(summary.totalLend, decimalDigits: 0)}',
+                        style: AppTypography.overline.copyWith(
+                          color: AppColors.textHint,
+                          fontSize: 10,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ],
                 ),
               ),
               AppSpacing.boxMD,
-              Flexible(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Text(
-                      balanceText,
-                      style: AppTypography.subtitle1.copyWith(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    balanceText,
+                    style: AppTypography.subtitle1.copyWith(
+                      color: color,
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  AppSpacing.boxXS,
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.sm,
+                      vertical: 2,
+                    ),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      tag,
+                      style: AppTypography.overline.copyWith(
                         color: color,
-                        fontWeight: FontWeight.w700,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    AppSpacing.boxXS,
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.sm,
-                        vertical: 2,
-                      ),
-                      decoration: BoxDecoration(
-                        color: color.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: Text(
-                        tag,
-                        style: AppTypography.overline.copyWith(
-                          color: color,
-                          fontSize: 10,
-                          fontWeight: FontWeight.w600,
-                        ),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ],
           ),

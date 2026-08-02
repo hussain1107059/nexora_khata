@@ -112,9 +112,13 @@ class LoanRepositoryImpl implements LoanRepository {
         businessId: transaction.businessId,
         contactId: transaction.contactId,
         type: transaction.type,
+        repayType: transaction.repayType,
         amount: transaction.amount,
         date: transaction.date,
         note: transaction.note,
+        paymentMethod: transaction.paymentMethod,
+        cashAccountId: transaction.cashAccountId,
+        bankAccountId: transaction.bankAccountId,
         createdAt: transaction.createdAt,
         updatedAt: transaction.updatedAt,
       );

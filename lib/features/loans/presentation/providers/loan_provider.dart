@@ -49,12 +49,36 @@ final loanDashboardProvider = FutureProvider<LoanDashboard>((ref) async {
     final borrow = list
         .where((t) => t.isBorrow)
         .fold<double>(0, (sum, t) => sum + t.amount);
+    final repaidLend = list
+        .where((t) => t.repaysLend)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+    final repaidBorrow = list
+        .where((t) => t.repaysBorrow)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+    final cashLend = list
+        .where((t) => t.isLend && t.isCash)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+    final cashBorrow = list
+        .where((t) => t.isBorrow && t.isCash)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+    final bankLend = list
+        .where((t) => t.isLend && !t.isCash)
+        .fold<double>(0, (sum, t) => sum + t.amount);
+    final bankBorrow = list
+        .where((t) => t.isBorrow && !t.isCash)
+        .fold<double>(0, (sum, t) => sum + t.amount);
     totalLend += lend;
     totalBorrow += borrow;
     return LoanContactSummary(
       contact: c,
       totalLend: lend,
       totalBorrow: borrow,
+      repaidLend: repaidLend,
+      repaidBorrow: repaidBorrow,
+      cashLend: cashLend,
+      cashBorrow: cashBorrow,
+      bankLend: bankLend,
+      bankBorrow: bankBorrow,
     );
   }).toList()
     ..sort((a, b) {

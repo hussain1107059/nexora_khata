@@ -7,8 +7,10 @@ import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
+import 'package:nexora_khata/di/injection_container.dart';
 import 'package:nexora_khata/features/loans/domain/entities/loan_transaction.dart';
 import 'package:nexora_khata/features/loans/presentation/providers/loan_provider.dart';
+import 'package:nexora_khata/features/transactions/data/datasources/transfer_datasource.dart';
 
 class LoanTransactionFormPage extends ConsumerStatefulWidget {
   final int contactId;
@@ -34,6 +36,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
   late final TextEditingController _noteCtrl;
   late DateTime _selectedDate;
   late String _type;
+  String? _repayType;
+  String _paymentMethod = 'cash';
 
   @override
   void initState() {
@@ -43,6 +47,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
     _noteCtrl = TextEditingController();
     _selectedDate = DateTime.now();
     _type = widget.initialType;
+    _repayType = null;
     _updateDateText();
   }
 
@@ -79,15 +84,31 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     final amount = double.tryParse(_amountCtrl.text) ?? 0;
+    if (_type == 'repay' && _repayType == null) {
+      AppSnackBar.error(context, 'কোন হিসাব পরিশোধ করছেন তা নির্বাচন করুন');
+      return;
+    }
     final now = DateTime.now();
+    final accountDs = getIt<TransferDataSource>();
+    int? cashId;
+    int? bankId;
+    if (_paymentMethod == 'cash') {
+      cashId = await accountDs.getDefaultCashAccountId();
+    } else {
+      bankId = await accountDs.getDefaultBankAccountId();
+    }
     final txn = LoanTransaction(
       id: 0,
       businessId: 0,
       contactId: widget.contactId,
       type: _type,
+      repayType: _type == 'repay' ? _repayType : null,
       amount: amount,
       date: _selectedDate,
       note: _noteCtrl.text.trim().isEmpty ? null : _noteCtrl.text.trim(),
+      paymentMethod: _paymentMethod,
+      cashAccountId: cashId,
+      bankAccountId: bankId,
       createdAt: now,
       updatedAt: now,
     );
@@ -103,7 +124,11 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
       );
       return;
     }
-    final label = _type == 'borrow' ? 'টাকা নেওয়া হয়েছে' : 'টাকা দেওয়া হয়েছে';
+    final label = switch (_type) {
+      'borrow' => 'টাকা নেওয়া হয়েছে',
+      'lend' => 'টাকা দেওয়া হয়েছে',
+      _ => 'পরিশোধ করা হয়েছে',
+    };
     AppSnackBar.success(context, label);
     ref.invalidate(loanDashboardProvider);
     ref.invalidate(loanTransactionsProvider(widget.contactId));
@@ -191,7 +216,10 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                       icon: Icons.arrow_upward_rounded,
                       color: AppColors.error,
                       selected: _type == 'borrow',
-                      onTap: () => setState(() => _type = 'borrow'),
+                      onTap: () => setState(() {
+                        _type = 'borrow';
+                        _repayType = null;
+                      }),
                     ),
                   ),
                   AppSpacing.boxWMD,
@@ -202,11 +230,60 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                       icon: Icons.arrow_downward_rounded,
                       color: AppColors.success,
                       selected: _type == 'lend',
-                      onTap: () => setState(() => _type = 'lend'),
+                      onTap: () => setState(() {
+                        _type = 'lend';
+                        _repayType = null;
+                      }),
+                    ),
+                  ),
+                  AppSpacing.boxWMD,
+                  Expanded(
+                    child: _TypeButton(
+                      label: 'পরিশোধ',
+                      subtitle: 'টাকা ফেরত/জমা',
+                      icon: Icons.autorenew_rounded,
+                      color: AppColors.info,
+                      selected: _type == 'repay',
+                      onTap: () => setState(() => _type = 'repay'),
                     ),
                   ),
                 ],
               ),
+              if (_type == 'repay') ...[
+                AppSpacing.boxLG,
+                Text(
+                  'কোন হিসাব পরিশোধ হচ্ছে?',
+                  style: AppTypography.labelMedium.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                ),
+                AppSpacing.boxHSM,
+                Row(
+                  children: [
+                    Expanded(
+                      child: _RepayDirectionButton(
+                        label: 'নেওয়া টাকা',
+                        subtitle: 'আমি ফেরত দিচ্ছি',
+                        icon: Icons.south_west_rounded,
+                        color: AppColors.error,
+                        selected: _repayType == 'borrow',
+                        onTap: () => setState(() => _repayType = 'borrow'),
+                      ),
+                    ),
+                    AppSpacing.boxWMD,
+                    Expanded(
+                      child: _RepayDirectionButton(
+                        label: 'দেওয়া টাকা',
+                        subtitle: 'ফেরত পাচ্ছি',
+                        icon: Icons.north_east_rounded,
+                        color: AppColors.success,
+                        selected: _repayType == 'lend',
+                        onTap: () => setState(() => _repayType = 'lend'),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
               AppSpacing.boxXL,
               AppTextField(
                 label: 'পরিমাণ',
@@ -227,6 +304,28 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                 },
               ),
               AppSpacing.boxLG,
+              DropdownButtonFormField<String>(
+                initialValue: _paymentMethod,
+                decoration: InputDecoration(
+                  labelText: 'পেমেন্ট পদ্ধতি',
+                  labelStyle: AppTypography.bodyText2.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+                ),
+                items: const [
+                  DropdownMenuItem(value: 'cash', child: Text('নগদ')),
+                  DropdownMenuItem(value: 'bank', child: Text('ব্যাংক')),
+                ],
+                onChanged: (v) => setState(() => _paymentMethod = v!),
+              ),
+              AppSpacing.boxLG,
               AppTextField(
                 label: 'তারিখ',
                 controller: _dateCtrl,
@@ -240,7 +339,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
               AppSpacing.boxLG,
               AppTextField(
                 label: 'নোট',
-                hint: 'কেন নেওয়া/দেওয়া হলো (ঐচ্ছিক)',
+                hint: 'কেন নেওয়া/দেওয়া/পরিশোধ হলো (ঐচ্ছিক)',
                 controller: _noteCtrl,
                 maxLines: 3,
                 textInputAction: TextInputAction.done,
@@ -259,6 +358,68 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RepayDirectionButton extends StatelessWidget {
+  final String label;
+  final String subtitle;
+  final IconData icon;
+  final Color color;
+  final bool selected;
+  final VoidCallback onTap;
+
+  const _RepayDirectionButton({
+    required this.label,
+    required this.subtitle,
+    required this.icon,
+    required this.color,
+    required this.selected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+        padding: AppSpacing.paddingLg,
+        decoration: BoxDecoration(
+          color: selected ? color.withValues(alpha: 0.1) : AppColors.white,
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(
+            color: selected ? color : AppColors.border,
+            width: selected ? 1.5 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: color, size: 24),
+            AppSpacing.boxHSM,
+            Text(
+              label,
+              style: AppTypography.subtitle2.copyWith(
+                color: selected ? color : AppColors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
+            ),
+            AppSpacing.boxXXS,
+            Text(
+              subtitle,
+              style: AppTypography.overline.copyWith(
+                color: AppColors.textSecondary,
+                fontSize: 9,
+              ),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ),
     );

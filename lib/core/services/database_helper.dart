@@ -424,14 +424,20 @@ class DatabaseHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         business_id INTEGER NOT NULL,
         contact_id INTEGER NOT NULL,
-        type TEXT NOT NULL CHECK(type IN ('borrow','lend')),
+        type TEXT NOT NULL CHECK(type IN ('borrow','lend','repay')),
+        repay_type TEXT CHECK(repay_type IN ('borrow','lend')),
         amount REAL NOT NULL CHECK(amount > 0),
         date TEXT NOT NULL,
         note TEXT,
+        payment_method TEXT,
+        cash_account_id INTEGER,
+        bank_account_id INTEGER,
         created_at TEXT NOT NULL DEFAULT (datetime('now')),
         updated_at TEXT NOT NULL DEFAULT (datetime('now')),
         FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE,
-        FOREIGN KEY (contact_id) REFERENCES loan_contacts(id) ON DELETE CASCADE
+        FOREIGN KEY (contact_id) REFERENCES loan_contacts(id) ON DELETE CASCADE,
+        FOREIGN KEY (cash_account_id) REFERENCES cash_accounts(id) ON DELETE SET NULL,
+        FOREIGN KEY (bank_account_id) REFERENCES bank_accounts(id) ON DELETE SET NULL
       )
     ''');
   }
@@ -831,6 +837,12 @@ class DatabaseHelper {
     if (version == 8) {
       await _relinkAllTransactions(db);
     }
+    if (version == 9) {
+      await _rebuildLoanTransactions(db);
+    }
+    if (version == 10) {
+      await _addLoanAccountColumns(db);
+    }
   }
 
   void _createBalanceUpdateTriggers(Database db) {
@@ -916,6 +928,60 @@ class DatabaseHelper {
             where: 'id = ?', whereArgs: [rowId]);
         }
       }
+    }
+  }
+
+  Future<void> _rebuildLoanTransactions(Database db) async {
+    await db.execute('''
+      CREATE TABLE loan_transactions_new (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        business_id INTEGER NOT NULL,
+        contact_id INTEGER NOT NULL,
+        type TEXT NOT NULL CHECK(type IN ('borrow','lend','repay')),
+        repay_type TEXT CHECK(repay_type IN ('borrow','lend')),
+        amount REAL NOT NULL CHECK(amount > 0),
+        date TEXT NOT NULL,
+        note TEXT,
+        created_at TEXT NOT NULL DEFAULT (datetime('now')),
+        updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+        FOREIGN KEY (business_id) REFERENCES businesses(id) ON DELETE CASCADE,
+        FOREIGN KEY (contact_id) REFERENCES loan_contacts(id) ON DELETE CASCADE
+      )
+    ''');
+    await db.execute('''
+      INSERT INTO loan_transactions_new (id, business_id, contact_id, type, amount, date, note, created_at, updated_at)
+      SELECT id, business_id, contact_id, type, amount, date, note, created_at, updated_at
+      FROM loan_transactions
+    ''');
+    await db.execute('DROP TABLE loan_transactions');
+    await db.execute(
+        'ALTER TABLE loan_transactions_new RENAME TO loan_transactions');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_loan_txn_business ON loan_transactions(business_id)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_loan_txn_contact ON loan_transactions(contact_id)');
+    await db.execute(
+        'CREATE INDEX IF NOT EXISTS idx_loan_txn_date ON loan_transactions(date)');
+  }
+
+  Future<void> _addLoanAccountColumns(Database db) async {
+    final columns = await db.rawQuery('PRAGMA table_info(loan_transactions)');
+    final names = columns.map((c) => c['name']).toSet();
+    if (!names.contains('payment_method')) {
+      await db.execute(
+          'ALTER TABLE loan_transactions ADD COLUMN payment_method TEXT');
+    }
+    if (!names.contains('cash_account_id')) {
+      await db.execute('''
+        ALTER TABLE loan_transactions ADD COLUMN cash_account_id INTEGER
+        REFERENCES cash_accounts(id) ON DELETE SET NULL
+      ''');
+    }
+    if (!names.contains('bank_account_id')) {
+      await db.execute('''
+        ALTER TABLE loan_transactions ADD COLUMN bank_account_id INTEGER
+        REFERENCES bank_accounts(id) ON DELETE SET NULL
+      ''');
     }
   }
 

@@ -148,7 +148,15 @@ class _AppInitializerState extends ConsumerState<_AppInitializer> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.menu_book_rounded, size: 64, color: AppColors.primary),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.asset(
+                  'assets/images/NexoraKhata.png',
+                  width: 96,
+                  height: 96,
+                  fit: BoxFit.cover,
+                ),
+              ),
               const SizedBox(height: 16),
               Text(
                 'নেক্সোরা খাতা',

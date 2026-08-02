@@ -6,8 +6,7 @@ import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
-import 'package:nexora_khata/core/utils/number_utils.dart';
-import 'package:nexora_khata/core/widgets/app_dialog.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';import 'package:nexora_khata/core/widgets/app_dialog.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
@@ -74,7 +73,15 @@ class LoanDetailPage extends ConsumerWidget {
           final totalLend = txns
               .where((t) => t.isLend)
               .fold<double>(0, (s, t) => s + t.amount);
-          final balance = totalLend - totalBorrow;
+          final repaidBorrow = txns
+              .where((t) => t.repaysBorrow)
+              .fold<double>(0, (s, t) => s + t.amount);
+          final repaidLend = txns
+              .where((t) => t.repaysLend)
+              .fold<double>(0, (s, t) => s + t.amount);
+          final remainingBorrow = totalBorrow - repaidBorrow;
+          final remainingLend = totalLend - repaidLend;
+          final balance = remainingLend - remainingBorrow;
 
           if (txns.isEmpty) {
             return const AppEmptyState(
@@ -98,6 +105,8 @@ class LoanDetailPage extends ConsumerWidget {
                 _BalanceCard(
                   totalBorrow: totalBorrow,
                   totalLend: totalLend,
+                  repaidBorrow: repaidBorrow,
+                  repaidLend: repaidLend,
                   balance: balance,
                 ),
                 AppSpacing.boxHLG,
@@ -190,6 +199,20 @@ class LoanDetailPage extends ConsumerWidget {
                   },
                 ),
                 AppSpacing.boxSM,
+                _SheetAction(
+                  icon: Icons.autorenew_rounded,
+                  color: AppColors.info,
+                  title: 'পরিশোধ',
+                  subtitle: 'টাকা ফেরত বা জমা',
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    context.push(
+                      RouteNames.loanTxnAdd,
+                      extra: {'contactId': contactId, 'name': name, 'type': 'repay'},
+                    );
+                  },
+                ),
+                AppSpacing.boxSM,
               ],
             ),
           ),
@@ -260,11 +283,15 @@ class LoanDetailPage extends ConsumerWidget {
 class _BalanceCard extends StatelessWidget {
   final double totalBorrow;
   final double totalLend;
+  final double repaidBorrow;
+  final double repaidLend;
   final double balance;
 
   const _BalanceCard({
     required this.totalBorrow,
     required this.totalLend,
+    required this.repaidBorrow,
+    required this.repaidLend,
     required this.balance,
   });
 
@@ -321,6 +348,26 @@ class _BalanceCard extends StatelessWidget {
               ),
             ],
           ),
+          AppSpacing.boxSM,
+          Row(
+            children: [
+              Expanded(
+                child: _MiniStat(
+                  label: 'পরিশোধ (নেওয়া)',
+                  amount: repaidBorrow,
+                  color: AppColors.error,
+                ),
+              ),
+              Container(width: 1, height: 36, color: color.withValues(alpha: 0.3)),
+              Expanded(
+                child: _MiniStat(
+                  label: 'পরিশোধ (দেওয়া)',
+                  amount: repaidLend,
+                  color: AppColors.success,
+                ),
+              ),
+            ],
+          ),
         ],
       ),
     );
@@ -370,10 +417,18 @@ class _TransactionTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isBorrow = txn.isBorrow;
-    final color = isBorrow ? AppColors.error : AppColors.success;
-    final icon = isBorrow
-        ? Icons.arrow_upward_rounded
-        : Icons.arrow_downward_rounded;
+    final isRepay = txn.isRepay;
+    final color = isRepay
+        ? AppColors.info
+        : (isBorrow ? AppColors.error : AppColors.success);
+    final icon = isRepay
+        ? Icons.autorenew_rounded
+        : (isBorrow
+            ? Icons.arrow_upward_rounded
+            : Icons.arrow_downward_rounded);
+    final title = isRepay
+        ? (txn.repaysBorrow ? 'নেওয়া পরিশোধ' : 'দেওয়া পরিশোধ')
+        : (isBorrow ? 'নিয়েছি' : 'দিয়েছি');
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 4),
@@ -400,7 +455,7 @@ class _TransactionTile extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    isBorrow ? 'নিয়েছি' : 'দিয়েছি',
+                    title,
                     style: AppTypography.subtitle2.copyWith(
                       color: AppColors.textPrimary,
                       fontWeight: FontWeight.w600,
@@ -413,6 +468,17 @@ class _TransactionTile extends StatelessWidget {
                       color: AppColors.textSecondary,
                     ),
                   ),
+                  if (txn.paymentMethod != null &&
+                      txn.paymentMethod!.isNotEmpty) ...[
+                    AppSpacing.boxXXS,
+                    Text(
+                      AppNumberUtils.formatPaymentMethod(txn.paymentMethod!),
+                      style: AppTypography.caption.copyWith(
+                        color: txn.isCash ? AppColors.primary : AppColors.info,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
                   if (txn.note != null && txn.note!.isNotEmpty) ...[
                     AppSpacing.boxXXS,
                     Text(
