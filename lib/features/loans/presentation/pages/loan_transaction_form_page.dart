@@ -5,6 +5,8 @@ import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
+import 'package:nexora_khata/core/utils/date_utils.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
@@ -76,9 +78,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
   }
 
   void _updateDateText() {
-    _dateCtrl.text = '${_selectedDate.year}-'
-        '${_selectedDate.month.toString().padLeft(2, '0')}-'
-        '${_selectedDate.day.toString().padLeft(2, '0')}';
+    _dateCtrl.text = AppDateUtils.formatDate(_selectedDate);
   }
 
   Future<void> _pickDate() async {
@@ -99,7 +99,7 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
 
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
-    final amount = double.tryParse(_amountCtrl.text) ?? 0;
+    final amount = AppNumberUtils.parseAmount(_amountCtrl.text);
     if (_type == 'repay' && _repayType == null) {
       AppSnackBar.error(context, AppStrings.s.loanTxnRepaySelectError);
       return;
@@ -312,8 +312,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                 ),
                 validator: (v) {
                   if (v == null || v.isEmpty) return AppStrings.s.valEnterAmount;
-                  final n = double.tryParse(v);
-                  if (n == null || n <= 0) return AppStrings.s.valEnterValidAmount;
+                  final n = AppNumberUtils.parseAmount(v);
+                  if (n <= 0) return AppStrings.s.valEnterValidAmount;
                   return null;
                 },
               ),

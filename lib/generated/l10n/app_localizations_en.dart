@@ -1343,6 +1343,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rptSharePdf => 'Share PDF';
 
   @override
+  String get rptPreviewPdf => 'Open PDF';
+
+  @override
+  String get rptPrintPdf => 'Print';
+
+  @override
   String get rptSelectRange =>
       'Choose a date range and filters, then press Generate';
 

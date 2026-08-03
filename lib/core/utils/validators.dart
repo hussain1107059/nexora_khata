@@ -1,4 +1,5 @@
 import 'package:nexora_khata/core/services/app_strings.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';
 
 abstract final class AppValidators {
   AppValidators._();
@@ -53,8 +54,8 @@ abstract final class AppValidators {
     if (value == null || value.trim().isEmpty) {
       return AppStrings.s.valAmountRequired;
     }
-    final amount = double.tryParse(value.trim());
-    if (amount == null || amount <= 0) {
+    final amount = AppNumberUtils.parseAmount(value);
+    if (amount <= 0) {
       return AppStrings.s.valAmountInvalid;
     }
     return null;
@@ -64,8 +65,8 @@ abstract final class AppValidators {
     if (value == null || value.trim().isEmpty) {
       return AppStrings.s.valNumberRequired;
     }
-    final number = double.tryParse(value.trim());
-    if (number == null || number < 0) {
+    final number = AppNumberUtils.parseAmount(value);
+    if (number < 0) {
       return AppStrings.s.valNumberPositive;
     }
     return null;

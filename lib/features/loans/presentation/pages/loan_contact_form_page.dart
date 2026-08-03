@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
@@ -85,7 +86,7 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
     }
 
     final amountText = _amountController.text.trim();
-    final amount = double.tryParse(amountText) ?? 0;
+    final amount = AppNumberUtils.parseAmount(amountText);
     if (!_editing && amount > 0) {
       final createdId = await _createdContactId(notifier);
       if (createdId != null) {

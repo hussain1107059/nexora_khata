@@ -442,6 +442,8 @@
   "rptAllCategories": "সব ক্যাটাগরি",
   "rptGenerate": "রিপোর্ট তৈরি করুন",
   "rptSharePdf": "PDF শেয়ার করুন",
+  "rptPreviewPdf": "PDF দেখুন",
+  "rptPrintPdf": "প্রিন্ট",
   "rptSelectRange": "তারিখ ও ফিল্টার বেছে নিন, তারপর তৈরি করুন চাপুন",
   "rptNoDataForRange": "এই সময়ে কোনো লেনদেন পাওয়া যায়নি",
   "rptDetailTxn": "লেনদেনসমূহ",

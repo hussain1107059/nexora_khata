@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
+import 'package:nexora_khata/core/utils/date_utils.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
@@ -118,9 +120,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
   }
 
   void _updateDateText() {
-    _dateCtrl.text = '${_selectedDate.year}-'
-        '${_selectedDate.month.toString().padLeft(2, '0')}-'
-        '${_selectedDate.day.toString().padLeft(2, '0')}';
+    _dateCtrl.text = AppDateUtils.formatDate(_selectedDate);
   }
 
   Future<void> _pickDate() async {
@@ -156,7 +156,7 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
       AppSnackBar.warning(context, AppStrings.s.valSelectCategory);
       return;
     }
-    final amount = double.tryParse(_amountCtrl.text) ?? 0;
+    final amount = AppNumberUtils.parseAmount(_amountCtrl.text);
     setState(() => _isSubmitting = true);
     await widget.onSubmit(
       TransactionFormData(
@@ -189,8 +189,8 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
             prefix: Text('৳ ', style: AppTypography.subtitle1.copyWith(color: AppColors.textSecondary)),
             validator: (v) {
               if (v == null || v.isEmpty) return AppStrings.s.valEnterAmount;
-              final n = double.tryParse(v);
-              if (n == null || n <= 0) return AppStrings.s.valEnterValidAmount;
+              final n = AppNumberUtils.parseAmount(v);
+              if (n <= 0) return AppStrings.s.valEnterValidAmount;
               return null;
             },
           ),

@@ -2617,6 +2617,18 @@ abstract class AppLocalizations {
   /// **'Share PDF'**
   String get rptSharePdf;
 
+  /// No description provided for @rptPreviewPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Open PDF'**
+  String get rptPreviewPdf;
+
+  /// No description provided for @rptPrintPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Print'**
+  String get rptPrintPdf;
+
   /// No description provided for @rptSelectRange.
   ///
   /// In en, this message translates to:

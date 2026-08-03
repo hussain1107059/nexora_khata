@@ -440,4 +440,12 @@ class PdfReportService {
       shareText: fileName.replaceAll('.pdf', ''),
     );
   }
+
+  static String defaultFileName([DateTime? now]) {
+    final t = now ?? DateTime.now();
+    String two(int n) => n.toString().padLeft(2, '0');
+    return 'nexorakhata_'
+        '${t.year}${two(t.month)}${two(t.day)}'
+        '_${two(t.hour)}${two(t.minute)}${two(t.second)}.pdf';
+  }
 }

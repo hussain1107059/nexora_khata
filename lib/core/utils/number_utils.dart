@@ -9,6 +9,31 @@ abstract final class AppNumberUtils {
   static const String localeBn = 'bn';
   static const String localeEn = 'en';
 
+  static const String _bnDigits = '০১২৩৪৫৬৭৮৯';
+
+  static bool get isBanglaLocale => AppStrings.s.localeName.startsWith('bn');
+
+  /// Converts Latin digits (0-9) to Bangla digits (০-৯).
+  static String toBnDigits(String input) {
+    return input.replaceAllMapped(
+      RegExp(r'[0-9]'),
+      (m) => _bnDigits[m[0]!.codeUnitAt(0) - 48],
+    );
+  }
+
+  /// Converts Bangla digits (০-৯) to Latin digits (0-9).
+  static String toEnDigits(String input) {
+    return input.replaceAllMapped(
+      RegExp(r'[০-৯]'),
+      (m) => '${m[0]!.codeUnitAt(0) - 0x09E6}',
+    );
+  }
+
+  /// Converts digits to Bangla when the active locale is Bangla.
+  static String localizeDigits(String input) {
+    return isBanglaLocale ? toBnDigits(input) : input;
+  }
+
   static String formatCurrency(
     double amount, {
     int decimalDigits = 2,
@@ -19,7 +44,7 @@ abstract final class AppNumberUtils {
       decimalDigits: decimalDigits,
       locale: localeEn,
     );
-    return formatter.format(amount);
+    return localizeDigits(formatter.format(amount));
   }
 
   static String formatNumber(
@@ -27,41 +52,41 @@ abstract final class AppNumberUtils {
     int decimalDigits = 0,
   }) {
     final formatter = NumberFormat('#,###${decimalDigits > 0 ? '.${'0' * decimalDigits}' : ''}');
-    return formatter.format(number);
+    return localizeDigits(formatter.format(number));
   }
 
   static String formatCompact(double number) {
     if (number.abs() >= 10000000) {
-      return '${(number / 10000000).toStringAsFixed(2)}Cr';
+      return localizeDigits('${(number / 10000000).toStringAsFixed(2)}Cr');
     }
     if (number.abs() >= 100000) {
-      return '${(number / 100000).toStringAsFixed(1)}L';
+      return localizeDigits('${(number / 100000).toStringAsFixed(1)}L');
     }
     if (number.abs() >= 1000) {
-      return '${(number / 1000).toStringAsFixed(1)}K';
+      return localizeDigits('${(number / 1000).toStringAsFixed(1)}K');
     }
-    return number.toStringAsFixed(0);
+    return localizeDigits(number.toStringAsFixed(0));
   }
 
   static String formatCompactBn(double number) {
     final s = AppStrings.s;
     if (number.abs() >= 10000000) {
-      return s.numCrore((number / 10000000).toStringAsFixed(2));
+      return s.numCrore(localizeDigits((number / 10000000).toStringAsFixed(2)));
     }
     if (number.abs() >= 100000) {
-      return s.numLakh((number / 100000).toStringAsFixed(1));
+      return s.numLakh(localizeDigits((number / 100000).toStringAsFixed(1)));
     }
     if (number.abs() >= 1000) {
-      return s.numThousand((number / 1000).toStringAsFixed(1));
+      return s.numThousand(localizeDigits((number / 1000).toStringAsFixed(1)));
     }
-    return number.toStringAsFixed(0);
+    return localizeDigits(number.toStringAsFixed(0));
   }
 
   static String formatPercentage(
     double value, {
     int decimalDigits = 1,
   }) {
-    return '${value.toStringAsFixed(decimalDigits)}%';
+    return '${localizeDigits(value.toStringAsFixed(decimalDigits))}%';
   }
 
   static String formatSign(double amount) {
@@ -100,6 +125,7 @@ abstract final class AppNumberUtils {
   }
 
   static double parseAmount(String text) {
-    return double.tryParse(text.replaceAll(RegExp(r'[^0-9.]'), '')) ?? 0;
+    final normalized = toEnDigits(text).replaceAll(RegExp(r'[^0-9.]'), '');
+    return double.tryParse(normalized) ?? 0;
   }
 }

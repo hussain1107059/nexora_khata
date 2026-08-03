@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';
 
 abstract final class AppDateUtils {
   AppDateUtils._();
@@ -16,16 +17,63 @@ abstract final class AppDateUtils {
   static const String dayMonthFormat = 'dd MMM';
   static const String yearFormat = 'yyyy';
 
+  /// Formats used only for storage / comparisons. These must always stay
+  /// Latin (ISO) even in the Bangla locale, otherwise string comparisons and
+  /// DB round-trips break.
+  static const Set<String> _storageFormats = {
+    dateFormat,
+    timeFormat,
+    dateTimeFormat,
+  };
+
+  static bool get isBanglaLocale => AppNumberUtils.isBanglaLocale;
+
   static String formatDate(DateTime date, {String? format}) {
-    return DateFormat(format ?? displayDateFormat).format(date);
+    final f = format ?? displayDateFormat;
+    if (isBanglaLocale && !_storageFormats.contains(f)) {
+      return _formatBn(date, f);
+    }
+    return DateFormat(f).format(date);
   }
 
   static String formatDateTime(DateTime date, {String? format}) {
-    return DateFormat(format ?? displayDateTimeFormat).format(date);
+    final f = format ?? displayDateTimeFormat;
+    if (isBanglaLocale && !_storageFormats.contains(f)) {
+      return _formatBn(date, f);
+    }
+    return DateFormat(f).format(date);
   }
 
   static String formatTime(DateTime date, {String? format}) {
-    return DateFormat(format ?? displayTimeFormat).format(date);
+    final f = format ?? displayTimeFormat;
+    if (isBanglaLocale && !_storageFormats.contains(f)) {
+      return _formatBn(date, f);
+    }
+    return DateFormat(f).format(date);
+  }
+
+  static String _formatBn(DateTime date, String f) {
+    final monthName = monthNameBn(date.month);
+    final hour12 = date.hour % 12 == 0 ? 12 : date.hour % 12;
+    const digits = AppNumberUtils.toBnDigits;
+
+    var s = f;
+    s = s.replaceAll('yyyy', digits('${date.year}'));
+    s = s.replaceAll('yy', digits((date.year % 100).toString().padLeft(2, '0')));
+    s = s.replaceAll('MMMM', monthName);
+    s = s.replaceAll('MMM', monthName);
+    s = s.replaceAll('MM', digits(date.month.toString().padLeft(2, '0')));
+    s = s.replaceAll('dd', digits(date.day.toString().padLeft(2, '0')));
+    s = s.replaceAll('HH', digits(date.hour.toString().padLeft(2, '0')));
+    s = s.replaceAll('hh', digits(hour12.toString().padLeft(2, '0')));
+    s = s.replaceAll('mm', digits(date.minute.toString().padLeft(2, '0')));
+    s = s.replaceAll('M', digits('${date.month}'));
+    s = s.replaceAll('d', digits('${date.day}'));
+    s = s.replaceAll('H', digits('${date.hour}'));
+    s = s.replaceAll('h', digits('$hour12'));
+    s = s.replaceAll('m', digits('${date.minute}'));
+    s = s.replaceAll('a', date.hour < 12 ? 'AM' : 'PM');
+    return s;
   }
 
   static String formatToISO(DateTime date) {

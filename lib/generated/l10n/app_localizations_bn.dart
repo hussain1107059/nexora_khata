@@ -1343,6 +1343,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get rptSharePdf => 'PDF শেয়ার করুন';
 
   @override
+  String get rptPreviewPdf => 'PDF দেখুন';
+
+  @override
+  String get rptPrintPdf => 'প্রিন্ট';
+
+  @override
   String get rptSelectRange =>
       'তারিখ ও ফিল্টার বেছে নিন, তারপর তৈরি করুন চাপুন';
 

@@ -15,6 +15,7 @@ import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/expense_category_provider.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/income_category_provider.dart';
 import 'package:nexora_khata/features/reports/data/services/pdf_report_service.dart';
+import 'package:nexora_khata/features/reports/presentation/pages/pdf_preview_page.dart';
 import 'package:nexora_khata/features/reports/presentation/providers/report_provider.dart';
 import 'package:nexora_khata/features/reports/presentation/widgets/report_summary_card.dart';
 import 'package:nexora_khata/features/transactions/presentation/models/transaction_entry.dart';
@@ -103,7 +104,7 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
     _apply();
   }
 
-  Future<void> _sharePdf() async {
+  Future<void> _openPdf() async {
     final data = ref.read(customReportProvider).valueOrNull;
     if (data == null || data.entries.isEmpty) {
       AppSnackBar.warning(context, AppStrings.s.rptNoDataForRange);
@@ -117,9 +118,13 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
         dateRange: '$_from - $_to',
       );
       if (!mounted) return;
-      await PdfReportService.sharePdf(
-        bytes,
-        'transaction_report_${_from}_$_to.pdf',
+      await Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => PdfPreviewPage(
+            bytes: bytes,
+            fileName: PdfReportService.defaultFileName(),
+          ),
+        ),
       );
     } catch (e) {
       if (!mounted) return;
@@ -138,9 +143,9 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
         centerTitle: true,
         actions: [
           IconButton(
-            icon: const Icon(Icons.share_rounded),
-            tooltip: AppStrings.s.rptSharePdf,
-            onPressed: _sharePdf,
+            icon: const Icon(Icons.picture_as_pdf_rounded),
+            tooltip: AppStrings.s.rptPreviewPdf,
+            onPressed: _openPdf,
           ),
         ],
       ),

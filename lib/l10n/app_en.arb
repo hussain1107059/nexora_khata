@@ -445,6 +445,8 @@
   "rptAllCategories": "All Categories",
   "rptGenerate": "Generate Report",
   "rptSharePdf": "Share PDF",
+  "rptPreviewPdf": "Open PDF",
+  "rptPrintPdf": "Print",
   "rptSelectRange": "Choose a date range and filters, then press Generate",
   "rptNoDataForRange": "No transactions found for this range",
   "rptDetailTxn": "Transactions",
