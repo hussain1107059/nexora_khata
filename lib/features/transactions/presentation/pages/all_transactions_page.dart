@@ -150,9 +150,9 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
           ? AppStrings.s.txnRepay
           : (isBorrow ? AppStrings.s.loanBorrowLabel : AppStrings.s.loanLendLabel);
       return TransactionCard(
-        description: entry.contactName ?? '',
+        description: title,
         date: entry.date,
-        categoryName: title,
+        categoryName: entry.contactName ?? '',
         amount: entry.amount,
         status: entry.status,
         iconBackground: color.withValues(alpha: 0.1),
