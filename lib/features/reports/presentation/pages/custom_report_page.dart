@@ -13,6 +13,8 @@ import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
+import 'package:nexora_khata/features/categories/domain/entities/expense_category.dart';
+import 'package:nexora_khata/features/categories/domain/entities/income_category.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/expense_category_provider.dart';
 import 'package:nexora_khata/features/categories/presentation/providers/income_category_provider.dart';
 import 'package:nexora_khata/features/reports/data/services/pdf_report_service.dart';
@@ -30,8 +32,6 @@ class CustomReportPage extends ConsumerStatefulWidget {
 }
 
 class _CustomReportPageState extends ConsumerState<CustomReportPage> {
-  static const int _allCategories = -1;
-
   late String _from;
   late String _to;
   String? _type;
@@ -69,19 +69,47 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
     );
   }
 
-  void _selectType(String? type) {
-    setState(() => _type = type);
-    _apply();
-  }
-
-  void _selectIncomeCategory(int? id) {
-    setState(() => _incomeCategoryId = id);
-    _apply();
-  }
-
-  void _selectExpenseCategory(int? id) {
-    setState(() => _expenseCategoryId = id);
-    _apply();
+  Future<void> _showFilterSheet() async {
+    List<IncomeCategory> incomeCats;
+    List<ExpenseCategory> expenseCats;
+    try {
+      final results = await Future.wait([
+        ref.read(incomeCategoryListProvider.future),
+        ref.read(expenseCategoryListProvider.future),
+      ]);
+      incomeCats = results[0] as List<IncomeCategory>;
+      expenseCats = results[1] as List<ExpenseCategory>;
+    } catch (_) {
+      incomeCats = const [];
+      expenseCats = const [];
+    }
+    if (!mounted) return;
+    showModalBottomSheet<void>(
+      context: context,
+      barrierColor: AppColors.scrim,
+      backgroundColor: AppColors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXxl)),
+      ),
+      builder: (ctx) => _ReportFilterSheet(
+        initialType: _type,
+        initialIncomeCategoryId: _incomeCategoryId,
+        initialExpenseCategoryId: _expenseCategoryId,
+        incomeCategories: incomeCats.map((c) => MapEntry(c.id, c.name)).toList(),
+        expenseCategories:
+            expenseCats.map((c) => MapEntry(c.id, c.name)).toList(),
+        onApply: (type, incomeCategoryId, expenseCategoryId) {
+          setState(() {
+            _type = type;
+            _incomeCategoryId = incomeCategoryId;
+            _expenseCategoryId = expenseCategoryId;
+          });
+          _apply();
+        },
+      ),
+    );
   }
 
   Future<void> _pickDate({required bool isFrom}) async {
@@ -202,11 +230,8 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
   }
 
   Widget _buildFilterCard() {
-    final incomeCatsAsync = ref.watch(incomeCategoryListProvider);
-    final expenseCatsAsync = ref.watch(expenseCategoryListProvider);
-    final includeIncome = _type == null || _type == 'income';
-    final includeExpense = _type == null || _type == 'expense';
-
+    final hasFilter =
+        _type != null || _incomeCategoryId != null || _expenseCategoryId != null;
     return Container(
       padding: AppSpacing.paddingLg,
       decoration: BoxDecoration(
@@ -221,105 +246,27 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
           ),
         ],
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: _DateTile(
-                  label: AppStrings.s.rptFromDate,
-                  date: _from,
-                  onTap: () => _pickDate(isFrom: true),
-                ),
-              ),
-              AppSpacing.boxSM,
-              Expanded(
-                child: _DateTile(
-                  label: AppStrings.s.rptToDate,
-                  date: _to,
-                  onTap: () => _pickDate(isFrom: false),
-                ),
-              ),
-            ],
-          ),
-          AppSpacing.boxHLG,
-          Text(
-            AppStrings.s.txnType,
-            style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary),
+          Expanded(
+            child: _DateTile(
+              label: AppStrings.s.rptFromDate,
+              date: _from,
+              onTap: () => _pickDate(isFrom: true),
+            ),
           ),
           AppSpacing.boxSM,
-          Wrap(
-            spacing: AppSpacing.sm,
-            runSpacing: AppSpacing.sm,
-            children: [
-              _TypeChip(label: AppStrings.s.txnAll, selected: _type == null, onTap: () => _selectType(null)),
-              _TypeChip(label: AppStrings.s.txnIncomeTitle, selected: _type == 'income', onTap: () => _selectType('income')),
-              _TypeChip(label: AppStrings.s.txnExpenseTitle, selected: _type == 'expense', onTap: () => _selectType('expense')),
-              _TypeChip(label: AppStrings.s.txnLoan, selected: _type == 'loan', onTap: () => _selectType('loan')),
-            ],
+          Expanded(
+            child: _DateTile(
+              label: AppStrings.s.rptToDate,
+              date: _to,
+              onTap: () => _pickDate(isFrom: false),
+            ),
           ),
-          if (includeIncome) ...[
-            AppSpacing.boxHLG,
-            Text(
-              AppStrings.s.rptIncomeCategory,
-              style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary),
-            ),
-            AppSpacing.boxSM,
-            _buildCategoryDropdown(
-              categories: (incomeCatsAsync.valueOrNull ?? const [])
-                  .map((c) => MapEntry(c.id, c.name))
-                  .toList(),
-              selected: _incomeCategoryId,
-              onChanged: _selectIncomeCategory,
-            ),
-          ],
-          if (includeExpense) ...[
-            AppSpacing.boxHLG,
-            Text(
-              AppStrings.s.rptExpenseCategory,
-              style: AppTypography.labelMedium.copyWith(color: AppColors.textSecondary),
-            ),
-            AppSpacing.boxSM,
-            _buildCategoryDropdown(
-              categories: (expenseCatsAsync.valueOrNull ?? const [])
-                  .map((c) => MapEntry(c.id, c.name))
-                  .toList(),
-              selected: _expenseCategoryId,
-              onChanged: _selectExpenseCategory,
-            ),
-          ],
-          AppSpacing.boxHLG,
-          AppButton.primary(
-            AppStrings.s.rptGenerate,
-            icon: Icons.manage_search_rounded,
-            onPressed: _apply,
-          ),
+          AppSpacing.boxSM,
+          _FilterButton(active: hasFilter, onTap: _showFilterSheet),
         ],
       ),
-    );
-  }
-
-  Widget _buildCategoryDropdown({
-    required List<MapEntry<int, String>> categories,
-    required int? selected,
-    required ValueChanged<int?> onChanged,
-  }) {
-    return DropdownButtonFormField<int>(
-      initialValue: selected ?? _allCategories,
-      decoration: InputDecoration(
-        labelText: AppStrings.s.rptAllCategories,
-        labelStyle: AppTypography.bodyText2.copyWith(color: AppColors.textSecondary),
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(AppSpacing.radiusMd)),
-        contentPadding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.md),
-        isDense: true,
-      ),
-      items: [
-        const DropdownMenuItem(value: _allCategories, child: Text('-')),
-        for (final c in categories)
-          DropdownMenuItem(value: c.key, child: Text(c.value)),
-      ],
-      onChanged: (v) => onChanged(v == _allCategories ? null : v),
     );
   }
 
@@ -346,6 +293,7 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
         iconColor: color,
         icon: icon,
         amountColor: color,
+        compact: true,
         completedStatusText: AppStrings.s.statusCompleted,
         onTap: () {
           final contactId = entry.contactId;
@@ -366,6 +314,7 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
       iconColor: color,
       icon: isIncome ? Icons.arrow_downward_rounded : Icons.arrow_upward_rounded,
       amountColor: color,
+      compact: true,
       completedStatusText: isIncome ? AppStrings.s.statusReceived : AppStrings.s.statusPaid,
       onTap: () {
         final route = isIncome
@@ -438,35 +387,268 @@ class _DateTile extends StatelessWidget {
   }
 }
 
-class _TypeChip extends StatelessWidget {
-  final String label;
-  final bool selected;
+class _FilterButton extends StatelessWidget {
+  final bool active;
   final VoidCallback onTap;
 
-  const _TypeChip({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
+  const _FilterButton({required this.active, required this.onTap});
 
   @override
   Widget build(BuildContext context) {
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Material(
+          color: active ? AppColors.primary : AppColors.background,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            side: BorderSide(
+              color: active ? AppColors.primary : AppColors.border,
+            ),
+          ),
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Icon(
+                Icons.filter_alt_rounded,
+                color: active ? AppColors.white : AppColors.textPrimary,
+                size: 22,
+              ),
+            ),
+          ),
+        ),
+        if (active)
+          Positioned(
+            top: -4,
+            right: -4,
+            child: Container(
+              width: 12,
+              height: 12,
+              decoration: BoxDecoration(
+                color: AppColors.error,
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: AppColors.cardBackground,
+                  width: 2,
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _ReportFilterSheet extends StatefulWidget {
+  final String? initialType;
+  final int? initialIncomeCategoryId;
+  final int? initialExpenseCategoryId;
+  final List<MapEntry<int, String>> incomeCategories;
+  final List<MapEntry<int, String>> expenseCategories;
+  final void Function(String?, int?, int?) onApply;
+
+  const _ReportFilterSheet({
+    required this.initialType,
+    required this.initialIncomeCategoryId,
+    required this.initialExpenseCategoryId,
+    required this.incomeCategories,
+    required this.expenseCategories,
+    required this.onApply,
+  });
+
+  @override
+  State<_ReportFilterSheet> createState() => _ReportFilterSheetState();
+}
+
+class _ReportFilterSheetState extends State<_ReportFilterSheet> {
+  static const int _allCategories = -1;
+
+  late String? _type = widget.initialType;
+  late int? _incomeCategoryId = widget.initialIncomeCategoryId;
+  late int? _expenseCategoryId = widget.initialExpenseCategoryId;
+
+  bool get _includeIncome => _type == null || _type == 'income';
+  bool get _includeExpense => _type == null || _type == 'expense';
+
+  @override
+  Widget build(BuildContext context) {
+    final hasFilter =
+        _type != null || _incomeCategoryId != null || _expenseCategoryId != null;
+    return SafeArea(
+      child: Padding(
+        padding: AppSpacing.paddingLg,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  AppStrings.s.commonFilter,
+                  style: AppTypography.subtitle1.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                if (hasFilter)
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _type = null;
+                        _incomeCategoryId = null;
+                        _expenseCategoryId = null;
+                      });
+                    },
+                    child: Text(AppStrings.s.txnClearAll),
+                  ),
+              ],
+            ),
+            AppSpacing.boxMD,
+            Text(
+              AppStrings.s.txnType,
+              style: AppTypography.labelMedium.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
+            AppSpacing.boxSM,
+            Wrap(
+              spacing: AppSpacing.sm,
+              runSpacing: AppSpacing.sm,
+              children: [
+                _buildOption(
+                  label: AppStrings.s.txnAll,
+                  value: null,
+                  selected: _type,
+                  onSelected: (v) => setState(() => _type = v),
+                ),
+                _buildOption(
+                  label: AppStrings.s.txnIncomeTitle,
+                  value: 'income',
+                  selected: _type,
+                  onSelected: (v) => setState(() => _type = v),
+                ),
+                _buildOption(
+                  label: AppStrings.s.txnExpenseTitle,
+                  value: 'expense',
+                  selected: _type,
+                  onSelected: (v) => setState(() => _type = v),
+                ),
+                _buildOption(
+                  label: AppStrings.s.txnLoan,
+                  value: 'loan',
+                  selected: _type,
+                  onSelected: (v) => setState(() => _type = v),
+                ),
+              ],
+            ),
+            if (_includeIncome) ...[
+              AppSpacing.boxMD,
+              Text(
+                AppStrings.s.rptIncomeCategory,
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              AppSpacing.boxSM,
+              _buildCategoryDropdown(
+                keyPrefix: 'inc',
+                categories: widget.incomeCategories,
+                selected: _incomeCategoryId,
+                onChanged: (v) => setState(() => _incomeCategoryId = v),
+              ),
+            ],
+            if (_includeExpense) ...[
+              AppSpacing.boxMD,
+              Text(
+                AppStrings.s.rptExpenseCategory,
+                style: AppTypography.labelMedium.copyWith(
+                  color: AppColors.textSecondary,
+                ),
+              ),
+              AppSpacing.boxSM,
+              _buildCategoryDropdown(
+                keyPrefix: 'exp',
+                categories: widget.expenseCategories,
+                selected: _expenseCategoryId,
+                onChanged: (v) => setState(() => _expenseCategoryId = v),
+              ),
+            ],
+            AppSpacing.boxLG,
+            AppButton.primary(
+              AppStrings.s.rptApplyFilter,
+              icon: Icons.filter_alt_rounded,
+              onPressed: () {
+                widget.onApply(_type, _incomeCategoryId, _expenseCategoryId);
+                Navigator.pop(context);
+              },
+            ),
+            AppSpacing.boxSM,
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryDropdown({
+    required String keyPrefix,
+    required List<MapEntry<int, String>> categories,
+    required int? selected,
+    required ValueChanged<int?> onChanged,
+  }) {
+    return DropdownButtonFormField<int>(
+      key: ValueKey('$keyPrefix-$selected'),
+      initialValue: selected ?? _allCategories,
+      decoration: InputDecoration(
+        labelText: AppStrings.s.rptAllCategories,
+        labelStyle: AppTypography.bodyText2.copyWith(
+          color: AppColors.textSecondary,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        isDense: true,
+      ),
+      items: [
+        const DropdownMenuItem(value: _allCategories, child: Text('-')),
+        for (final c in categories)
+          DropdownMenuItem(value: c.key, child: Text(c.value)),
+      ],
+      onChanged: (v) => onChanged(v == _allCategories ? null : v),
+    );
+  }
+
+  Widget _buildOption({
+    required String label,
+    required String? value,
+    required String? selected,
+    required ValueChanged<String?> onSelected,
+  }) {
+    final isSelected = selected == value;
     return GestureDetector(
-      onTap: onTap,
+      onTap: () => onSelected(value),
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeOut,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary : AppColors.background,
+          color: isSelected ? AppColors.primary : AppColors.background,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: selected ? AppColors.primary : AppColors.border),
+          border: Border.all(
+            color: isSelected ? AppColors.primary : AppColors.border,
+          ),
         ),
         child: Text(
           label,
           style: AppTypography.labelMedium.copyWith(
-            color: selected ? AppColors.white : AppColors.textPrimary,
-            fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+            color: isSelected ? AppColors.white : AppColors.textPrimary,
+            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
           ),
         ),
       ),

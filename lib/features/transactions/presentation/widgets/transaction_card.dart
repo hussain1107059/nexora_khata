@@ -19,6 +19,7 @@ class TransactionCard extends StatelessWidget {
   final String completedStatusText;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final bool compact;
 
   const TransactionCard({
     super.key,
@@ -34,6 +35,7 @@ class TransactionCard extends StatelessWidget {
     required this.completedStatusText,
     this.onTap,
     this.onLongPress,
+    this.compact = false,
   });
 
   Color get _statusColor {
@@ -65,7 +67,10 @@ class TransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: 6),
+      margin: EdgeInsets.symmetric(
+        horizontal: AppSpacing.lg,
+        vertical: compact ? 2 : 6,
+      ),
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
@@ -75,17 +80,22 @@ class TransactionCard extends StatelessWidget {
         onLongPress: onLongPress,
         borderRadius: BorderRadius.circular(AppSpacing.radiusLg),
         child: Padding(
-          padding: AppSpacing.paddingLg,
+          padding: compact
+              ? const EdgeInsets.symmetric(
+                  horizontal: AppSpacing.lg,
+                  vertical: AppSpacing.sm,
+                )
+              : AppSpacing.paddingLg,
           child: Row(
             children: [
               Container(
-                width: 44,
-                height: 44,
+                width: compact ? 36 : 44,
+                height: compact ? 36 : 44,
                 decoration: BoxDecoration(
                   color: iconBackground,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: iconColor, size: 22),
+                child: Icon(icon, color: iconColor, size: compact ? 18 : 22),
               ),
               AppSpacing.boxMD,
               Expanded(

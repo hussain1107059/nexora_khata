@@ -1349,6 +1349,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rptPrintPdf => 'Print';
 
   @override
+  String get rptApplyFilter => 'Apply Filter';
+
+  @override
   String get rptSelectRange =>
       'Choose a date range and filters, then press Generate';
 

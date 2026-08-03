@@ -444,6 +444,7 @@
   "rptSharePdf": "PDF শেয়ার করুন",
   "rptPreviewPdf": "PDF দেখুন",
   "rptPrintPdf": "প্রিন্ট",
+  "rptApplyFilter": "ফিল্টার প্রয়োগ করুন",
   "rptSelectRange": "তারিখ ও ফিল্টার বেছে নিন, তারপর তৈরি করুন চাপুন",
   "rptNoDataForRange": "এই সময়ে কোনো লেনদেন পাওয়া যায়নি",
   "rptDetailTxn": "লেনদেনসমূহ",

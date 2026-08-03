@@ -1349,6 +1349,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get rptPrintPdf => 'প্রিন্ট';
 
   @override
+  String get rptApplyFilter => 'ফিল্টার প্রয়োগ করুন';
+
+  @override
   String get rptSelectRange =>
       'তারিখ ও ফিল্টার বেছে নিন, তারপর তৈরি করুন চাপুন';
 

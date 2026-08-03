@@ -21,7 +21,6 @@ class SettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     AppStrings.dependOnLocale(context);
-    final isDarkMode = ref.watch(darkModeProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -31,15 +30,6 @@ class SettingsPage extends ConsumerWidget {
         children: [
           const _ProfileSection(),
           _SectionHeader(title: AppStrings.s.setPreferences),
-          SwitchListTile(
-            secondary: Icon(
-              isDarkMode ? Icons.dark_mode : Icons.light_mode,
-              color: AppColors.primary,
-            ),
-            title: AppText(AppStrings.s.setDarkMode, type: AppTextType.body2),
-            value: isDarkMode,
-            onChanged: (_) => ref.read(darkModeProvider.notifier).toggle(),
-          ),
           const _LanguageTile(),
           const Divider(height: 1),
           _SectionHeader(title: AppStrings.s.setDatabase),

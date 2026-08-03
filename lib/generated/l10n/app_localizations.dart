@@ -2629,6 +2629,12 @@ abstract class AppLocalizations {
   /// **'Print'**
   String get rptPrintPdf;
 
+  /// No description provided for @rptApplyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply Filter'**
+  String get rptApplyFilter;
+
   /// No description provided for @rptSelectRange.
   ///
   /// In en, this message translates to:
