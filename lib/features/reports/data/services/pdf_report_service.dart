@@ -1,7 +1,7 @@
 import 'dart:typed_data';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import 'package:bangla_pdf/bangla_pdf.dart' as bpdf;
 import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/file_share_service.dart';
 import 'package:nexora_khata/features/transactions/data/models/income_model.dart';
@@ -10,21 +10,14 @@ import 'package:nexora_khata/features/reports/domain/entities/report.dart';
 import 'package:nexora_khata/features/transactions/presentation/models/transaction_entry.dart';
 
 class PdfReportService {
-  pw.Font? _font;
-  bool _loaded = false;
-
-  Future<void> _loadFont() async {
-    if (_loaded) return;
-    final data = await rootBundle.load('assets/fonts/NotoSansBengali.ttf');
-    _font = pw.Font.ttf(data.buffer.asByteData());
-    _loaded = true;
-  }
-
-  pw.TextStyle _s(double size, {PdfColor? color, pw.FontWeight? weight}) {
-    return pw.TextStyle(
-      font: _font, fontSize: size,
+  pw.Widget _b(String text, double size,
+      {PdfColor? color, pw.FontWeight? weight, pw.TextAlign? align}) {
+    return bpdf.Text(
+      text,
+      fontSize: size,
       color: color ?? PdfColors.black,
       fontWeight: weight ?? pw.FontWeight.normal,
+      textAlign: align,
     );
   }
 
@@ -33,7 +26,6 @@ class PdfReportService {
     required String title,
     String? dateRange,
   }) async {
-    await _loadFont();
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -57,7 +49,6 @@ class PdfReportService {
     required String title,
     String? dateRange,
   }) async {
-    await _loadFont();
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -82,7 +73,6 @@ class PdfReportService {
     required int month,
     required ReportSummary summary,
   }) async {
-    await _loadFont();
     final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
@@ -109,7 +99,6 @@ class PdfReportService {
     required int year,
     required ReportSummary summary,
   }) async {
-    await _loadFont();
     final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
@@ -128,10 +117,10 @@ class PdfReportService {
           ),
           child: pw.Row(
             children: [
-              pw.Expanded(child: pw.Text(monthNames[m.month - 1], style: _s(10))),
-              pw.Expanded(child: pw.Text(_f(m.income), style: _s(10, color: PdfColors.green700), textAlign: pw.TextAlign.right)),
-              pw.Expanded(child: pw.Text(_f(m.expense), style: _s(10, color: PdfColors.red700), textAlign: pw.TextAlign.right)),
-              pw.Expanded(child: pw.Text(_f(m.net), style: _s(10, color: m.net >= 0 ? PdfColors.blue700 : PdfColors.red700), textAlign: pw.TextAlign.right)),
+              pw.Expanded(child: _b(monthNames[m.month - 1], 10)),
+              pw.Expanded(child: _b(_f(m.income), 10, color: PdfColors.green700, align: pw.TextAlign.right)),
+              pw.Expanded(child: _b(_f(m.expense), 10, color: PdfColors.red700, align: pw.TextAlign.right)),
+              pw.Expanded(child: _b(_f(m.net), 10, color: m.net >= 0 ? PdfColors.blue700 : PdfColors.red700, align: pw.TextAlign.right)),
             ],
           ),
         )),
@@ -140,7 +129,7 @@ class PdfReportService {
         _buildTotalRow(AppStrings.s.dashboardTotalExpense, summary.totalExpense),
         _buildTotalRow(AppStrings.s.rptNet, summary.netAmount, bold: true),
         pw.SizedBox(height: 12),
-        pw.Text(AppStrings.s.rptTotalTxnsLabel(summary.totalTransactions), style: _s(10, color: PdfColors.grey700)),
+        _b(AppStrings.s.rptTotalTxnsLabel(summary.totalTransactions), 10, color: PdfColors.grey700),
       ],
     ));
     return doc.save();
@@ -151,7 +140,6 @@ class PdfReportService {
     required int year,
     required int month,
   }) async {
-    await _loadFont();
     final monthNames = [AppStrings.s.monthJanuary, AppStrings.s.monthFebruary, AppStrings.s.monthMarch, AppStrings.s.monthApril, AppStrings.s.monthMay, AppStrings.s.monthJune, AppStrings.s.monthJuly, AppStrings.s.monthAugust, AppStrings.s.monthSeptember, AppStrings.s.monthOctober, AppStrings.s.monthNovember, AppStrings.s.monthDecember];
     final last = data.isNotEmpty ? data.last : null;
     final doc = pw.Document();
@@ -185,20 +173,10 @@ class PdfReportService {
           ),
           child: pw.Row(
             children: [
-              pw.Expanded(child: pw.Text(
-                '${d.date.day}/${d.date.month}/${d.date.year}',
-                style: _s(10),
-              )),
-              pw.Expanded(child: pw.Text(
-                _f(d.cashBalance), style: _s(10), textAlign: pw.TextAlign.right,
-              )),
-              pw.Expanded(child: pw.Text(
-                _f(d.bankBalance), style: _s(10), textAlign: pw.TextAlign.right,
-              )),
-              pw.Expanded(child: pw.Text(
-                _f(d.totalBalance), style: _s(10, weight: pw.FontWeight.bold),
-                textAlign: pw.TextAlign.right,
-              )),
+              pw.Expanded(child: _b('${d.date.day}/${d.date.month}/${d.date.year}', 10)),
+              pw.Expanded(child: _b(_f(d.cashBalance), 10, align: pw.TextAlign.right)),
+              pw.Expanded(child: _b(_f(d.bankBalance), 10, align: pw.TextAlign.right)),
+              pw.Expanded(child: _b(_f(d.totalBalance), 10, weight: pw.FontWeight.bold, align: pw.TextAlign.right)),
             ],
           ),
         )),
@@ -213,7 +191,6 @@ class PdfReportService {
     required String title,
     String? dateRange,
   }) async {
-    await _loadFont();
     final doc = pw.Document();
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
@@ -252,19 +229,12 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: pw.Text(
-            '${e.date.day}/${e.date.month}/${e.date.year}', style: _s(9),
-          )),
-          pw.Expanded(child: pw.Text(_typeLabel(e), style: _s(9))),
-          pw.Expanded(child: pw.Text(e.categoryName ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(e.description ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(
-            _f(e.amount), style: _s(9, color: amountColor),
-            textAlign: pw.TextAlign.right,
-          )),
-          pw.Expanded(child: pw.Text(
-            _statusBn(e.status), style: _s(9), textAlign: pw.TextAlign.center,
-          )),
+          pw.Expanded(child: _b('${e.date.day}/${e.date.month}/${e.date.year}', 9)),
+          pw.Expanded(child: _b(_typeLabel(e), 9)),
+          pw.Expanded(child: _b(e.categoryName ?? '-', 9)),
+          pw.Expanded(child: _b(e.description ?? '-', 9)),
+          pw.Expanded(child: _b(_f(e.amount), 9, color: amountColor, align: pw.TextAlign.right)),
+          pw.Expanded(child: _b(_statusBn(e.status), 9, align: pw.TextAlign.center)),
         ],
       ),
     );
@@ -289,11 +259,11 @@ class PdfReportService {
             pw.Column(
               crossAxisAlignment: pw.CrossAxisAlignment.start,
               children: [
-                pw.Text(AppStrings.s.appTitle, style: _s(16, weight: pw.FontWeight.bold, color: PdfColors.red700)),
-                pw.Text(title, style: _s(12, color: PdfColors.grey700)),
+                _b(AppStrings.s.appTitle, 16, weight: pw.FontWeight.bold, color: PdfColors.red700),
+                _b(title, 12, color: PdfColors.grey700),
               ],
             ),
-            if (subtitle != null) pw.Text(subtitle, style: _s(10, color: PdfColors.grey600)),
+            if (subtitle != null) _b(subtitle, 10, color: PdfColors.grey600),
           ],
         ),
         pw.Divider(thickness: 1.5, color: PdfColors.red300),
@@ -308,8 +278,8 @@ class PdfReportService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
         children: [
-          pw.Text('BadhonByte', style: _s(8, color: PdfColors.grey500)),
-          pw.Text(AppStrings.s.appTitle, style: _s(8, color: PdfColors.grey500)),
+          _b('BadhonByte', 8, color: PdfColors.grey500),
+          _b(AppStrings.s.appTitle, 8, color: PdfColors.grey500),
         ],
       ),
     );
@@ -335,9 +305,9 @@ class PdfReportService {
   pw.Widget _statBox(String label, double value, PdfColor color) {
     return pw.Column(
       children: [
-        pw.Text(label, style: _s(8, color: PdfColors.grey600)),
+        _b(label, 9, color: PdfColors.grey600),
         pw.SizedBox(height: 4),
-        pw.Text(_f(value), style: _s(14, weight: pw.FontWeight.bold, color: color)),
+        _b(_f(value), 14, weight: pw.FontWeight.bold, color: color),
       ],
     );
   }
@@ -371,7 +341,7 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: headers.map((h) => pw.Expanded(
-          child: pw.Text(h, style: _s(9, weight: pw.FontWeight.bold, color: PdfColors.red800)),
+          child: _b(h, 9, weight: pw.FontWeight.bold, color: PdfColors.red800),
         )).toList(),
       ),
     );
@@ -385,15 +355,12 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: pw.Text(
-            '${i.incomeDate.day}/${i.incomeDate.month}/${i.incomeDate.year}',
-            style: _s(9),
-          )),
-          pw.Expanded(child: pw.Text(i.catName ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(i.customerName ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(i.description ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(_f(i.amount), style: _s(9, color: PdfColors.green700), textAlign: pw.TextAlign.right)),
-          pw.Expanded(child: pw.Text(_statusBn(i.status), style: _s(9), textAlign: pw.TextAlign.center)),
+          pw.Expanded(child: _b('${i.incomeDate.day}/${i.incomeDate.month}/${i.incomeDate.year}', 9)),
+          pw.Expanded(child: _b(i.catName ?? '-', 9)),
+          pw.Expanded(child: _b(i.customerName ?? '-', 9)),
+          pw.Expanded(child: _b(i.description ?? '-', 9)),
+          pw.Expanded(child: _b(_f(i.amount), 9, color: PdfColors.green700, align: pw.TextAlign.right)),
+          pw.Expanded(child: _b(_statusBn(i.status), 9, align: pw.TextAlign.center)),
         ],
       ),
     );
@@ -408,15 +375,12 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: pw.Text(
-            '${e.expenseDate.day}/${e.expenseDate.month}/${e.expenseDate.year}',
-            style: _s(9),
-          )),
-          pw.Expanded(child: pw.Text(e.catName ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(supplierName ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(e.description ?? '-', style: _s(9))),
-          pw.Expanded(child: pw.Text(_f(e.amount), style: _s(9, color: PdfColors.red700), textAlign: pw.TextAlign.right)),
-          pw.Expanded(child: pw.Text(_statusBn(e.status), style: _s(9), textAlign: pw.TextAlign.center)),
+          pw.Expanded(child: _b('${e.expenseDate.day}/${e.expenseDate.month}/${e.expenseDate.year}', 9)),
+          pw.Expanded(child: _b(e.catName ?? '-', 9)),
+          pw.Expanded(child: _b(supplierName ?? '-', 9)),
+          pw.Expanded(child: _b(e.description ?? '-', 9)),
+          pw.Expanded(child: _b(_f(e.amount), 9, color: PdfColors.red700, align: pw.TextAlign.right)),
+          pw.Expanded(child: _b(_statusBn(e.status), 9, align: pw.TextAlign.center)),
         ],
       ),
     );
@@ -430,12 +394,10 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: pw.Text(
-            '${d.date.day}/${d.date.month}/${d.date.year}', style: _s(10),
-          )),
-          pw.Expanded(child: pw.Text(_f(d.income), style: _s(10, color: PdfColors.green700), textAlign: pw.TextAlign.right)),
-          pw.Expanded(child: pw.Text(_f(d.expense), style: _s(10, color: PdfColors.red700), textAlign: pw.TextAlign.right)),
-          pw.Expanded(child: pw.Text(_f(d.net), style: _s(10, color: d.net >= 0 ? PdfColors.blue700 : PdfColors.red700), textAlign: pw.TextAlign.right)),
+          pw.Expanded(child: _b('${d.date.day}/${d.date.month}/${d.date.year}', 10)),
+          pw.Expanded(child: _b(_f(d.income), 10, color: PdfColors.green700, align: pw.TextAlign.right)),
+          pw.Expanded(child: _b(_f(d.expense), 10, color: PdfColors.red700, align: pw.TextAlign.right)),
+          pw.Expanded(child: _b(_f(d.net), 10, color: d.net >= 0 ? PdfColors.blue700 : PdfColors.red700, align: pw.TextAlign.right)),
         ],
       ),
     );
@@ -447,8 +409,8 @@ class PdfReportService {
       child: pw.Row(
         mainAxisAlignment: pw.MainAxisAlignment.end,
         children: [
-          pw.Text('$label: ', style: _s(10, weight: bold ? pw.FontWeight.bold : pw.FontWeight.normal)),
-          pw.Text(_f(amount), style: _s(10, weight: bold ? pw.FontWeight.bold : pw.FontWeight.normal)),
+          _b('$label: ', 10, weight: bold ? pw.FontWeight.bold : pw.FontWeight.normal),
+          _b(_f(amount), 10, weight: bold ? pw.FontWeight.bold : pw.FontWeight.normal),
         ],
       ),
     );
