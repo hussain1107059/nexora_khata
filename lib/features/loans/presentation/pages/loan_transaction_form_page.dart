@@ -17,12 +17,14 @@ class LoanTransactionFormPage extends ConsumerStatefulWidget {
   final int contactId;
   final String contactName;
   final String initialType;
+  final LoanTransaction? transaction;
 
   const LoanTransactionFormPage({
     super.key,
     required this.contactId,
     required this.contactName,
     this.initialType = 'borrow',
+    this.transaction,
   });
 
   @override
@@ -40,15 +42,26 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
   String? _repayType;
   String _paymentMethod = 'cash';
 
+  bool get _isEditing => widget.transaction != null;
+
+  String _formatAmount(double v) {
+    if (v == v.roundToDouble()) return v.toStringAsFixed(0);
+    return v.toString();
+  }
+
   @override
   void initState() {
     super.initState();
-    _amountCtrl = TextEditingController();
+    final txn = widget.transaction;
+    _amountCtrl = TextEditingController(
+      text: txn != null ? _formatAmount(txn.amount) : '',
+    );
     _dateCtrl = TextEditingController();
-    _noteCtrl = TextEditingController();
-    _selectedDate = DateTime.now();
+    _noteCtrl = TextEditingController(text: txn?.note ?? '');
+    _selectedDate = txn?.date ?? DateTime.now();
     _type = widget.initialType;
-    _repayType = null;
+    _repayType = txn?.repayType;
+    _paymentMethod = txn?.paymentMethod ?? 'cash';
     _updateDateText();
   }
 
@@ -99,8 +112,8 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
       bankId = await accountDs.getDefaultBankAccountId();
     }
     final txn = LoanTransaction(
-      id: 0,
-      businessId: 0,
+      id: widget.transaction?.id ?? 0,
+      businessId: widget.transaction?.businessId ?? 0,
       contactId: widget.contactId,
       type: _type,
       repayType: _type == 'repay' ? _repayType : null,
@@ -110,12 +123,12 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
       paymentMethod: _paymentMethod,
       cashAccountId: cashId,
       bankAccountId: bankId,
-      createdAt: now,
+      createdAt: widget.transaction?.createdAt ?? now,
       updatedAt: now,
     );
 
     final notifier = ref.read(loanTransactionFormProvider.notifier);
-    final success = await notifier.create(txn);
+    final success = _isEditing ? await notifier.update(txn) : await notifier.create(txn);
 
     if (!mounted) return;
     if (!success) {
@@ -142,7 +155,12 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Text(AppStrings.s.loanTxnAddTitle, style: AppTypography.subtitle1),
+        title: Text(
+          _isEditing
+              ? AppStrings.s.loanTxnEditTitle
+              : AppStrings.s.loanTxnAddTitle,
+          style: AppTypography.subtitle1,
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -339,8 +357,10 @@ class _LoanTransactionFormPageState extends ConsumerState<LoanTransactionFormPag
                 builder: (context, ref, _) {
                   final state = ref.watch(loanTransactionFormProvider);
                   return AppButton(
-                    text: AppStrings.s.loanTxnSave,
-                    icon: Icons.check_rounded,
+                    text: _isEditing
+                        ? AppStrings.s.loanTxnUpdate
+                        : AppStrings.s.loanTxnSave,
+                    icon: _isEditing ? Icons.save_rounded : Icons.check_rounded,
                     isLoading: state.isLoading,
                     onPressed: _save,
                   );

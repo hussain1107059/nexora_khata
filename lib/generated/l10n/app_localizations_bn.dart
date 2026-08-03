@@ -1008,6 +1008,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get loanTxnAddTitle => 'লেনদেন যোগ করুন';
 
   @override
+  String get loanTxnEditTitle => 'লেনদেন সম্পাদনা করুন';
+
+  @override
   String get loanTxnAccount => 'হিসাব';
 
   @override
@@ -1039,6 +1042,9 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get loanTxnSave => 'সংরক্ষণ করুন';
+
+  @override
+  String get loanTxnUpdate => 'আপডেট করুন';
 
   @override
   String get loanContactUpdated => 'হিসাব আপডেট হয়েছে';

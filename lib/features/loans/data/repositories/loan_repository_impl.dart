@@ -130,6 +130,36 @@ class LoanRepositoryImpl implements LoanRepository {
   }
 
   @override
+  Future<Either<Failure, LoanTransaction>> updateTransaction(
+    LoanTransaction transaction,
+  ) async {
+    try {
+      final model = LoanTransactionModel(
+        id: transaction.id,
+        businessId: transaction.businessId,
+        contactId: transaction.contactId,
+        type: transaction.type,
+        repayType: transaction.repayType,
+        amount: transaction.amount,
+        date: transaction.date,
+        note: transaction.note,
+        paymentMethod: transaction.paymentMethod,
+        cashAccountId: transaction.cashAccountId,
+        bankAccountId: transaction.bankAccountId,
+        createdAt: transaction.createdAt,
+        updatedAt: transaction.updatedAt,
+      );
+      final updated = await dataSource.updateTransaction(
+        transaction.id,
+        model.toMap(),
+      );
+      return Right(updated);
+    } catch (e) {
+      return Left(DatabaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
   Future<Either<Failure, void>> deleteTransaction(int id) async {
     try {
       await dataSource.deleteTransaction(id);

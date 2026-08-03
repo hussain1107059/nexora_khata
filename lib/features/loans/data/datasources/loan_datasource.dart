@@ -94,6 +94,25 @@ class LoanDataSource {
     return LoanTransactionModel.fromMap(rows.first);
   }
 
+  Future<LoanTransactionModel> updateTransaction(
+    int id,
+    Map<String, dynamic> data,
+  ) async {
+    final db = _dbHelper.db;
+    data['updated_at'] = DateTime.now().toIso8601String();
+    await db.update(
+      'loan_transactions',
+      data,
+      where: 'id = ? AND business_id = ?',
+      whereArgs: [id, _tenantId],
+    );
+    final rows = await db.rawQuery(
+      'SELECT * FROM loan_transactions WHERE id = ? AND business_id = ?',
+      [id, _tenantId],
+    );
+    return LoanTransactionModel.fromMap(rows.first);
+  }
+
   Future<void> deleteTransaction(int id) async {
     final db = _dbHelper.db;
     await db.delete('loan_transactions',

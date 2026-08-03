@@ -337,6 +337,7 @@
   "loanTxnLentMsg": "টাকা দেওয়া হয়েছে",
   "loanTxnRepaidMsg": "পরিশোধ করা হয়েছে",
   "loanTxnAddTitle": "লেনদেন যোগ করুন",
+  "loanTxnEditTitle": "লেনদেন সম্পাদনা করুন",
   "loanTxnAccount": "হিসাব",
   "loanTxnType": "লেনদেনের ধরন",
   "loanTxnBorrowSub": "আমি টাকা নিয়েছি",
@@ -348,6 +349,7 @@
   "loanTxnRepayLendSub": "ফেরত পাচ্ছি",
   "loanTxnNoteHint": "কেন নেওয়া/দেওয়া/পরিশোধ হলো (ঐচ্ছিক)",
   "loanTxnSave": "সংরক্ষণ করুন",
+  "loanTxnUpdate": "আপডেট করুন",
 
   "loanContactUpdated": "হিসাব আপডেট হয়েছে",
   "loanContactAdded": "নতুন হিসাব যোগ হয়েছে",

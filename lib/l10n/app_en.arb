@@ -340,6 +340,7 @@
   "loanTxnLentMsg": "Money lent",
   "loanTxnRepaidMsg": "Repayment made",
   "loanTxnAddTitle": "Add Transaction",
+  "loanTxnEditTitle": "Edit Transaction",
   "loanTxnAccount": "Account",
   "loanTxnType": "Transaction Type",
   "loanTxnBorrowSub": "I borrowed money",
@@ -351,6 +352,7 @@
   "loanTxnRepayLendSub": "Receiving back",
   "loanTxnNoteHint": "Reason for this transaction (optional)",
   "loanTxnSave": "Save",
+  "loanTxnUpdate": "Update",
 
   "loanContactUpdated": "Account updated",
   "loanContactAdded": "New account added",

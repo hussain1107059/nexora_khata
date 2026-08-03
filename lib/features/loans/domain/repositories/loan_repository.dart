@@ -22,5 +22,9 @@ abstract class LoanRepository {
     LoanTransaction transaction,
   );
 
+  Future<Either<Failure, LoanTransaction>> updateTransaction(
+    LoanTransaction transaction,
+  );
+
   Future<Either<Failure, void>> deleteTransaction(int id);
 }

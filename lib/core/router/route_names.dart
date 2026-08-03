@@ -37,6 +37,7 @@ abstract final class RouteNames {
   static const String loanContactAdd = '/loans/add';
   static const String loanContactEdit = '/loans/edit';
   static const String loanTxnAdd = '/loans/transaction/add';
+  static const String loanTxnEdit = '/loans/transaction/edit';
   static const String transferAdd = '/transfers/add';
   static const String reports = '/reports';
   static const String settings = '/settings';

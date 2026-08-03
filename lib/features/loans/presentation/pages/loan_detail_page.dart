@@ -125,6 +125,7 @@ class LoanDetailPage extends ConsumerWidget {
                 for (final txn in txns)
                   _TransactionTile(
                     txn: txn,
+                    onEdit: () => _editTxn(context, ref, txn),
                     onDelete: () => _confirmDeleteTxn(context, ref, txn),
                   ),
               ],
@@ -246,6 +247,23 @@ class LoanDetailPage extends ConsumerWidget {
       state.whenOrNull(
         error: (e, _) => AppSnackBar.error(context, e.toString()),
       );
+    }
+  }
+
+  Future<void> _editTxn(
+    BuildContext context,
+    WidgetRef ref,
+    LoanTransaction txn,
+  ) async {
+    final name =
+        ref.read(loanContactDetailProvider(contactId)).valueOrNull?.name ?? '';
+    final result = await context.push<bool>(
+      RouteNames.loanTxnEdit,
+      extra: {'transaction': txn, 'name': name},
+    );
+    if (result == true) {
+      ref.invalidate(loanTransactionsProvider(contactId));
+      ref.invalidate(loanDashboardProvider);
     }
   }
 
@@ -413,9 +431,14 @@ class _MiniStat extends StatelessWidget {
 
 class _TransactionTile extends StatelessWidget {
   final LoanTransaction txn;
+  final VoidCallback onEdit;
   final VoidCallback onDelete;
 
-  const _TransactionTile({required this.txn, required this.onDelete});
+  const _TransactionTile({
+    required this.txn,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -505,6 +528,15 @@ class _TransactionTile extends StatelessWidget {
               ),
             ),
             AppSpacing.boxSM,
+            GestureDetector(
+              onTap: onEdit,
+              child: const Icon(
+                Icons.edit_rounded,
+                size: 20,
+                color: AppColors.textHint,
+              ),
+            ),
+            AppSpacing.boxXS,
             GestureDetector(
               onTap: onDelete,
               child: const Icon(

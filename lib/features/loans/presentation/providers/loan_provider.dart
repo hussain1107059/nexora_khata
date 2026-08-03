@@ -173,6 +173,26 @@ class LoanTransactionFormNotifier extends StateNotifier<AsyncValue<void>> {
     return success;
   }
 
+  Future<bool> update(LoanTransaction transaction) async {
+    state = const AsyncLoading();
+    final result = await _repo.updateTransaction(transaction);
+    state = result.fold(
+      (l) => AsyncError(l.message, StackTrace.current),
+      (_) => const AsyncData(null),
+    );
+    final success = result.isRight();
+    if (success) {
+      try {
+        await getIt<NotificationService>().cancelLoanReminder(transaction.id);
+      } catch (e) {
+        log.e('Failed to cancel loan reminder: $e');
+      }
+      final updated = result.getOrElse(() => transaction);
+      await _scheduleLoanReminder(updated);
+    }
+    return success;
+  }
+
   Future<void> _scheduleLoanReminder(LoanTransaction txn) async {
     if (txn.type != 'borrow' && txn.type != 'lend') return;
     try {

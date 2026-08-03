@@ -17,6 +17,7 @@ import '../../features/loans/presentation/pages/loan_list_page.dart';
 import '../../features/loans/presentation/pages/loan_contact_form_page.dart';
 import '../../features/loans/presentation/pages/loan_detail_page.dart';
 import '../../features/loans/presentation/pages/loan_transaction_form_page.dart';
+import '../../features/loans/domain/entities/loan_transaction.dart';
 import '../../features/transactions/presentation/pages/all_transactions_page.dart';
 import '../../features/transactions/presentation/pages/income_list_page.dart';
 import '../../features/transactions/presentation/pages/transfer_form_page.dart';
@@ -316,6 +317,22 @@ final GoRouter appRouter = GoRouter(
           contactId: contactId,
           contactName: name,
           initialType: type,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouteNames.loanTxnEdit,
+      name: RouteNames.loanTxnEdit,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>?;
+        final txn = extra?['transaction'] as LoanTransaction?;
+        final name = extra?['name'] as String? ?? '';
+        return LoanTransactionFormPage(
+          transaction: txn,
+          contactId: txn?.contactId ?? 0,
+          contactName: name,
+          initialType: txn?.type ?? 'borrow',
         );
       },
     ),

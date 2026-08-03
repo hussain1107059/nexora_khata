@@ -2000,6 +2000,12 @@ abstract class AppLocalizations {
   /// **'Add Transaction'**
   String get loanTxnAddTitle;
 
+  /// No description provided for @loanTxnEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Transaction'**
+  String get loanTxnEditTitle;
+
   /// No description provided for @loanTxnAccount.
   ///
   /// In en, this message translates to:
@@ -2065,6 +2071,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Save'**
   String get loanTxnSave;
+
+  /// No description provided for @loanTxnUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get loanTxnUpdate;
 
   /// No description provided for @loanContactUpdated.
   ///

@@ -1010,6 +1010,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loanTxnAddTitle => 'Add Transaction';
 
   @override
+  String get loanTxnEditTitle => 'Edit Transaction';
+
+  @override
   String get loanTxnAccount => 'Account';
 
   @override
@@ -1041,6 +1044,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loanTxnSave => 'Save';
+
+  @override
+  String get loanTxnUpdate => 'Update';
 
   @override
   String get loanContactUpdated => 'Account updated';

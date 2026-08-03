@@ -163,6 +163,7 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
         onTap: () {
           final contactId = entry.contactId;
           if (contactId == null) return;
+          ref.invalidate(allTransactionsProvider);
           context.push('${RouteNames.loanDetail}/$contactId');
         },
       );
@@ -186,6 +187,7 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
         final route = isIncome
             ? '${RouteNames.incomeDetail}/${entry.id}'
             : '${RouteNames.expenseDetail}/${entry.id}';
+        ref.invalidate(allTransactionsProvider);
         context.push(route);
       },
     );
