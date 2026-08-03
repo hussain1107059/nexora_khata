@@ -1070,6 +1070,24 @@ abstract class AppLocalizations {
   /// **'Loan'**
   String get txnLoan;
 
+  /// No description provided for @txnTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get txnTransfer;
+
+  /// No description provided for @txnTransferTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transfer'**
+  String get txnTransferTitle;
+
+  /// No description provided for @txnTransferSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Move money between cash or bank accounts'**
+  String get txnTransferSubtitle;
+
   /// No description provided for @txnStatusFilter.
   ///
   /// In en, this message translates to:

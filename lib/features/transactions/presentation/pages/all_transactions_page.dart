@@ -168,6 +168,30 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
         },
       );
     }
+    if (entry.isTransfer) {
+      const color = AppColors.primary;
+      final from = entry.fromType == 'bank'
+          ? AppStrings.s.payBank
+          : AppStrings.s.payCash;
+      final to = entry.toType == 'bank'
+          ? AppStrings.s.payBank
+          : AppStrings.s.payCash;
+      final title = (entry.description != null && entry.description!.isNotEmpty)
+          ? entry.description!
+          : AppStrings.s.txnTransfer;
+      return TransactionCard(
+        description: title,
+        date: entry.date,
+        categoryName: '$from → $to',
+        amount: entry.amount,
+        status: entry.status,
+        iconBackground: color.withValues(alpha: 0.1),
+        iconColor: color,
+        icon: Icons.swap_horiz_rounded,
+        amountColor: color,
+        completedStatusText: AppStrings.s.statusCompleted,
+      );
+    }
     final isIncome = entry.isIncome;
     final color = isIncome ? AppColors.success : AppColors.error;
     return TransactionCard(
@@ -240,6 +264,21 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
                 onTap: () async {
                   Navigator.pop(ctx);
                   final result = await context.push<bool>(RouteNames.expenseAdd);
+                  if (result == true) {
+                    ref.invalidate(allTransactionsProvider);
+                    ref.invalidate(allTxRefreshProvider);
+                  }
+                },
+              ),
+              AppSpacing.boxSM,
+              _SheetAction(
+                icon: Icons.swap_horiz_rounded,
+                color: AppColors.primary,
+                title: AppStrings.s.txnTransferTitle,
+                subtitle: AppStrings.s.txnTransferSubtitle,
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  final result = await context.push<bool>(RouteNames.transferAdd);
                   if (result == true) {
                     ref.invalidate(allTransactionsProvider);
                     ref.invalidate(allTxRefreshProvider);
@@ -451,6 +490,10 @@ class _FilterSheetState extends State<_FilterSheet> {
                   widget.onTypeChanged(v);
                 }),
                 _buildOption(label: AppStrings.s.txnLoan, value: 'loan', selected: _type, onSelected: (v) {
+                  setState(() => _type = v);
+                  widget.onTypeChanged(v);
+                }),
+                _buildOption(label: AppStrings.s.txnTransfer, value: 'transfer', selected: _type, onSelected: (v) {
                   setState(() => _type = v);
                   widget.onTypeChanged(v);
                 }),

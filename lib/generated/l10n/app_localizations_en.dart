@@ -524,6 +524,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get txnLoan => 'Loan';
 
   @override
+  String get txnTransfer => 'Transfer';
+
+  @override
+  String get txnTransferTitle => 'Transfer';
+
+  @override
+  String get txnTransferSubtitle => 'Move money between cash or bank accounts';
+
+  @override
   String get txnStatusFilter => 'Status';
 
   @override

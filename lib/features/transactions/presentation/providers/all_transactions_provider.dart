@@ -3,6 +3,7 @@ import 'package:nexora_khata/features/loans/presentation/providers/loan_provider
 import 'package:nexora_khata/features/transactions/presentation/models/transaction_entry.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/expense_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/income_provider.dart';
+import 'package:nexora_khata/features/transactions/presentation/providers/transfer_provider.dart';
 
 final allTxSearchProvider = StateProvider<String>((ref) => '');
 final allTxStatusProvider = StateProvider<String?>((ref) => null);
@@ -13,6 +14,7 @@ final allTransactionsProvider = FutureProvider<List<TransactionEntry>>((ref) asy
   final incomeRepo = ref.read(incomeRepositoryProvider);
   final expenseRepo = ref.read(expenseRepositoryProvider);
   final loanRepo = ref.read(loanRepositoryProvider);
+  final transferRepo = ref.read(transferRepositoryProvider);
   final search = ref.watch(allTxSearchProvider);
   final status = ref.watch(allTxStatusProvider);
   final type = ref.watch(allTxTypeProvider);
@@ -22,11 +24,13 @@ final allTransactionsProvider = FutureProvider<List<TransactionEntry>>((ref) asy
   final expenseResult = await expenseRepo.getAll();
   final loanContactsResult = await loanRepo.getContacts();
   final loanTxnResult = await loanRepo.getAllTransactions();
+  final transferResult = await transferRepo.getAll();
 
   final incomes = incomeResult.fold((l) => throw l, (r) => r);
   final expenses = expenseResult.fold((l) => throw l, (r) => r);
   final loanContacts = loanContactsResult.fold((l) => throw l, (r) => r);
   final loanTxns = loanTxnResult.fold((l) => throw l, (r) => r);
+  final transfers = transferResult.fold((l) => throw l, (r) => r);
 
   final contactNames = {for (final c in loanContacts) c.id: c.name};
 
@@ -63,6 +67,17 @@ final allTransactionsProvider = FutureProvider<List<TransactionEntry>>((ref) asy
         contactName: contactNames[txn.contactId],
         contactId: txn.contactId,
         loanType: txn.isRepay ? 'repay' : (txn.isBorrow ? 'borrow' : 'lend'),
+      ),
+    for (final trf in transfers)
+      TransactionEntry(
+        type: 'transfer',
+        id: trf.id,
+        amount: trf.amount,
+        description: trf.description,
+        date: trf.transferDate,
+        status: trf.status,
+        fromType: trf.fromType,
+        toType: trf.toType,
       ),
   ];
 

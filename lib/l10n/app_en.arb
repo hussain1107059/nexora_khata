@@ -174,6 +174,9 @@
   "txnAll": "All",
   "txnClearAll": "Clear All",
   "txnLoan": "Loan",
+  "txnTransfer": "Transfer",
+  "txnTransferTitle": "Transfer",
+  "txnTransferSubtitle": "Move money between cash or bank accounts",
   "txnStatusFilter": "Status",
   "txnRepay": "Repay",
 

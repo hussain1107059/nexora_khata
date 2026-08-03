@@ -523,6 +523,16 @@ class AppLocalizationsBn extends AppLocalizations {
   String get txnLoan => 'ঋণ';
 
   @override
+  String get txnTransfer => 'লেনদেন';
+
+  @override
+  String get txnTransferTitle => 'লেনদেন করুন';
+
+  @override
+  String get txnTransferSubtitle =>
+      'ক্যাশ বা ব্যাংক হিসাবের মধ্যে টাকা লেনদেন করুন';
+
+  @override
   String get txnStatusFilter => 'স্ট্যাটাস';
 
   @override
