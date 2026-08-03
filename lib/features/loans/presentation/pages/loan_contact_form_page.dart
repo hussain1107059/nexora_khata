@@ -9,10 +9,12 @@ import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
 import 'package:nexora_khata/di/injection_container.dart';
+import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:nexora_khata/features/loans/domain/entities/loan_contact.dart';
 import 'package:nexora_khata/features/loans/domain/entities/loan_transaction.dart';
 import 'package:nexora_khata/features/loans/presentation/providers/loan_provider.dart';
 import 'package:nexora_khata/features/transactions/data/datasources/transfer_datasource.dart';
+import 'package:nexora_khata/features/transactions/presentation/providers/all_transactions_provider.dart';
 
 class LoanContactFormPage extends ConsumerStatefulWidget {
   final LoanContact? contact;
@@ -99,6 +101,10 @@ class _LoanContactFormPageState extends ConsumerState<LoanContactFormPage> {
     ref.invalidate(loanDashboardProvider);
     ref.invalidate(loanContactListProvider);
     ref.invalidate(loanRefreshProvider);
+    ref.invalidate(dashboardProvider);
+    ref.invalidate(dashboardRefreshProvider);
+    ref.invalidate(allTransactionsProvider);
+    ref.invalidate(allTxRefreshProvider);
     context.pop(true);
   }
 

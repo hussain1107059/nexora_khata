@@ -12,8 +12,10 @@ import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
+import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:nexora_khata/features/loans/domain/entities/loan_transaction.dart';
 import 'package:nexora_khata/features/loans/presentation/providers/loan_provider.dart';
+import 'package:nexora_khata/features/transactions/presentation/providers/all_transactions_provider.dart';
 
 class LoanDetailPage extends ConsumerWidget {
   final int contactId;
@@ -241,6 +243,10 @@ class LoanDetailPage extends ConsumerWidget {
     if (success) {
       AppSnackBar.success(context, AppStrings.s.loanDeleted);
       ref.invalidate(loanDashboardProvider);
+      ref.invalidate(dashboardProvider);
+      ref.invalidate(dashboardRefreshProvider);
+      ref.invalidate(allTransactionsProvider);
+      ref.invalidate(allTxRefreshProvider);
       context.pop();
     } else {
       final state = ref.read(loanContactFormProvider);
@@ -264,6 +270,10 @@ class LoanDetailPage extends ConsumerWidget {
     if (result == true) {
       ref.invalidate(loanTransactionsProvider(contactId));
       ref.invalidate(loanDashboardProvider);
+      ref.invalidate(dashboardProvider);
+      ref.invalidate(dashboardRefreshProvider);
+      ref.invalidate(allTransactionsProvider);
+      ref.invalidate(allTxRefreshProvider);
     }
   }
 
@@ -290,6 +300,10 @@ class LoanDetailPage extends ConsumerWidget {
       AppSnackBar.success(context, AppStrings.s.loanTxnDeleted);
       ref.invalidate(loanTransactionsProvider(contactId));
       ref.invalidate(loanDashboardProvider);
+      ref.invalidate(dashboardProvider);
+      ref.invalidate(dashboardRefreshProvider);
+      ref.invalidate(allTransactionsProvider);
+      ref.invalidate(allTxRefreshProvider);
     } else {
       final state = ref.read(loanTransactionFormProvider);
       state.whenOrNull(
