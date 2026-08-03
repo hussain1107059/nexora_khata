@@ -26,13 +26,6 @@ class LoanListPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(AppStrings.s.loanTitle, style: AppTypography.subtitle1),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () => ref.invalidate(loanDashboardProvider),
-            tooltip: AppStrings.s.commonRefresh,
-          ),
-        ],
       ),
       body: dashboardAsync.when(
         loading: () => AppLoading(message: AppStrings.s.loanLoading),

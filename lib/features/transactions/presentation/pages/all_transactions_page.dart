@@ -34,13 +34,6 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
       appBar: AppBar(
         title: Text(AppStrings.s.txnAllTitle, style: AppTypography.subtitle1),
         centerTitle: true,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () => ref.invalidate(allTransactionsProvider),
-            tooltip: AppStrings.s.commonRefresh,
-          ),
-        ],
       ),
       body: Column(
         children: [

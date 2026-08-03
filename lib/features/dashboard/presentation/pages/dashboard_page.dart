@@ -22,30 +22,13 @@ class DashboardPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
       appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              AppStrings.s.appTitle,
-              style: AppTypography.subtitle1.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            Text(
-              AppStrings.s.dashboardTitle,
-              style: AppTypography.caption.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh_rounded),
-            onPressed: () => ref.invalidate(dashboardProvider),
+        title: Text(
+          AppStrings.s.appTitle,
+          style: AppTypography.subtitle1.copyWith(
+            color: AppColors.textPrimary,
+            fontWeight: FontWeight.w700,
           ),
-        ],
+        ),
       ),
       body: dashboardAsync.when(
         loading: () => const AppShimmerLoading(itemCount: 6),

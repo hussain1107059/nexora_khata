@@ -157,7 +157,10 @@ class _TransactionTile extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       AppSpacing.boxHXS,
-                      Row(
+                      Wrap(
+                        spacing: AppSpacing.sm,
+                        runSpacing: 2,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
                           Container(
                             padding: const EdgeInsets.symmetric(
@@ -176,12 +179,13 @@ class _TransactionTile extends StatelessWidget {
                               ),
                             ),
                           ),
-                          AppSpacing.boxWSM,
                           Text(
                             AppDateUtils.timeAgo(tx.date),
                             style: AppTypography.caption.copyWith(
                               color: AppColors.textHint,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ],
                       ),
