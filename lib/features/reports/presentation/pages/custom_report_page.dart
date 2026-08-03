@@ -201,7 +201,7 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
                 padding: AppSpacing.screenPadding,
                 child: _buildFilterCard(),
               ),
-              AppSpacing.boxHLG,
+              AppSpacing.boxHXS,
               if (data.entries.isEmpty)
                 Padding(
                   padding: AppSpacing.screenPadding,
@@ -219,7 +219,7 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
                     periodText: _formatRange(),
                   ),
                 ),
-                AppSpacing.boxHLG,
+                AppSpacing.boxHXS,
                 ...data.entries.map(_buildCard),
               ],
             ],
