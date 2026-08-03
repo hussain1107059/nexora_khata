@@ -7,7 +7,6 @@ import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
-import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
@@ -140,11 +139,12 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
       return;
     }
     try {
+      final dateRange = _formatRange();
       final bytes = await PdfReportService().generateFilteredReport(
         data: data.entries,
         summary: data.summary,
         title: AppStrings.s.customReportTitle,
-        dateRange: AppNumberUtils.localizeDigits('$_from - $_to'),
+        dateRange: dateRange,
       );
       if (!mounted) return;
       await Navigator.of(context).push(
@@ -159,6 +159,14 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
       if (!mounted) return;
       AppSnackBar.error(context, AppStrings.s.setErrorPrefix(e));
     }
+  }
+
+  String _formatRange() {
+    final fromD = DateTime.tryParse(_from);
+    final toD = DateTime.tryParse(_to);
+    if (fromD == null || toD == null) return '$_from - $_to';
+    final sepx = AppStrings.s.rptRangeTo;
+    return '${AppDateUtils.formatDate(fromD)} $sepx ${AppDateUtils.formatDate(toD)}';
   }
 
   @override
@@ -206,20 +214,12 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
               else ...[
                 Padding(
                   padding: AppSpacing.screenPadding,
-                  child: ReportSummaryCard(summary: data.summary),
-                ),
-                AppSpacing.boxHLG,
-                Padding(
-                  padding: AppSpacing.screenPadding,
-                  child: Text(
-                    AppStrings.s.rptDetailTxn,
-                    style: AppTypography.subtitle2.copyWith(
-                      color: AppColors.textPrimary,
-                      fontWeight: FontWeight.w600,
-                    ),
+                  child: ReportSummaryCard(
+                    summary: data.summary,
+                    periodText: _formatRange(),
                   ),
                 ),
-                AppSpacing.boxSM,
+                AppSpacing.boxHLG,
                 ...data.entries.map(_buildCard),
               ],
             ],
@@ -616,7 +616,7 @@ class _ReportFilterSheetState extends State<_ReportFilterSheet> {
         isDense: true,
       ),
       items: [
-        const DropdownMenuItem(value: _allCategories, child: Text('-')),
+        DropdownMenuItem(value: _allCategories, child: Text(AppStrings.s.txnAll)),
         for (final c in categories)
           DropdownMenuItem(value: c.key, child: Text(c.value)),
       ],

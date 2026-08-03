@@ -2635,6 +2635,12 @@ abstract class AppLocalizations {
   /// **'Apply Filter'**
   String get rptApplyFilter;
 
+  /// No description provided for @rptRangeTo.
+  ///
+  /// In en, this message translates to:
+  /// **'to'**
+  String get rptRangeTo;
+
   /// No description provided for @rptSelectRange.
   ///
   /// In en, this message translates to:

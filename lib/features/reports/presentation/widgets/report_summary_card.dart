@@ -8,8 +8,9 @@ import 'package:nexora_khata/features/reports/domain/entities/report.dart';
 
 class ReportSummaryCard extends StatelessWidget {
   final ReportSummary summary;
+  final String? periodText;
 
-  const ReportSummaryCard({super.key, required this.summary});
+  const ReportSummaryCard({super.key, required this.summary, this.periodText});
 
   @override
   Widget build(BuildContext context) {
@@ -34,112 +35,53 @@ class ReportSummaryCard extends StatelessWidget {
             width: double.infinity,
             padding: AppSpacing.paddingLg,
             decoration: const BoxDecoration(
-              gradient: AppColors.primaryGradient,
+              color: AppColors.white,
+              border: Border(bottom: BorderSide(color: AppColors.divider)),
             ),
-            child: Row(
-              children: [
-                Container(
-                  width: 32,
-                  height: 32,
-                  decoration: BoxDecoration(
-                    color: AppColors.white.withValues(alpha: 0.22),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(
-                    Icons.insert_chart_rounded,
-                    size: 18,
-                    color: AppColors.white,
-                  ),
-                ),
-                AppSpacing.boxWMD,
-                Expanded(
-                  child: Text(
-                    summary.period,
-                    style: AppTypography.subtitle2.copyWith(
-                      color: AppColors.white,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                ),
-              ],
+            child: Text(
+              periodText ?? summary.period,
+              style: AppTypography.subtitle2.copyWith(
+                color: AppColors.textPrimary,
+                fontWeight: FontWeight.w700,
+              ),
             ),
           ),
           Padding(
             padding: AppSpacing.paddingLg,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: _SummaryItem(
-                        label: AppStrings.s.dashboardTotalIncome,
-                        amount: summary.totalIncome,
-                        color: AppColors.success,
-                      ),
-                    ),
-                    Container(
-                      width: 1,
-                      height: 44,
-                      color: AppColors.divider,
-                    ),
-                    Expanded(
-                      child: _SummaryItem(
-                        label: AppStrings.s.dashboardTotalExpense,
-                        amount: summary.totalExpense,
-                        color: AppColors.error,
-                      ),
-                    ),
-                  ],
+                Expanded(
+                  child: _SummaryItem(
+                    label: AppStrings.s.dashboardTotalIncome,
+                    amount: summary.totalIncome,
+                    color: AppColors.success,
+                  ),
                 ),
-                AppSpacing.boxHMD,
-                const Divider(height: 1, color: AppColors.divider),
-                AppSpacing.boxHMD,
-                Row(
-                  children: [
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            AppStrings.s.rptNetAmount,
-                            style: AppTypography.caption.copyWith(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                          AppSpacing.boxHXS,
-                          Text(
-                            AppNumberUtils.formatCurrency(summary.netAmount),
-                            style: AppTypography.subtitle1.copyWith(
-                              color: summary.netAmount >= 0
-                                  ? AppColors.success
-                                  : AppColors.error,
-                              fontWeight: FontWeight.w700,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          AppStrings.s.rptTotalTransactions,
-                          style: AppTypography.caption.copyWith(
-                            color: AppColors.textSecondary,
-                          ),
-                        ),
-                        AppSpacing.boxHXS,
-                        Text(
-                          AppStrings.s.rptCount(summary.totalTransactions),
-                          style: AppTypography.subtitle1.copyWith(
-                            color: AppColors.textPrimary,
-                            fontWeight: FontWeight.w700,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                Container(
+                  width: 1,
+                  height: 44,
+                  color: AppColors.divider,
+                ),
+                Expanded(
+                  child: _SummaryItem(
+                    label: AppStrings.s.dashboardTotalExpense,
+                    amount: summary.totalExpense,
+                    color: AppColors.error,
+                  ),
+                ),
+                Container(
+                  width: 1,
+                  height: 44,
+                  color: AppColors.divider,
+                ),
+                Expanded(
+                  child: _SummaryItem(
+                    label: AppStrings.s.rptNetAmount,
+                    amount: summary.netAmount,
+                    color: summary.netAmount >= 0
+                        ? AppColors.success
+                        : AppColors.error,
+                  ),
                 ),
               ],
             ),

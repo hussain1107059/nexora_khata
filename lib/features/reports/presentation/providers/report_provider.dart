@@ -230,8 +230,15 @@ final customReportProvider = FutureProvider<CustomReportData>((ref) async {
     totalExpense: expenseTotal,
     netAmount: incomeTotal - expenseTotal,
     totalTransactions: entries.length,
-    period: '${filter.from} - ${filter.to}',
+    period: _formatCustomPeriod(filter.from, filter.to),
   );
 
   return CustomReportData(entries: entries, summary: summary);
 });
+
+String _formatCustomPeriod(String from, String to) {
+  final fromDate = DateTime.tryParse(from);
+  final toDate = DateTime.tryParse(to);
+  if (fromDate == null || toDate == null) return '$from - $to';
+  return '${AppDateUtils.formatDate(fromDate)} to ${AppDateUtils.formatDate(toDate)}';
+}

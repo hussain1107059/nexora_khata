@@ -1352,6 +1352,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get rptApplyFilter => 'Apply Filter';
 
   @override
+  String get rptRangeTo => 'to';
+
+  @override
   String get rptSelectRange =>
       'Choose a date range and filters, then press Generate';
 

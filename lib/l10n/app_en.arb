@@ -448,6 +448,7 @@
   "rptPreviewPdf": "Open PDF",
   "rptPrintPdf": "Print",
   "rptApplyFilter": "Apply Filter",
+  "rptRangeTo": "to",
   "rptSelectRange": "Choose a date range and filters, then press Generate",
   "rptNoDataForRange": "No transactions found for this range",
   "rptDetailTxn": "Transactions",
