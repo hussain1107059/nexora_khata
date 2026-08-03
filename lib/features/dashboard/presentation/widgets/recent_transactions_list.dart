@@ -193,12 +193,14 @@ class _TransactionTile extends StatelessWidget {
                   ),
                 ),
                 Flexible(
+                  fit: FlexFit.tight,
                   child: Text(
                     AppNumberUtils.formatCurrency(tx.amount),
                     style: AppTypography.bodyText2.copyWith(
                       color: color,
                       fontWeight: FontWeight.w700,
                     ),
+                    textAlign: TextAlign.end,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

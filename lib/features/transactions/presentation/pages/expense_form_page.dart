@@ -12,6 +12,7 @@ import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard
 import 'package:nexora_khata/features/transactions/data/datasources/transfer_datasource.dart';
 import 'package:nexora_khata/features/transactions/domain/entities/expense.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/expense_provider.dart';
+import 'package:nexora_khata/features/transactions/presentation/providers/all_transactions_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_form_fields.dart';
 
 class ExpenseFormPage extends ConsumerWidget {
@@ -105,6 +106,8 @@ class ExpenseFormPage extends ConsumerWidget {
             ref.invalidate(expenseRefreshProvider);
             ref.invalidate(dashboardProvider);
             ref.invalidate(dashboardRefreshProvider);
+            ref.invalidate(allTransactionsProvider);
+            ref.invalidate(allTxRefreshProvider);
             context.pop(true);
           }
         },

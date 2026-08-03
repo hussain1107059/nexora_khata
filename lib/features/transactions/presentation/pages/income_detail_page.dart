@@ -10,6 +10,7 @@ import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/income_provider.dart';
+import 'package:nexora_khata/features/transactions/presentation/providers/all_transactions_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_detail_view.dart';
 
 class IncomeDetailPage extends ConsumerWidget {
@@ -94,6 +95,8 @@ class IncomeDetailPage extends ConsumerWidget {
             ref.invalidate(incomeFilteredListProvider);
             ref.invalidate(dashboardProvider);
             ref.invalidate(dashboardRefreshProvider);
+            ref.invalidate(allTransactionsProvider);
+            ref.invalidate(allTxRefreshProvider);
             context.pop();
           }, child: Text(AppStrings.s.commonDelete, style: AppTypography.button.copyWith(color: AppColors.error))),
         ],

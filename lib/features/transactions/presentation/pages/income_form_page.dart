@@ -12,6 +12,7 @@ import 'package:nexora_khata/features/dashboard/presentation/providers/dashboard
 import 'package:nexora_khata/features/transactions/data/datasources/transfer_datasource.dart';
 import 'package:nexora_khata/features/transactions/domain/entities/income.dart';
 import 'package:nexora_khata/features/transactions/presentation/providers/income_provider.dart';
+import 'package:nexora_khata/features/transactions/presentation/providers/all_transactions_provider.dart';
 import 'package:nexora_khata/features/transactions/presentation/widgets/transaction_form_fields.dart';
 
 class IncomeFormPage extends ConsumerWidget {
@@ -105,6 +106,8 @@ class IncomeFormPage extends ConsumerWidget {
             ref.invalidate(incomeRefreshProvider);
             ref.invalidate(dashboardProvider);
             ref.invalidate(dashboardRefreshProvider);
+            ref.invalidate(allTransactionsProvider);
+            ref.invalidate(allTxRefreshProvider);
             context.pop(true);
           }
         },

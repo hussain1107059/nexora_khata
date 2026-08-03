@@ -93,48 +93,53 @@ class _AppTextFieldState extends State<AppTextField> {
           ),
           AppSpacing.boxHSM,
         ],
-        TextFormField(
-          controller: widget.controller,
-          initialValue: widget.initialValue,
-          onChanged: widget.onChanged,
-          validator: widget.validator,
-          keyboardType: widget.keyboardType,
-          textInputAction: widget.textInputAction,
-          obscureText: _obscureNotifier.value,
-          enabled: widget.enabled,
-          readOnly: widget.readOnly,
-          autofocus: widget.autofocus,
-          maxLines: widget.obscureText ? 1 : widget.maxLines,
-          minLines: widget.minLines,
-          maxLength: widget.maxLength,
-          onTap: widget.onTap,
-          focusNode: widget.focusNode,
-          textCapitalization: widget.textCapitalization,
-          style: Theme.of(context).textTheme.bodyLarge,
-          decoration: InputDecoration(
-            hintText: widget.hint,
-            errorText: widget.errorText,
-            prefix: widget.prefix,
-            suffix: widget.suffix,
-            prefixIcon: widget.prefixIcon,
-            suffixIcon: widget.obscureText
-                ? IconButton(
-                    icon: Icon(
-                      _obscureNotifier.value
-                          ? Icons.visibility_off_outlined
-                          : Icons.visibility_outlined,
-                      size: 20,
-                    ),
-                    onPressed: () {
-                      _obscureNotifier.value = !_obscureNotifier.value;
-                    },
-                  )
-                : widget.suffixIcon,
-            contentPadding: widget.contentPadding ?? AppSpacing.paddingHLg.copyWith(
-              top: AppSpacing.md,
-              bottom: AppSpacing.md,
-            ),
-          ),
+        ValueListenableBuilder<bool>(
+          valueListenable: _obscureNotifier,
+          builder: (context, obscure, _) {
+            return TextFormField(
+              controller: widget.controller,
+              initialValue: widget.initialValue,
+              onChanged: widget.onChanged,
+              validator: widget.validator,
+              keyboardType: widget.keyboardType,
+              textInputAction: widget.textInputAction,
+              obscureText: obscure,
+              enabled: widget.enabled,
+              readOnly: widget.readOnly,
+              autofocus: widget.autofocus,
+              maxLines: widget.obscureText ? 1 : widget.maxLines,
+              minLines: widget.minLines,
+              maxLength: widget.maxLength,
+              onTap: widget.onTap,
+              focusNode: widget.focusNode,
+              textCapitalization: widget.textCapitalization,
+              style: Theme.of(context).textTheme.bodyLarge,
+              decoration: InputDecoration(
+                hintText: widget.hint,
+                errorText: widget.errorText,
+                prefix: widget.prefix,
+                suffix: widget.suffix,
+                prefixIcon: widget.prefixIcon,
+                suffixIcon: widget.obscureText
+                    ? IconButton(
+                        icon: Icon(
+                          obscure
+                              ? Icons.visibility_off_outlined
+                              : Icons.visibility_outlined,
+                          size: 20,
+                        ),
+                        onPressed: () {
+                          _obscureNotifier.value = !_obscureNotifier.value;
+                        },
+                      )
+                    : widget.suffixIcon,
+                contentPadding: widget.contentPadding ?? AppSpacing.paddingHLg.copyWith(
+                  top: AppSpacing.md,
+                  bottom: AppSpacing.md,
+                ),
+              ),
+            );
+          },
         ),
       ],
     );
