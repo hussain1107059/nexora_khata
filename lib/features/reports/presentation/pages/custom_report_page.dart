@@ -153,24 +153,36 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
         data: (data) {
           return ListView(
             physics: const BouncingScrollPhysics(),
-            padding: AppSpacing.screenPadding.copyWith(bottom: 100),
+            padding: const EdgeInsets.only(bottom: AppSpacing.huge),
             children: [
-              _buildFilterCard(),
+              Padding(
+                padding: AppSpacing.screenPadding,
+                child: _buildFilterCard(),
+              ),
               AppSpacing.boxHLG,
               if (data.entries.isEmpty)
-                AppEmptyState(
-                  icon: Icons.insert_chart_rounded,
-                  title: AppStrings.s.rptNoDataForRange,
-                  subtitle: AppStrings.s.rptSelectRange,
+                Padding(
+                  padding: AppSpacing.screenPadding,
+                  child: AppEmptyState(
+                    icon: Icons.insert_chart_rounded,
+                    title: AppStrings.s.rptNoDataForRange,
+                    subtitle: AppStrings.s.rptSelectRange,
+                  ),
                 )
               else ...[
-                ReportSummaryCard(summary: data.summary),
+                Padding(
+                  padding: AppSpacing.screenPadding,
+                  child: ReportSummaryCard(summary: data.summary),
+                ),
                 AppSpacing.boxHLG,
-                Text(
-                  AppStrings.s.rptDetailTxn,
-                  style: AppTypography.subtitle2.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
+                Padding(
+                  padding: AppSpacing.screenPadding,
+                  child: Text(
+                    AppStrings.s.rptDetailTxn,
+                    style: AppTypography.subtitle2.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
                 AppSpacing.boxSM,
