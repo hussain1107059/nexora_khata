@@ -55,6 +55,12 @@ class QuickActionButtons extends StatelessWidget {
                 color: AppColors.warning,
                 onTap: () => context.push(RouteNames.loanList),
               ),
+              _ActionBtn(
+                icon: Icons.insert_chart_rounded,
+                label: AppStrings.s.dashboardReport,
+                color: AppColors.primary,
+                onTap: () => context.push(RouteNames.reports),
+              ),
             ],
           ),
         ),

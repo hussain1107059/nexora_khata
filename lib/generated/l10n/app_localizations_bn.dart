@@ -457,6 +457,9 @@ class AppLocalizationsBn extends AppLocalizations {
   String get dashboardQuickActions => 'দ্রুত অ্যাকশন';
 
   @override
+  String get dashboardReport => 'রিপোর্ট';
+
+  @override
   String get dashboardAddIncome => 'আয় যোগ করুন';
 
   @override
@@ -1314,6 +1317,40 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get rptLoanGiven => 'লোন (দেওয়া)';
+
+  @override
+  String get customReportTitle => 'লেনদেন রিপোর্ট';
+
+  @override
+  String get rptFromDate => 'শুরুর তারিখ';
+
+  @override
+  String get rptToDate => 'শেষ তারিখ';
+
+  @override
+  String get rptIncomeCategory => 'আয় ক্যাটাগরি';
+
+  @override
+  String get rptExpenseCategory => 'ব্যয় ক্যাটাগরি';
+
+  @override
+  String get rptAllCategories => 'সব ক্যাটাগরি';
+
+  @override
+  String get rptGenerate => 'রিপোর্ট তৈরি করুন';
+
+  @override
+  String get rptSharePdf => 'PDF শেয়ার করুন';
+
+  @override
+  String get rptSelectRange =>
+      'তারিখ ও ফিল্টার বেছে নিন, তারপর তৈরি করুন চাপুন';
+
+  @override
+  String get rptNoDataForRange => 'এই সময়ে কোনো লেনদেন পাওয়া যায়নি';
+
+  @override
+  String get rptDetailTxn => 'লেনদেনসমূহ';
 
   @override
   String get setTitle => 'সেটিংস';

@@ -12,7 +12,7 @@ import '../../features/settings/presentation/pages/privacy_page.dart';
 import '../../features/settings/presentation/pages/terms_page.dart';
 import '../../features/settings/presentation/pages/backup_page.dart';
 import '../../features/settings/presentation/pages/online_backup_page.dart';
-import '../../features/reports/presentation/pages/reports_page.dart';
+import '../../features/reports/presentation/pages/custom_report_page.dart';
 import '../../features/loans/presentation/pages/loan_list_page.dart';
 import '../../features/loans/presentation/pages/loan_contact_form_page.dart';
 import '../../features/loans/presentation/pages/loan_detail_page.dart';
@@ -112,7 +112,7 @@ final GoRouter appRouter = GoRouter(
           path: RouteNames.reports,
           name: RouteNames.reports,
           pageBuilder: (context, state) => const NoTransitionPage(
-            child: ReportsPage(),
+            child: CustomReportPage(),
           ),
         ),
         GoRoute(

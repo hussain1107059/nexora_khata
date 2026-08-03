@@ -457,6 +457,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dashboardQuickActions => 'Quick Actions';
 
   @override
+  String get dashboardReport => 'Report';
+
+  @override
   String get dashboardAddIncome => 'Add Income';
 
   @override
@@ -1314,6 +1317,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get rptLoanGiven => 'Loan (Lent)';
+
+  @override
+  String get customReportTitle => 'Transaction Report';
+
+  @override
+  String get rptFromDate => 'Start Date';
+
+  @override
+  String get rptToDate => 'End Date';
+
+  @override
+  String get rptIncomeCategory => 'Income Category';
+
+  @override
+  String get rptExpenseCategory => 'Expense Category';
+
+  @override
+  String get rptAllCategories => 'All Categories';
+
+  @override
+  String get rptGenerate => 'Generate Report';
+
+  @override
+  String get rptSharePdf => 'Share PDF';
+
+  @override
+  String get rptSelectRange =>
+      'Choose a date range and filters, then press Generate';
+
+  @override
+  String get rptNoDataForRange => 'No transactions found for this range';
+
+  @override
+  String get rptDetailTxn => 'Transactions';
 
   @override
   String get setTitle => 'Settings';

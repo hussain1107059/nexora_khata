@@ -938,6 +938,12 @@ abstract class AppLocalizations {
   /// **'Quick Actions'**
   String get dashboardQuickActions;
 
+  /// No description provided for @dashboardReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get dashboardReport;
+
   /// No description provided for @dashboardAddIncome.
   ///
   /// In en, this message translates to:
@@ -2562,6 +2568,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Loan (Lent)'**
   String get rptLoanGiven;
+
+  /// No description provided for @customReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction Report'**
+  String get customReportTitle;
+
+  /// No description provided for @rptFromDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Date'**
+  String get rptFromDate;
+
+  /// No description provided for @rptToDate.
+  ///
+  /// In en, this message translates to:
+  /// **'End Date'**
+  String get rptToDate;
+
+  /// No description provided for @rptIncomeCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Income Category'**
+  String get rptIncomeCategory;
+
+  /// No description provided for @rptExpenseCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Expense Category'**
+  String get rptExpenseCategory;
+
+  /// No description provided for @rptAllCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'All Categories'**
+  String get rptAllCategories;
+
+  /// No description provided for @rptGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Generate Report'**
+  String get rptGenerate;
+
+  /// No description provided for @rptSharePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Share PDF'**
+  String get rptSharePdf;
+
+  /// No description provided for @rptSelectRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a date range and filters, then press Generate'**
+  String get rptSelectRange;
+
+  /// No description provided for @rptNoDataForRange.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found for this range'**
+  String get rptNoDataForRange;
+
+  /// No description provided for @rptDetailTxn.
+  ///
+  /// In en, this message translates to:
+  /// **'Transactions'**
+  String get rptDetailTxn;
 
   /// No description provided for @setTitle.
   ///

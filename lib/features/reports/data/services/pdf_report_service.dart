@@ -7,6 +7,7 @@ import 'package:nexora_khata/core/services/file_share_service.dart';
 import 'package:nexora_khata/features/transactions/data/models/income_model.dart';
 import 'package:nexora_khata/features/transactions/data/models/expense_model.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
+import 'package:nexora_khata/features/transactions/presentation/models/transaction_entry.dart';
 
 class PdfReportService {
   pw.Font? _font;
@@ -204,6 +205,79 @@ class PdfReportService {
       ],
     ));
     return doc.save();
+  }
+
+  Future<Uint8List> generateFilteredReport({
+    required List<TransactionEntry> data,
+    required ReportSummary summary,
+    required String title,
+    String? dateRange,
+  }) async {
+    await _loadFont();
+    final doc = pw.Document();
+    doc.addPage(pw.MultiPage(
+      pageFormat: PdfPageFormat.a4,
+      margin: const pw.EdgeInsets.all(32),
+      header: (ctx) => _buildHeader(title, dateRange),
+      footer: (ctx) => _buildFooter(),
+      build: (ctx) => [
+        _buildMonthlySummary(summary),
+        pw.SizedBox(height: 16),
+        _buildTableHeaders([
+          AppStrings.s.rptHeaderDate,
+          AppStrings.s.txnType,
+          AppStrings.s.rptHeaderCategory,
+          AppStrings.s.rptHeaderDescription,
+          AppStrings.s.rptHeaderAmount,
+          AppStrings.s.rptHeaderStatus,
+        ]),
+        ...data.map(_buildEntryRow),
+        pw.Divider(thickness: 1, color: PdfColors.grey300),
+        _buildTotalRow(AppStrings.s.dashboardTotalIncome, summary.totalIncome),
+        _buildTotalRow(AppStrings.s.dashboardTotalExpense, summary.totalExpense),
+        _buildTotalRow(AppStrings.s.rptNet, summary.netAmount, bold: true),
+      ],
+    ));
+    return doc.save();
+  }
+
+  pw.Widget _buildEntryRow(TransactionEntry e) {
+    final amountColor = e.isExpense
+        ? PdfColors.red700
+        : (e.isIncome ? PdfColors.green700 : PdfColors.blue700);
+    return pw.Container(
+      padding: const pw.EdgeInsets.symmetric(vertical: 5, horizontal: 8),
+      decoration: const pw.BoxDecoration(
+        border: pw.Border(bottom: pw.BorderSide(color: PdfColors.grey200)),
+      ),
+      child: pw.Row(
+        children: [
+          pw.Expanded(child: pw.Text(
+            '${e.date.day}/${e.date.month}/${e.date.year}', style: _s(9),
+          )),
+          pw.Expanded(child: pw.Text(_typeLabel(e), style: _s(9))),
+          pw.Expanded(child: pw.Text(e.categoryName ?? '-', style: _s(9))),
+          pw.Expanded(child: pw.Text(e.description ?? '-', style: _s(9))),
+          pw.Expanded(child: pw.Text(
+            _f(e.amount), style: _s(9, color: amountColor),
+            textAlign: pw.TextAlign.right,
+          )),
+          pw.Expanded(child: pw.Text(
+            _statusBn(e.status), style: _s(9), textAlign: pw.TextAlign.center,
+          )),
+        ],
+      ),
+    );
+  }
+
+  String _typeLabel(TransactionEntry e) {
+    if (e.isLoan) {
+      if (e.isLoanRepay) return AppStrings.s.txnRepay;
+      return e.isLoanBorrow
+          ? AppStrings.s.rptLoanTaken
+          : AppStrings.s.rptLoanGiven;
+    }
+    return e.isIncome ? AppStrings.s.rptIncome : AppStrings.s.rptExpense;
   }
 
   pw.Widget _buildHeader(String title, String? subtitle) {
