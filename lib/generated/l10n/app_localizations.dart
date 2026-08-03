@@ -1076,6 +1076,30 @@ abstract class AppLocalizations {
   /// **'Transfer'**
   String get txnTransfer;
 
+  /// No description provided for @txnCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get txnCategories;
+
+  /// No description provided for @txnLists.
+  ///
+  /// In en, this message translates to:
+  /// **'Lists'**
+  String get txnLists;
+
+  /// No description provided for @incListSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View all income transactions'**
+  String get incListSubtitle;
+
+  /// No description provided for @expListSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View all expense transactions'**
+  String get expListSubtitle;
+
   /// No description provided for @txnTransferTitle.
   ///
   /// In en, this message translates to:

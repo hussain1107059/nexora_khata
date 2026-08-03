@@ -527,6 +527,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get txnTransfer => 'Transfer';
 
   @override
+  String get txnCategories => 'Categories';
+
+  @override
+  String get txnLists => 'Lists';
+
+  @override
+  String get incListSubtitle => 'View all income transactions';
+
+  @override
+  String get expListSubtitle => 'View all expense transactions';
+
+  @override
   String get txnTransferTitle => 'Transfer';
 
   @override

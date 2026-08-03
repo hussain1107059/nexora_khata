@@ -526,6 +526,18 @@ class AppLocalizationsBn extends AppLocalizations {
   String get txnTransfer => 'লেনদেন';
 
   @override
+  String get txnCategories => 'ক্যাটাগরি';
+
+  @override
+  String get txnLists => 'তালিকা';
+
+  @override
+  String get incListSubtitle => 'সব আয় লেনদেন দেখুন';
+
+  @override
+  String get expListSubtitle => 'সব ব্যয় লেনদেন দেখুন';
+
+  @override
   String get txnTransferTitle => 'লেনদেন করুন';
 
   @override

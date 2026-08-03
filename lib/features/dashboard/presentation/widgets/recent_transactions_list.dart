@@ -46,7 +46,7 @@ class RecentTransactionsList extends StatelessWidget {
                 ),
               ),
               TextButton(
-                onPressed: () => context.push(RouteNames.incomeList),
+                onPressed: () => _showListViewSheet(context),
                 child: Text(
                   AppStrings.s.dashboardViewAll,
                   style: AppTypography.labelMedium.copyWith(
@@ -59,6 +59,60 @@ class RecentTransactionsList extends StatelessWidget {
         ),
         ...transactions.take(5).map((tx) => _TransactionTile(tx: tx)),
       ],
+    );
+  }
+
+  void _showListViewSheet(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      barrierColor: AppColors.scrim,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXxl)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: AppSpacing.paddingLg,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                AppStrings.s.txnLists,
+                style: AppTypography.subtitle1.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              AppSpacing.boxHMD,
+              _ListOptionTile(
+                icon: Icons.arrow_downward_rounded,
+                color: AppColors.success,
+                title: AppStrings.s.incListTitle,
+                subtitle: AppStrings.s.incListSubtitle,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.push(RouteNames.incomeList);
+                },
+              ),
+              AppSpacing.boxSM,
+              _ListOptionTile(
+                icon: Icons.arrow_upward_rounded,
+                color: AppColors.error,
+                title: AppStrings.s.expListTitle,
+                subtitle: AppStrings.s.expListSubtitle,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.push(RouteNames.expenseList);
+                },
+              ),
+              AppSpacing.boxSM,
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -208,6 +262,76 @@ class _TransactionTile extends StatelessWidget {
               ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ListOptionTile extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _ListOptionTile({
+    required this.icon,
+    required this.color,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+      child: Container(
+        padding: AppSpacing.paddingLg,
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+          border: Border.all(color: color.withValues(alpha: 0.3)),
+        ),
+        child: Row(
+          children: [
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(icon, color: color, size: 22),
+            ),
+            AppSpacing.boxMD,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: AppTypography.subtitle2.copyWith(
+                      color: AppColors.textPrimary,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  AppSpacing.boxXXS,
+                  Text(
+                    subtitle,
+                    style: AppTypography.caption.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+            const Icon(Icons.chevron_right_rounded, color: AppColors.textHint),
+          ],
         ),
       ),
     );

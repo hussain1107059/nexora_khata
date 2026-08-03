@@ -34,6 +34,13 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
       appBar: AppBar(
         title: Text(AppStrings.s.txnAllTitle, style: AppTypography.subtitle1),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.category_rounded),
+            tooltip: AppStrings.s.incCategoryTooltip,
+            onPressed: _showCategoriesSheet,
+          ),
+        ],
       ),
       body: Column(
         children: [
@@ -58,6 +65,31 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
             ),
           ),
           AppSpacing.boxSM,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _QuickLinkTile(
+                    icon: Icons.arrow_downward_rounded,
+                    color: AppColors.success,
+                    label: AppStrings.s.txnIncomeTitle,
+                    onTap: () => context.push(RouteNames.incomeList),
+                  ),
+                ),
+                AppSpacing.boxSM,
+                Expanded(
+                  child: _QuickLinkTile(
+                    icon: Icons.arrow_upward_rounded,
+                    color: AppColors.error,
+                    label: AppStrings.s.txnExpenseTitle,
+                    onTap: () => context.push(RouteNames.expenseList),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          AppSpacing.boxHSM,
           Expanded(
             child: txnsAsync.when(
               loading: () => AppLoading(message: AppStrings.s.txnLoading),
@@ -217,6 +249,61 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
     );
   }
 
+  void _showCategoriesSheet() {
+    showModalBottomSheet<void>(
+      context: context,
+      barrierColor: AppColors.scrim,
+      backgroundColor: AppColors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(AppSpacing.radiusXxl)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Padding(
+          padding: AppSpacing.paddingLg,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                AppStrings.s.txnCategories,
+                style: AppTypography.subtitle1.copyWith(
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w700,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              AppSpacing.boxHMD,
+              _SheetAction(
+                icon: Icons.arrow_downward_rounded,
+                color: AppColors.success,
+                title: AppStrings.s.incCategoryTitle,
+                subtitle: AppStrings.s.incCategoryTooltip,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.push(RouteNames.incomeCategories);
+                },
+              ),
+              AppSpacing.boxSM,
+              _SheetAction(
+                icon: Icons.arrow_upward_rounded,
+                color: AppColors.error,
+                title: AppStrings.s.expCategoryTitle,
+                subtitle: AppStrings.s.expCategoryTooltip,
+                onTap: () {
+                  Navigator.pop(ctx);
+                  context.push(RouteNames.expenseCategories);
+                },
+              ),
+              AppSpacing.boxSM,
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   void _showAddTxnSheet() {
     showModalBottomSheet<void>(
       context: context,
@@ -364,12 +451,64 @@ class _SheetAction extends StatelessWidget {
   }
 }
 
+class _QuickLinkTile extends StatelessWidget {
+  final IconData icon;
+  final Color color;
+  final String label;
+  final VoidCallback onTap;
+
+  const _QuickLinkTile({
+    required this.icon,
+    required this.color,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: color.withValues(alpha: 0.08),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        side: BorderSide(color: color.withValues(alpha: 0.3)),
+      ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: AppSpacing.lg,
+            vertical: AppSpacing.md,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, size: 20, color: color),
+              AppSpacing.boxSM,
+              Flexible(
+                child: Text(
+                  label,
+                  style: AppTypography.subtitle2.copyWith(
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _FilterButton extends StatelessWidget {
   final bool active;
   final VoidCallback onTap;
 
   const _FilterButton({required this.active, required this.onTap});
-
   @override
   Widget build(BuildContext context) {
     return Stack(
