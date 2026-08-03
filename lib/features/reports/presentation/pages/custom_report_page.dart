@@ -7,6 +7,7 @@ import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/utils/date_utils.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
@@ -115,7 +116,7 @@ class _CustomReportPageState extends ConsumerState<CustomReportPage> {
         data: data.entries,
         summary: data.summary,
         title: AppStrings.s.customReportTitle,
-        dateRange: '$_from - $_to',
+        dateRange: AppNumberUtils.localizeDigits('$_from - $_to'),
       );
       if (!mounted) return;
       await Navigator.of(context).push(

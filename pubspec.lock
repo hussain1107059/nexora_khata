@@ -60,10 +60,9 @@ packages:
   bangla_pdf:
     dependency: "direct main"
     description:
-      name: bangla_pdf
-      sha256: "23902f6cddeb6d8ca53b49735c2082d218dba5e9fed5528d09c29e6a8cd561a6"
-      url: "https://pub.dev"
-    source: hosted
+      path: "third_party/bangla_pdf"
+      relative: true
+    source: path
     version: "1.0.6"
   barcode:
     dependency: transitive

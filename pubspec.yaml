@@ -76,6 +76,12 @@ dependencies:
   timezone: ^0.11.1
   flutter_timezone: ^5.1.0
 
+dependency_overrides:
+  # Patched copy of bangla_pdf (fixed index-out-of-range bug in BanglaUnicodeMapper
+  # that crashed PDF generation). Keep in sync with pub.dev 1.0.6.
+  bangla_pdf:
+    path: third_party/bangla_pdf
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

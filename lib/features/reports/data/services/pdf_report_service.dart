@@ -4,6 +4,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:bangla_pdf/bangla_pdf.dart' as bpdf;
 import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/services/file_share_service.dart';
+import 'package:nexora_khata/core/utils/number_utils.dart';
 import 'package:nexora_khata/features/transactions/data/models/income_model.dart';
 import 'package:nexora_khata/features/transactions/data/models/expense_model.dart';
 import 'package:nexora_khata/features/reports/domain/entities/report.dart';
@@ -78,7 +79,7 @@ class PdfReportService {
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(32),
-      header: (ctx) => _buildHeader(AppStrings.s.rptMonthlyReportTitle(monthNames[month - 1], year), null),
+      header: (ctx) => _buildHeader(AppStrings.s.rptMonthlyReportTitle(monthNames[month - 1], _localized(year)), null),
       footer: (ctx) => _buildFooter(),
       build: (ctx) => [
         _buildMonthlySummary(summary),
@@ -104,7 +105,7 @@ class PdfReportService {
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(32),
-      header: (ctx) => _buildHeader(AppStrings.s.rptYearlyReportTitle(year), null),
+      header: (ctx) => _buildHeader(AppStrings.s.rptYearlyReportTitle(_localized(year)), null),
       footer: (ctx) => _buildFooter(),
       build: (ctx) => [
         _buildMonthlySummary(summary),
@@ -129,7 +130,7 @@ class PdfReportService {
         _buildTotalRow(AppStrings.s.dashboardTotalExpense, summary.totalExpense),
         _buildTotalRow(AppStrings.s.rptNet, summary.netAmount, bold: true),
         pw.SizedBox(height: 12),
-        _b(AppStrings.s.rptTotalTxnsLabel(summary.totalTransactions), 10, color: PdfColors.grey700),
+        _b(AppStrings.s.rptTotalTxnsLabel(_localized(summary.totalTransactions)), 10, color: PdfColors.grey700),
       ],
     ));
     return doc.save();
@@ -146,7 +147,7 @@ class PdfReportService {
     doc.addPage(pw.MultiPage(
       pageFormat: PdfPageFormat.a4,
       margin: const pw.EdgeInsets.all(32),
-      header: (ctx) => _buildHeader(AppStrings.s.rptCashflowReportTitle(monthNames[month - 1], year), null),
+      header: (ctx) => _buildHeader(AppStrings.s.rptCashflowReportTitle(monthNames[month - 1], _localized(year)), null),
       footer: (ctx) => _buildFooter(),
       build: (ctx) => [
         if (last != null) pw.Container(
@@ -173,7 +174,7 @@ class PdfReportService {
           ),
           child: pw.Row(
             children: [
-              pw.Expanded(child: _b('${d.date.day}/${d.date.month}/${d.date.year}', 10)),
+pw.Expanded(child: _b(_localized('${d.date.day}/${d.date.month}/${d.date.year}'), 10)),
               pw.Expanded(child: _b(_f(d.cashBalance), 10, align: pw.TextAlign.right)),
               pw.Expanded(child: _b(_f(d.bankBalance), 10, align: pw.TextAlign.right)),
               pw.Expanded(child: _b(_f(d.totalBalance), 10, weight: pw.FontWeight.bold, align: pw.TextAlign.right)),
@@ -229,7 +230,7 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: _b('${e.date.day}/${e.date.month}/${e.date.year}', 9)),
+          pw.Expanded(child: _b(_localized('${e.date.day}/${e.date.month}/${e.date.year}'), 9)),
           pw.Expanded(child: _b(_typeLabel(e), 9)),
           pw.Expanded(child: _b(e.categoryName ?? '-', 9)),
           pw.Expanded(child: _b(e.description ?? '-', 9)),
@@ -355,7 +356,7 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: _b('${i.incomeDate.day}/${i.incomeDate.month}/${i.incomeDate.year}', 9)),
+          pw.Expanded(child: _b(_localized('${i.incomeDate.day}/${i.incomeDate.month}/${i.incomeDate.year}'), 9)),
           pw.Expanded(child: _b(i.catName ?? '-', 9)),
           pw.Expanded(child: _b(i.customerName ?? '-', 9)),
           pw.Expanded(child: _b(i.description ?? '-', 9)),
@@ -375,7 +376,7 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: _b('${e.expenseDate.day}/${e.expenseDate.month}/${e.expenseDate.year}', 9)),
+          pw.Expanded(child: _b(_localized('${e.expenseDate.day}/${e.expenseDate.month}/${e.expenseDate.year}'), 9)),
           pw.Expanded(child: _b(e.catName ?? '-', 9)),
           pw.Expanded(child: _b(supplierName ?? '-', 9)),
           pw.Expanded(child: _b(e.description ?? '-', 9)),
@@ -394,7 +395,7 @@ class PdfReportService {
       ),
       child: pw.Row(
         children: [
-          pw.Expanded(child: _b('${d.date.day}/${d.date.month}/${d.date.year}', 10)),
+          pw.Expanded(child: _b(_localized('${d.date.day}/${d.date.month}/${d.date.year}'), 10)),
           pw.Expanded(child: _b(_f(d.income), 10, color: PdfColors.green700, align: pw.TextAlign.right)),
           pw.Expanded(child: _b(_f(d.expense), 10, color: PdfColors.red700, align: pw.TextAlign.right)),
           pw.Expanded(child: _b(_f(d.net), 10, color: d.net >= 0 ? PdfColors.blue700 : PdfColors.red700, align: pw.TextAlign.right)),
@@ -419,10 +420,18 @@ class PdfReportService {
   String _f(double v) {
     final abs = v.abs();
     final sign = v < 0 ? '-' : '';
-    if (abs >= 10000000) return '$sign৳${(abs / 10000000).toStringAsFixed(2)}Cr';
-    if (abs >= 100000) return '$sign৳${(abs / 100000).toStringAsFixed(2)}L';
-    return '${sign}৳${abs.toStringAsFixed(2)}';
+    String raw;
+    if (abs >= 10000000) {
+      raw = '$sign৳${(abs / 10000000).toStringAsFixed(2)}Cr';
+    } else if (abs >= 100000) {
+      raw = '$sign৳${(abs / 100000).toStringAsFixed(2)}L';
+    } else {
+      raw = '${sign}৳${abs.toStringAsFixed(2)}';
+    }
+    return AppNumberUtils.localizeDigits(raw);
   }
+
+  String _localized(Object text) => AppNumberUtils.localizeDigits('$text');
 
   String _statusBn(String status) {
     switch (status) {

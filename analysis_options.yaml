@@ -1,5 +1,11 @@
 include: package:flutter_lints/flutter.yaml
 
+analyzer:
+  exclude:
+    # Vendored upstream package (kept as-is except for the crash fix); its
+    # style lints do not apply to this project.
+    - third_party/**
+
 linter:
   rules:
     prefer_const_constructors: true
