@@ -52,6 +52,7 @@ class IncomeCategoryDataSource {
       int id, Map<String, dynamic> data) async {
     final db = _dbHelper.db;
     data['updated_at'] = DateTime.now().toIso8601String();
+    data['business_id'] = _tenantId;
     await db.update(
       'income_categories',
       data,
