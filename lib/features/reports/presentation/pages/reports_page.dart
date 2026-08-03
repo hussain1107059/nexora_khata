@@ -17,6 +17,8 @@ import 'package:nexora_khata/features/reports/presentation/widgets/report_line_c
 import 'package:nexora_khata/features/reports/presentation/widgets/report_pie_chart.dart';
 import 'package:nexora_khata/features/reports/presentation/widgets/report_summary_card.dart';
 
+bool _reportPeriodSeeded = false;
+
 class ReportsPage extends ConsumerWidget {
   const ReportsPage({super.key});
 
@@ -33,6 +35,26 @@ class ReportsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tab = ref.watch(reportTabProvider);
+
+    if (!_reportPeriodSeeded) {
+      ref.watch(availableYearsProvider).whenData((years) {
+        if (years.isEmpty) return;
+        final latest = years.first;
+        final currentYear = DateTime.now().year;
+        if (latest == currentYear && ref.read(reportMonthProvider)['year'] == currentYear) {
+          _reportPeriodSeeded = true;
+          return;
+        }
+        _reportPeriodSeeded = true;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(reportYearProvider.notifier).state = latest;
+          ref.read(reportMonthProvider.notifier).state = {
+            'year': latest,
+            'month': ref.read(reportMonthProvider)['month'] ?? 1,
+          };
+        });
+      });
+    }
 
     return Scaffold(
       backgroundColor: AppColors.scaffoldBackground,
@@ -529,9 +551,9 @@ class _CategoryReportView extends ConsumerWidget {
           ),
           AppSpacing.boxHLG,
           if (toggle == 0)
-            _buildCategoryContent(ref, true, AppStrings.s.rptCatIncome)
+            _buildCategoryContent(ref, ref.watch(reportYearProvider), true, AppStrings.s.rptCatIncome)
           else
-            _buildCategoryContent(ref, false, AppStrings.s.rptCatExpense),
+            _buildCategoryContent(ref, ref.watch(reportYearProvider), false, AppStrings.s.rptCatExpense),
         ],
       ),
     );
@@ -539,10 +561,11 @@ class _CategoryReportView extends ConsumerWidget {
 
   Widget _buildCategoryContent(
     WidgetRef ref,
+    int year,
     bool isIncome,
     String title,
   ) {
-    final params = <String, int?>{'year': null, 'month': null};
+    final params = <String, int?>{'year': year, 'month': null};
     final async = isIncome
         ? ref.watch(categoryIncomeProvider(params))
         : ref.watch(categoryExpenseProvider(params));

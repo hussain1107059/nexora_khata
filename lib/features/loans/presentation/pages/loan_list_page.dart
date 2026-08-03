@@ -12,7 +12,6 @@ import 'package:nexora_khata/core/widgets/app_loading.dart';
 import 'package:nexora_khata/features/loans/presentation/models/loan_summary.dart';
 import 'package:nexora_khata/features/loans/presentation/providers/loan_provider.dart';
 import 'package:nexora_khata/features/loans/presentation/widgets/loan_contact_card.dart';
-import 'package:nexora_khata/features/loans/presentation/widgets/loan_summary_header.dart';
 
 class LoanListPage extends ConsumerWidget {
   const LoanListPage({super.key});
@@ -75,8 +74,6 @@ class _LoanContent extends ConsumerWidget {
       child: ListView(
         padding: const EdgeInsets.only(top: AppSpacing.md, bottom: AppSpacing.huge),
         children: [
-          LoanSummaryHeader(dashboard: dashboard),
-          AppSpacing.boxHLG,
           Padding(
             padding: AppSpacing.paddingHSm,
             child: Text(
