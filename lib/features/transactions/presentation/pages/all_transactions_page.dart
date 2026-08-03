@@ -150,9 +150,9 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
           ? AppStrings.s.txnRepay
           : (isBorrow ? AppStrings.s.loanBorrowLabel : AppStrings.s.loanLendLabel);
       return TransactionCard(
-        description: title,
+        description: entry.contactName ?? '',
         date: entry.date,
-        categoryName: entry.contactName ?? '',
+        categoryName: title,
         amount: entry.amount,
         status: entry.status,
         iconBackground: color.withValues(alpha: 0.1),
@@ -170,9 +170,9 @@ class _AllTransactionsPageState extends ConsumerState<AllTransactionsPage> {
     final isIncome = entry.isIncome;
     final color = isIncome ? AppColors.success : AppColors.error;
     return TransactionCard(
-      description: entry.description ?? '',
+      description: entry.categoryName ?? entry.description ?? '',
       date: entry.date,
-      categoryName: entry.categoryName,
+      categoryName: entry.categoryName != null ? entry.description : null,
       amount: entry.amount,
       status: entry.status,
       iconBackground: color.withValues(alpha: 0.1),
