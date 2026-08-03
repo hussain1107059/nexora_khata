@@ -2536,7 +2536,7 @@ abstract class AppLocalizations {
   /// No description provided for @setBackupRestore.
   ///
   /// In en, this message translates to:
-  /// **'Backup & Restore'**
+  /// **'Offline Backup'**
   String get setBackupRestore;
 
   /// No description provided for @setBackupRestoreSub.
@@ -2544,6 +2544,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Backup, restore, export & import'**
   String get setBackupRestoreSub;
+
+  /// No description provided for @setOnlineBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Backup'**
+  String get setOnlineBackup;
+
+  /// No description provided for @setOnlineBackupSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & restore on Google Drive'**
+  String get setOnlineBackupSub;
 
   /// No description provided for @setOther.
   ///
@@ -2596,7 +2608,7 @@ abstract class AppLocalizations {
   /// No description provided for @setAutoBackup.
   ///
   /// In en, this message translates to:
-  /// **'Automatic Backup'**
+  /// **'Automatic Offline Backup'**
   String get setAutoBackup;
 
   /// No description provided for @setBackupFreq.
@@ -2638,7 +2650,7 @@ abstract class AppLocalizations {
   /// No description provided for @setManualBackup.
   ///
   /// In en, this message translates to:
-  /// **'Manual Backup'**
+  /// **'Manual Offline Backup'**
   String get setManualBackup;
 
   /// No description provided for @setManualBackupDesc.
@@ -2698,7 +2710,7 @@ abstract class AppLocalizations {
   /// No description provided for @setBackupHistory.
   ///
   /// In en, this message translates to:
-  /// **'Backup History'**
+  /// **'Offline Backup History'**
   String get setBackupHistory;
 
   /// No description provided for @setBackupCount.
@@ -2838,6 +2850,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Import failed'**
   String get setImportFailed;
+
+  /// No description provided for @obkTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Online Backup'**
+  String get obkTitle;
+
+  /// No description provided for @obkYourAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Google Account'**
+  String get obkYourAccount;
+
+  /// No description provided for @obkSignedInDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup and restore your data on Google Drive'**
+  String get obkSignedInDesc;
+
+  /// No description provided for @obkSignedOutDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google to backup and restore your data on Google Drive'**
+  String get obkSignedOutDesc;
+
+  /// No description provided for @obkSignIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get obkSignIn;
+
+  /// No description provided for @obkSignOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out'**
+  String get obkSignOut;
+
+  /// No description provided for @obkSignedInAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Signed in as {email}'**
+  String obkSignedInAs(Object email);
+
+  /// No description provided for @obkBackupNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Now'**
+  String get obkBackupNow;
+
+  /// No description provided for @obkRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore from Google Drive'**
+  String get obkRestore;
+
+  /// No description provided for @obkStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Status'**
+  String get obkStatus;
+
+  /// No description provided for @obkLastBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Backup'**
+  String get obkLastBackup;
+
+  /// No description provided for @obkBackupDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Date'**
+  String get obkBackupDate;
+
+  /// No description provided for @obkBackupSize.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup Size'**
+  String get obkBackupSize;
+
+  /// No description provided for @obkNever.
+  ///
+  /// In en, this message translates to:
+  /// **'Never'**
+  String get obkNever;
+
+  /// No description provided for @obkNotSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Not signed in'**
+  String get obkNotSignedIn;
+
+  /// No description provided for @obkNoBackupYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup yet'**
+  String get obkNoBackupYet;
+
+  /// No description provided for @obkRestoreWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring will replace all current data on this device with the online backup'**
+  String get obkRestoreWarning;
+
+  /// No description provided for @obkRestoreConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Restore'**
+  String get obkRestoreConfirmTitle;
+
+  /// No description provided for @obkRestoreConfirmMsg.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace all current data with the Google Drive backup?'**
+  String get obkRestoreConfirmMsg;
+
+  /// No description provided for @obkUploadSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup uploaded to Google Drive'**
+  String get obkUploadSuccess;
+
+  /// No description provided for @obkRestoreSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore successful! Please restart the app.'**
+  String get obkRestoreSuccess;
+
+  /// No description provided for @obkErrorNoInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get obkErrorNoInternet;
+
+  /// No description provided for @obkErrorNotSignedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Please sign in first'**
+  String get obkErrorNotSignedIn;
+
+  /// No description provided for @obkErrorSignInCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in was cancelled'**
+  String get obkErrorSignInCancelled;
+
+  /// No description provided for @obkErrorSignInFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Google sign-in failed'**
+  String get obkErrorSignInFailed;
+
+  /// No description provided for @obkErrorPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied for Google Drive'**
+  String get obkErrorPermissionDenied;
+
+  /// No description provided for @obkErrorTokenExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session expired, please sign in again'**
+  String get obkErrorTokenExpired;
+
+  /// No description provided for @obkErrorMissingBackup.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup found on Google Drive'**
+  String get obkErrorMissingBackup;
+
+  /// No description provided for @obkErrorUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to upload backup'**
+  String get obkErrorUploadFailed;
+
+  /// No description provided for @obkErrorDownloadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to download backup'**
+  String get obkErrorDownloadFailed;
+
+  /// No description provided for @obkErrorRestoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore failed'**
+  String get obkErrorRestoreFailed;
+
+  /// No description provided for @obkErrorUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Online backup is not supported on this platform'**
+  String get obkErrorUnsupported;
+
+  /// No description provided for @obkErrorUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Something went wrong. Please try again'**
+  String get obkErrorUnknown;
 
   /// No description provided for @aboutTitle.
   ///
@@ -3312,6 +3522,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password must be at least 4 characters'**
   String get authPasswordMin;
+
+  /// No description provided for @authEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get authEmailLabel;
+
+  /// No description provided for @authEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email'**
+  String get authEmailHint;
+
+  /// No description provided for @authSecurityQuestionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Question'**
+  String get authSecurityQuestionLabel;
+
+  /// No description provided for @authSecurityAnswerLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Answer'**
+  String get authSecurityAnswerLabel;
+
+  /// No description provided for @authSecurityAnswerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the answer'**
+  String get authSecurityAnswerHint;
+
+  /// No description provided for @authSecurityQuestionRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a security question'**
+  String get authSecurityQuestionRequired;
+
+  /// No description provided for @authForgotLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot password?'**
+  String get authForgotLink;
+
+  /// No description provided for @authForgotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot Password'**
+  String get authForgotTitle;
+
+  /// No description provided for @authForgotSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your registered email to recover your account'**
+  String get authForgotSubtitle;
+
+  /// No description provided for @authForgotEmailHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your registered email'**
+  String get authForgotEmailHint;
+
+  /// No description provided for @authForgotContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get authForgotContinue;
+
+  /// No description provided for @authForgotQuestionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Security Question'**
+  String get authForgotQuestionTitle;
+
+  /// No description provided for @authForgotQuestionSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Answer the security question you set during sign-up'**
+  String get authForgotQuestionSubtitle;
+
+  /// No description provided for @authForgotQuestionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your answer'**
+  String get authForgotQuestionHint;
+
+  /// No description provided for @authForgotVerify.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get authForgotVerify;
+
+  /// No description provided for @authForgotEmailNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No account found with this email'**
+  String get authForgotEmailNotFound;
+
+  /// No description provided for @authForgotWrongAnswer.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect answer'**
+  String get authForgotWrongAnswer;
+
+  /// No description provided for @authForgotNewPasswordTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a New Password'**
+  String get authForgotNewPasswordTitle;
+
+  /// No description provided for @authForgotNewPasswordSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a new password for your account'**
+  String get authForgotNewPasswordSubtitle;
+
+  /// No description provided for @authForgotNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New Password'**
+  String get authForgotNewPasswordLabel;
+
+  /// No description provided for @authForgotNewPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a new password'**
+  String get authForgotNewPasswordHint;
+
+  /// No description provided for @authForgotConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm New Password'**
+  String get authForgotConfirmPasswordLabel;
+
+  /// No description provided for @authForgotConfirmPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-enter the new password'**
+  String get authForgotConfirmPasswordHint;
+
+  /// No description provided for @authForgotResetButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset Password'**
+  String get authForgotResetButton;
+
+  /// No description provided for @authForgotResetSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Password reset successfully. Please login.'**
+  String get authForgotResetSuccess;
+
+  /// No description provided for @authForgotBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get authForgotBack;
 
   /// No description provided for @setAccount.
   ///

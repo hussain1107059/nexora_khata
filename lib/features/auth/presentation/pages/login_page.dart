@@ -121,6 +121,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       onPressed: _login,
                     ),
                     AppSpacing.boxHLG,
+                    Center(
+                      child: TextButton(
+                        onPressed: () => context.go(RouteNames.forgotPassword),
+                        child: Text(AppStrings.s.authForgotLink),
+                      ),
+                    ),
+                    AppSpacing.boxHMD,
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [

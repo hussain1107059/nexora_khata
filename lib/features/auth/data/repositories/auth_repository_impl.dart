@@ -65,6 +65,8 @@ class AuthRepositoryImpl implements AuthRepository {
     required String password,
     String? email,
     String? phone,
+    String? securityQuestion,
+    String? securityAnswer,
   }) async {
     try {
       final usernameTrim = username.trim();
@@ -73,16 +75,62 @@ class AuthRepositoryImpl implements AuthRepository {
       }
       final salt = _dataSource.generateSalt();
       final hash = _dataSource.hashPassword(password, salt);
+      final securityAnswerHash = (securityQuestion != null &&
+              securityAnswer != null &&
+              securityAnswer.trim().isNotEmpty)
+          ? _dataSource.hashSecurityAnswer(securityAnswer.trim())
+          : null;
       final user = await _dataSource.create(
         name: name.trim(),
         username: usernameTrim,
         passwordHash: '$salt:$hash',
         email: email?.trim(),
         phone: phone?.trim(),
+        securityQuestion: securityQuestion?.trim(),
+        securityAnswerHash: securityAnswerHash,
       );
       await _dataSource.saveSession(user.id);
       await _dataSource.claimLegacyData(user.id);
       return Right(user);
+    } catch (e) {
+      return Left(DatabaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, String?>> getSecurityQuestion(String email) async {
+    try {
+      final question = await _dataSource.getSecurityQuestionByEmail(email);
+      return Right(question);
+    } catch (e) {
+      return Left(DatabaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> verifySecurityAnswer(
+      String email, String answer) async {
+    try {
+      return Right(await _dataSource.verifySecurityAnswer(email, answer));
+    } catch (e) {
+      return Left(DatabaseFailure(message: e.toString()));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> resetPassword({
+    required String email,
+    required String newPassword,
+  }) async {
+    try {
+      final salt = _dataSource.generateSalt();
+      final hash = _dataSource.hashPassword(newPassword, salt);
+      final updated = await _dataSource.updatePassword(
+          email, '$salt:$hash');
+      if (updated == 0) {
+        return const Left(NotFoundFailure(message: 'Account not found'));
+      }
+      return const Right(null);
     } catch (e) {
       return Left(DatabaseFailure(message: e.toString()));
     }

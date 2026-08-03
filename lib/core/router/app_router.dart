@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../widgets/app_shell.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/signup_page.dart';
+import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/providers/auth_provider.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/settings/presentation/pages/settings_page.dart';
@@ -10,6 +11,7 @@ import '../../features/settings/presentation/pages/about_page.dart';
 import '../../features/settings/presentation/pages/privacy_page.dart';
 import '../../features/settings/presentation/pages/terms_page.dart';
 import '../../features/settings/presentation/pages/backup_page.dart';
+import '../../features/settings/presentation/pages/online_backup_page.dart';
 import '../../features/reports/presentation/pages/reports_page.dart';
 import '../../features/loans/presentation/pages/loan_list_page.dart';
 import '../../features/loans/presentation/pages/loan_contact_form_page.dart';
@@ -43,7 +45,8 @@ final GoRouter appRouter = GoRouter(
   redirect: (context, state) {
     final loggedIn = authUserNotifier.value != null;
     final atAuthPage = state.matchedLocation == RouteNames.login ||
-        state.matchedLocation == RouteNames.signup;
+        state.matchedLocation == RouteNames.signup ||
+        state.matchedLocation == RouteNames.forgotPassword;
     if (!loggedIn && !atAuthPage) return RouteNames.login;
     if (loggedIn && atAuthPage) return RouteNames.dashboard;
     return null;
@@ -70,6 +73,14 @@ final GoRouter appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       pageBuilder: (context, state) => const NoTransitionPage(
         child: SignupPage(),
+      ),
+    ),
+    GoRoute(
+      path: RouteNames.forgotPassword,
+      name: RouteNames.forgotPassword,
+      parentNavigatorKey: _rootNavigatorKey,
+      pageBuilder: (context, state) => const NoTransitionPage(
+        child: ForgotPasswordPage(),
       ),
     ),
     ShellRoute(
@@ -255,6 +266,12 @@ final GoRouter appRouter = GoRouter(
       name: RouteNames.backup,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const BackupPage(),
+    ),
+    GoRoute(
+      path: RouteNames.onlineBackup,
+      name: RouteNames.onlineBackup,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const OnlineBackupPage(),
     ),
     GoRoute(
       path: RouteNames.transferAdd,

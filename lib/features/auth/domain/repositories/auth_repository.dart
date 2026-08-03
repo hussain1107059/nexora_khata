@@ -11,7 +11,16 @@ abstract class AuthRepository {
     required String password,
     String? email,
     String? phone,
+    String? securityQuestion,
+    String? securityAnswer,
   });
   Future<Either<Failure, void>> logout();
   Future<Either<Failure, bool>> isUsernameTaken(String username);
+  Future<Either<Failure, String?>> getSecurityQuestion(String email);
+  Future<Either<Failure, bool>> verifySecurityAnswer(
+      String email, String answer);
+  Future<Either<Failure, void>> resetPassword({
+    required String email,
+    required String newPassword,
+  });
 }

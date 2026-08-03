@@ -128,6 +128,8 @@ class DatabaseHelper {
         phone TEXT,
         password_hash TEXT,
         pin TEXT,
+        security_question TEXT,
+        security_answer_hash TEXT,
         avatar_path TEXT,
         is_active INTEGER NOT NULL DEFAULT 1,
         last_login_at TEXT,
@@ -996,6 +998,11 @@ class DatabaseHelper {
     }
     if (version == 11) {
       await _ensureColumn(db, 'users', 'username', 'TEXT');
+    }
+    if (version == 12) {
+      await _ensureColumn(db, 'users', 'security_question', 'TEXT');
+      await _ensureColumn(
+          db, 'users', 'security_answer_hash', 'TEXT');
     }
   }
 

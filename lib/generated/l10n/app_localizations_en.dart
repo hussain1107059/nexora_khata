@@ -1301,10 +1301,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setBackupTake => 'Take Backup';
 
   @override
-  String get setBackupRestore => 'Backup & Restore';
+  String get setBackupRestore => 'Offline Backup';
 
   @override
   String get setBackupRestoreSub => 'Backup, restore, export & import';
+
+  @override
+  String get setOnlineBackup => 'Online Backup';
+
+  @override
+  String get setOnlineBackupSub => 'Backup & restore on Google Drive';
 
   @override
   String get setOther => 'Other';
@@ -1331,7 +1337,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setAppVersion => 'App Version';
 
   @override
-  String get setAutoBackup => 'Automatic Backup';
+  String get setAutoBackup => 'Automatic Offline Backup';
 
   @override
   String get setBackupFreq => 'Backup Frequency';
@@ -1353,7 +1359,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setMonthly => 'Monthly';
 
   @override
-  String get setManualBackup => 'Manual Backup';
+  String get setManualBackup => 'Manual Offline Backup';
 
   @override
   String get setManualBackupDesc =>
@@ -1385,7 +1391,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setImport => 'Import';
 
   @override
-  String get setBackupHistory => 'Backup History';
+  String get setBackupHistory => 'Offline Backup History';
 
   @override
   String setBackupCount(Object count, Object size) {
@@ -1474,6 +1480,111 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setImportFailed => 'Import failed';
+
+  @override
+  String get obkTitle => 'Online Backup';
+
+  @override
+  String get obkYourAccount => 'Your Google Account';
+
+  @override
+  String get obkSignedInDesc => 'Backup and restore your data on Google Drive';
+
+  @override
+  String get obkSignedOutDesc =>
+      'Sign in with Google to backup and restore your data on Google Drive';
+
+  @override
+  String get obkSignIn => 'Sign in with Google';
+
+  @override
+  String get obkSignOut => 'Sign out';
+
+  @override
+  String obkSignedInAs(Object email) {
+    return 'Signed in as $email';
+  }
+
+  @override
+  String get obkBackupNow => 'Backup Now';
+
+  @override
+  String get obkRestore => 'Restore from Google Drive';
+
+  @override
+  String get obkStatus => 'Backup Status';
+
+  @override
+  String get obkLastBackup => 'Last Backup';
+
+  @override
+  String get obkBackupDate => 'Backup Date';
+
+  @override
+  String get obkBackupSize => 'Backup Size';
+
+  @override
+  String get obkNever => 'Never';
+
+  @override
+  String get obkNotSignedIn => 'Not signed in';
+
+  @override
+  String get obkNoBackupYet => 'No backup yet';
+
+  @override
+  String get obkRestoreWarning =>
+      'Restoring will replace all current data on this device with the online backup';
+
+  @override
+  String get obkRestoreConfirmTitle => 'Confirm Restore';
+
+  @override
+  String get obkRestoreConfirmMsg =>
+      'Replace all current data with the Google Drive backup?';
+
+  @override
+  String get obkUploadSuccess => 'Backup uploaded to Google Drive';
+
+  @override
+  String get obkRestoreSuccess => 'Restore successful! Please restart the app.';
+
+  @override
+  String get obkErrorNoInternet => 'No internet connection';
+
+  @override
+  String get obkErrorNotSignedIn => 'Please sign in first';
+
+  @override
+  String get obkErrorSignInCancelled => 'Sign in was cancelled';
+
+  @override
+  String get obkErrorSignInFailed => 'Google sign-in failed';
+
+  @override
+  String get obkErrorPermissionDenied => 'Permission denied for Google Drive';
+
+  @override
+  String get obkErrorTokenExpired => 'Session expired, please sign in again';
+
+  @override
+  String get obkErrorMissingBackup => 'No backup found on Google Drive';
+
+  @override
+  String get obkErrorUploadFailed => 'Failed to upload backup';
+
+  @override
+  String get obkErrorDownloadFailed => 'Failed to download backup';
+
+  @override
+  String get obkErrorRestoreFailed => 'Restore failed';
+
+  @override
+  String get obkErrorUnsupported =>
+      'Online backup is not supported on this platform';
+
+  @override
+  String get obkErrorUnknown => 'Something went wrong. Please try again';
 
   @override
   String get aboutTitle => 'About';
@@ -1740,6 +1851,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get authPasswordMin => 'Password must be at least 4 characters';
+
+  @override
+  String get authEmailLabel => 'Email';
+
+  @override
+  String get authEmailHint => 'Enter your email';
+
+  @override
+  String get authSecurityQuestionLabel => 'Security Question';
+
+  @override
+  String get authSecurityAnswerLabel => 'Security Answer';
+
+  @override
+  String get authSecurityAnswerHint => 'Enter the answer';
+
+  @override
+  String get authSecurityQuestionRequired =>
+      'Please choose a security question';
+
+  @override
+  String get authForgotLink => 'Forgot password?';
+
+  @override
+  String get authForgotTitle => 'Forgot Password';
+
+  @override
+  String get authForgotSubtitle =>
+      'Enter your registered email to recover your account';
+
+  @override
+  String get authForgotEmailHint => 'Enter your registered email';
+
+  @override
+  String get authForgotContinue => 'Continue';
+
+  @override
+  String get authForgotQuestionTitle => 'Security Question';
+
+  @override
+  String get authForgotQuestionSubtitle =>
+      'Answer the security question you set during sign-up';
+
+  @override
+  String get authForgotQuestionHint => 'Enter your answer';
+
+  @override
+  String get authForgotVerify => 'Verify';
+
+  @override
+  String get authForgotEmailNotFound => 'No account found with this email';
+
+  @override
+  String get authForgotWrongAnswer => 'Incorrect answer';
+
+  @override
+  String get authForgotNewPasswordTitle => 'Set a New Password';
+
+  @override
+  String get authForgotNewPasswordSubtitle =>
+      'Choose a new password for your account';
+
+  @override
+  String get authForgotNewPasswordLabel => 'New Password';
+
+  @override
+  String get authForgotNewPasswordHint => 'Enter a new password';
+
+  @override
+  String get authForgotConfirmPasswordLabel => 'Confirm New Password';
+
+  @override
+  String get authForgotConfirmPasswordHint => 'Re-enter the new password';
+
+  @override
+  String get authForgotResetButton => 'Reset Password';
+
+  @override
+  String get authForgotResetSuccess =>
+      'Password reset successfully. Please login.';
+
+  @override
+  String get authForgotBack => 'Back';
 
   @override
   String get setAccount => 'Account';

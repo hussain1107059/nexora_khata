@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:nexora_khata/core/config/theme/app_colors.dart';
 import 'package:nexora_khata/core/config/theme/app_spacing.dart';
 import 'package:nexora_khata/core/config/theme/app_typography.dart';
+import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_text.dart';
 import 'package:nexora_khata/features/auth/presentation/providers/auth_provider.dart';
@@ -43,18 +44,18 @@ class SettingsPage extends ConsumerWidget {
           const Divider(height: 1),
           _SectionHeader(title: AppStrings.s.setDatabase),
           ListTile(
-            leading: const Icon(Icons.backup, color: AppColors.primary),
-            title: AppText(AppStrings.s.setBackup, type: AppTextType.body2),
-            subtitle: AppText(AppStrings.s.setBackupTake, type: AppTextType.caption),
+            leading: const Icon(Icons.cloud_outlined, color: AppColors.primary),
+            title: AppText(AppStrings.s.setOnlineBackup, type: AppTextType.body2),
+            subtitle: AppText(AppStrings.s.setOnlineBackupSub, type: AppTextType.caption),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/backup'),
+            onTap: () => context.push(RouteNames.onlineBackup),
           ),
           ListTile(
             leading: const Icon(Icons.backup, color: AppColors.primary),
             title: AppText(AppStrings.s.setBackupRestore, type: AppTextType.body2),
             subtitle: AppText(AppStrings.s.setBackupRestoreSub, type: AppTextType.caption),
             trailing: const Icon(Icons.chevron_right),
-            onTap: () => context.push('/settings/backup'),
+            onTap: () => context.push(RouteNames.backup),
           ),
           const Divider(height: 1),
           _SectionHeader(title: AppStrings.s.setOther),

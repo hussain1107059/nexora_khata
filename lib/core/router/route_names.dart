@@ -4,6 +4,7 @@ abstract final class RouteNames {
   static const String splash = '/';
   static const String login = '/login';
   static const String signup = '/signup';
+  static const String forgotPassword = '/forgot-password';
   static const String home = '/home';
   static const String dashboard = '/dashboard';
   static const String transactions = '/transactions';
@@ -43,4 +44,5 @@ abstract final class RouteNames {
   static const String privacy = '/settings/privacy';
   static const String terms = '/settings/terms';
   static const String backup = '/settings/backup';
+  static const String onlineBackup = '/settings/online-backup';
 }

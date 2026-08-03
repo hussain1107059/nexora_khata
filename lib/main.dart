@@ -6,6 +6,7 @@ import 'core/config/theme/app_theme.dart';
 import 'core/config/theme/app_colors.dart';
 import 'core/config/theme/app_typography.dart';
 import 'core/router/app_router.dart';
+import 'core/services/app_state_scope.dart';
 import 'core/services/app_strings.dart';
 import 'core/services/database_helper.dart';
 import 'core/services/notification_service.dart';
@@ -14,8 +15,11 @@ import 'features/auth/presentation/providers/auth_provider.dart';
 import 'features/settings/presentation/providers/settings_provider.dart';
 import 'generated/l10n/app_localizations.dart';
 
+final ProviderContainer _appContainer = ProviderContainer();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppStateScope.bind(_appContainer);
 
   try {
     await initializeDependencies();
@@ -38,8 +42,9 @@ void main() async {
   }
 
   runApp(
-    const ProviderScope(
-      child: NexoraKhataApp(),
+    UncontrolledProviderScope(
+      container: _appContainer,
+      child: const NexoraKhataApp(),
     ),
   );
 }
@@ -176,7 +181,14 @@ class _AppInitializerState extends ConsumerState<_AppInitializer>
 
   @override
   Widget build(BuildContext context) {
-    if (!_ready) {
+    // Watch the auth state only once the database is ready, so the session is
+    // validated on the splash screen (not before) and the router then goes
+    // straight to Dashboard for an authenticated user with no Login flash.
+    var authRestoring = false;
+    if (_ready) {
+      authRestoring = ref.watch(authStateProvider).isLoading;
+    }
+    if (!_ready || authRestoring) {
       return Scaffold(
         backgroundColor: AppColors.white,
         body: Center(

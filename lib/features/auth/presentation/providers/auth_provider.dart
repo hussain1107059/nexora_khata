@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:nexora_khata/core/services/app_state_scope.dart';
 import 'package:nexora_khata/core/services/current_user_scope.dart';
 import 'package:nexora_khata/core/services/notification_service.dart';
 import 'package:nexora_khata/di/injection_container.dart';
@@ -59,6 +60,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthUser?>> {
     required String password,
     String? email,
     String? phone,
+    String? securityQuestion,
+    String? securityAnswer,
   }) async {
     state = const AsyncLoading();
     final result = await _repo.signup(
@@ -67,6 +70,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthUser?>> {
       password: password,
       email: email,
       phone: phone,
+      securityQuestion: securityQuestion,
+      securityAnswer: securityAnswer,
     );
     result.fold(
       (failure) => state = AsyncError<AuthUser?>(failure, StackTrace.current),
@@ -79,6 +84,8 @@ class AuthNotifier extends StateNotifier<AsyncValue<AuthUser?>> {
     await _repo.logout();
     state = const AsyncData(null);
     authUserNotifier.value = null;
+    CurrentUserScope.setUserId(null);
     await getIt<NotificationService>().cancelAll();
+    AppStateScope.clearAll();
   }
 }

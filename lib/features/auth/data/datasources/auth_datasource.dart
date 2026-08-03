@@ -33,6 +33,49 @@ class AuthDataSource {
     return _fromMap(rows.first);
   }
 
+  Future<AuthUser?> findByEmail(String email) async {
+    final rows = await _dbHelper.query('users',
+        where: 'email = ?', whereArgs: [email.trim()], limit: 1);
+    if (rows.isEmpty) return null;
+    return _fromMap(rows.first);
+  }
+
+  Future<String?> getSecurityQuestionByEmail(String email) async {
+    final rows = await _dbHelper.query('users',
+        columns: ['security_question'],
+        where: 'email = ?', whereArgs: [email.trim()], limit: 1);
+    if (rows.isEmpty) return null;
+    return rows.first['security_question'] as String?;
+  }
+
+  /// Hashes the security answer (salted) so it is never stored in plain text.
+  String hashSecurityAnswer(String answer) {
+    final salt = generateSalt();
+    return '$salt:${hashPassword(answer, salt)}';
+  }
+
+  /// Returns true only when [answer] matches the stored, hashed answer.
+  Future<bool> verifySecurityAnswer(String email, String answer) async {
+    final rows = await _dbHelper.query('users',
+        columns: ['security_answer_hash'],
+        where: 'email = ?', whereArgs: [email.trim()], limit: 1);
+    if (rows.isEmpty) return false;
+    final stored = rows.first['security_answer_hash'] as String?;
+    if (stored == null || stored.isEmpty) return false;
+    final parts = stored.split(':');
+    if (parts.length != 2) return false;
+    return hashPassword(answer, parts[0]) == parts[1];
+  }
+
+  /// Stores a new salted password hash (`salt:hash`, same layout as signup) for
+  /// the account matching [email]. Returns the number of updated rows.
+  Future<int> updatePassword(String email, String passwordHash) async {
+    return _dbHelper.updateWhere('users', {
+      'password_hash': passwordHash,
+      'updated_at': DateTime.now().toIso8601String(),
+    }, where: 'email = ?', whereArgs: [email.trim()]);
+  }
+
   Future<String?> getPasswordHash(int id) async {
     final rows = await _dbHelper.query('users',
         columns: ['password_hash'], where: 'id = ?', whereArgs: [id], limit: 1);
@@ -50,6 +93,8 @@ class AuthDataSource {
     required String passwordHash,
     String? email,
     String? phone,
+    String? securityQuestion,
+    String? securityAnswerHash,
   }) async {
     final now = DateTime.now().toIso8601String();
     final id = await _dbHelper.insert('users', {
@@ -58,6 +103,8 @@ class AuthDataSource {
       'email': email,
       'phone': phone,
       'password_hash': passwordHash,
+      'security_question': securityQuestion,
+      'security_answer_hash': securityAnswerHash,
       'is_active': 1,
       'status': 'active',
       'created_at': now,

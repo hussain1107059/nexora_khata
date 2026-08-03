@@ -7,10 +7,20 @@ import 'package:nexora_khata/core/config/theme/app_typography.dart';
 import 'package:nexora_khata/core/errors/failures.dart';
 import 'package:nexora_khata/core/router/route_names.dart';
 import 'package:nexora_khata/core/services/app_strings.dart';
+import 'package:nexora_khata/core/utils/validators.dart';
 import 'package:nexora_khata/core/widgets/app_button.dart';
 import 'package:nexora_khata/core/widgets/app_snackbar.dart';
 import 'package:nexora_khata/core/widgets/app_text_field.dart';
 import 'package:nexora_khata/features/auth/presentation/providers/auth_provider.dart';
+
+const List<String> _securityQuestions = [
+  'আপনার মায়ের নাম কি?',
+  'আপনার প্রিয় রং কি?',
+  'আপনার জন্মস্থান কোথায়?',
+  'আপনার প্রিয় খাবারের নাম কি?',
+  'আপনার প্রিয় শিক্ষকের নাম কি?',
+  'আপনার প্রথম পোষা প্রাণীর নাম কি?',
+];
 
 class SignupPage extends ConsumerStatefulWidget {
   const SignupPage({super.key});
@@ -23,16 +33,21 @@ class _SignupPageState extends ConsumerState<SignupPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _usernameController = TextEditingController();
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
+  final _securityAnswerController = TextEditingController();
+  String? _selectedQuestion;
   bool _submitting = false;
 
   @override
   void dispose() {
     _nameController.dispose();
     _usernameController.dispose();
+    _emailController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
+    _securityAnswerController.dispose();
     super.dispose();
   }
 
@@ -43,7 +58,10 @@ class _SignupPageState extends ConsumerState<SignupPage> {
     final success = await ref.read(authStateProvider.notifier).signup(
           name: _nameController.text,
           username: _usernameController.text,
+          email: _emailController.text.trim(),
           password: _passwordController.text,
+          securityQuestion: _selectedQuestion,
+          securityAnswer: _securityAnswerController.text,
         );
     if (!mounted) return;
     setState(() => _submitting = false);
@@ -128,6 +146,19 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                     ),
                     AppSpacing.boxHLG,
                     AppTextField(
+                      label: AppStrings.s.authEmailLabel,
+                      hint: AppStrings.s.authEmailHint,
+                      controller: _emailController,
+                      textInputAction: TextInputAction.next,
+                      keyboardType: TextInputType.emailAddress,
+                      prefixIcon: const Icon(
+                        Icons.email_outlined,
+                        color: AppColors.textHint,
+                      ),
+                      validator: AppValidators.email,
+                    ),
+                    AppSpacing.boxHLG,
+                    AppTextField(
                       label: AppStrings.s.authPasswordLabel,
                       hint: AppStrings.s.authPasswordHint,
                       controller: _passwordController,
@@ -167,6 +198,44 @@ class _SignupPageState extends ConsumerState<SignupPage> {
                         }
                         return null;
                       },
+                    ),
+                    AppSpacing.boxHLG,
+                    DropdownButtonFormField<String>(
+                      initialValue: _selectedQuestion,
+                      decoration: InputDecoration(
+                        labelText: AppStrings.s.authSecurityQuestionLabel,
+                        hintText: AppStrings.s.authSecurityQuestionLabel,
+                        prefixIcon: const Icon(
+                          Icons.help_outline,
+                          color: AppColors.textHint,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      items: [
+                        for (final q in _securityQuestions)
+                          DropdownMenuItem(value: q, child: Text(q)),
+                      ],
+                      validator: (v) => (v == null || v.isEmpty)
+                          ? AppStrings.s.authSecurityQuestionRequired
+                          : null,
+                      onChanged: (v) =>
+                          setState(() => _selectedQuestion = v),
+                    ),
+                    AppSpacing.boxHLG,
+                    AppTextField(
+                      label: AppStrings.s.authSecurityAnswerLabel,
+                      hint: AppStrings.s.authSecurityAnswerHint,
+                      controller: _securityAnswerController,
+                      textInputAction: TextInputAction.done,
+                      prefixIcon: const Icon(
+                        Icons.lock_outline,
+                        color: AppColors.textHint,
+                      ),
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? AppStrings.s.authRequiredField
+                          : null,
                     ),
                     AppSpacing.boxHXXL,
                     AppButton(

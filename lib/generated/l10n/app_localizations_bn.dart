@@ -1300,10 +1300,16 @@ class AppLocalizationsBn extends AppLocalizations {
   String get setBackupTake => 'ব্যাকআপ নিন';
 
   @override
-  String get setBackupRestore => 'ব্যাকআপ ও পুনরুদ্ধার';
+  String get setBackupRestore => 'অফলাইন ব্যাকআপ';
 
   @override
   String get setBackupRestoreSub => 'ব্যাকআপ, পুনরুদ্ধার, এক্সপোর্ট ও ইম্পোর্ট';
+
+  @override
+  String get setOnlineBackup => 'অনলাইন ব্যাকআপ';
+
+  @override
+  String get setOnlineBackupSub => 'Google Drive-এ ব্যাকআপ ও পুনরুদ্ধার';
 
   @override
   String get setOther => 'অন্যান্য';
@@ -1330,7 +1336,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get setAppVersion => 'অ্যাপ সংস্করণ';
 
   @override
-  String get setAutoBackup => 'স্বয়ংক্রিয় ব্যাকআপ';
+  String get setAutoBackup => 'স্বয়ংক্রিয় অফলাইন ব্যাকআপ';
 
   @override
   String get setBackupFreq => 'ব্যাকআপ ফ্রিকোয়েন্সি';
@@ -1352,7 +1358,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get setMonthly => 'মাসিক';
 
   @override
-  String get setManualBackup => 'ম্যানুয়াল ব্যাকআপ';
+  String get setManualBackup => 'ম্যানুয়াল অফলাইন ব্যাকআপ';
 
   @override
   String get setManualBackupDesc =>
@@ -1384,7 +1390,7 @@ class AppLocalizationsBn extends AppLocalizations {
   String get setImport => 'ইম্পোর্ট';
 
   @override
-  String get setBackupHistory => 'ব্যাকআপ ইতিহাস';
+  String get setBackupHistory => 'অফলাইন ব্যাকআপ ইতিহাস';
 
   @override
   String setBackupCount(Object count, Object size) {
@@ -1473,6 +1479,115 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get setImportFailed => 'ইম্পোর্ট ব্যর্থ';
+
+  @override
+  String get obkTitle => 'অনলাইন ব্যাকআপ';
+
+  @override
+  String get obkYourAccount => 'আপনার Google অ্যাকাউন্ট';
+
+  @override
+  String get obkSignedInDesc =>
+      'Google Drive-এ আপনার ডেটা ব্যাকআপ ও পুনরুদ্ধার করুন';
+
+  @override
+  String get obkSignedOutDesc =>
+      'Google Drive-এ ব্যাকআপ ও পুনরুদ্ধার করতে Google দিয়ে সাইন ইন করুন';
+
+  @override
+  String get obkSignIn => 'Google দিয়ে সাইন ইন করুন';
+
+  @override
+  String get obkSignOut => 'সাইন আউট';
+
+  @override
+  String obkSignedInAs(Object email) {
+    return '$email হিসাবে সাইন ইন করা হয়েছে';
+  }
+
+  @override
+  String get obkBackupNow => 'এখন ব্যাকআপ নিন';
+
+  @override
+  String get obkRestore => 'Google Drive থেকে পুনরুদ্ধার';
+
+  @override
+  String get obkStatus => 'ব্যাকআপ অবস্থা';
+
+  @override
+  String get obkLastBackup => 'শেষ ব্যাকআপ';
+
+  @override
+  String get obkBackupDate => 'ব্যাকআপ তারিখ';
+
+  @override
+  String get obkBackupSize => 'ব্যাকআপ আকার';
+
+  @override
+  String get obkNever => 'কখনোই না';
+
+  @override
+  String get obkNotSignedIn => 'সাইন ইন করা হয়নি';
+
+  @override
+  String get obkNoBackupYet => 'এখনো কোনো ব্যাকআপ নেই';
+
+  @override
+  String get obkRestoreWarning =>
+      'পুনরুদ্ধার করলে এই ডিভাইসের বর্তমান সব ডেটা অনলাইন ব্যাকআপ দিয়ে প্রতিস্থাপিত হবে';
+
+  @override
+  String get obkRestoreConfirmTitle => 'পুনরুদ্ধার নিশ্চিত করুন';
+
+  @override
+  String get obkRestoreConfirmMsg =>
+      'বর্তমান সব ডেটা Google Drive ব্যাকআপ দিয়ে প্রতিস্থাপন করবেন?';
+
+  @override
+  String get obkUploadSuccess => 'ব্যাকআপ Google Drive-এ আপলোড হয়েছে';
+
+  @override
+  String get obkRestoreSuccess =>
+      'পুনরুদ্ধার সফল! অনুগ্রহ করে অ্যাপটি পুনরায় চালু করুন।';
+
+  @override
+  String get obkErrorNoInternet => 'ইন্টারনেট সংযোগ নেই';
+
+  @override
+  String get obkErrorNotSignedIn => 'আগে সাইন ইন করুন';
+
+  @override
+  String get obkErrorSignInCancelled => 'সাইন ইন বাতিল হয়েছে';
+
+  @override
+  String get obkErrorSignInFailed => 'Google সাইন-ইন ব্যর্থ হয়েছে';
+
+  @override
+  String get obkErrorPermissionDenied =>
+      'Google Drive-এ অনুমতি অস্বীকার করা হয়েছে';
+
+  @override
+  String get obkErrorTokenExpired => 'সেশন মেয়াদোত্তীর্ণ, আবার সাইন ইন করুন';
+
+  @override
+  String get obkErrorMissingBackup =>
+      'Google Drive-এ কোনো ব্যাকআপ পাওয়া যায়নি';
+
+  @override
+  String get obkErrorUploadFailed => 'ব্যাকআপ আপলোড করতে ব্যর্থ হয়েছে';
+
+  @override
+  String get obkErrorDownloadFailed => 'ব্যাকআপ ডাউনলোড করতে ব্যর্থ হয়েছে';
+
+  @override
+  String get obkErrorRestoreFailed => 'পুনরুদ্ধার ব্যর্থ হয়েছে';
+
+  @override
+  String get obkErrorUnsupported =>
+      'এই প্ল্যাটফর্মে অনলাইন ব্যাকআপ সমর্থিত নয়';
+
+  @override
+  String get obkErrorUnknown => 'কিছু ভুল হয়েছে, আবার চেষ্টা করুন';
 
   @override
   String get aboutTitle => 'সম্পর্কে';
@@ -1740,6 +1855,90 @@ class AppLocalizationsBn extends AppLocalizations {
 
   @override
   String get authPasswordMin => 'পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে';
+
+  @override
+  String get authEmailLabel => 'ইমেইল';
+
+  @override
+  String get authEmailHint => 'ইমেইল লিখুন';
+
+  @override
+  String get authSecurityQuestionLabel => 'নিরাপত্তা প্রশ্ন';
+
+  @override
+  String get authSecurityAnswerLabel => 'নিরাপত্তা প্রশ্নের উত্তর';
+
+  @override
+  String get authSecurityAnswerHint => 'উত্তরটি লিখুন';
+
+  @override
+  String get authSecurityQuestionRequired =>
+      'অনুগ্রহ করে একটি নিরাপত্তা প্রশ্ন নির্বাচন করুন';
+
+  @override
+  String get authForgotLink => 'পাসওয়ার্ড ভুলে গেছেন?';
+
+  @override
+  String get authForgotTitle => 'পাসওয়ার্ড ভুলে গেছেন';
+
+  @override
+  String get authForgotSubtitle =>
+      'আপনার অ্যাকাউন্ট পুনরুদ্ধার করতে নিবন্ধিত ইমেইল লিখুন';
+
+  @override
+  String get authForgotEmailHint => 'আপনার নিবন্ধিত ইমেইল লিখুন';
+
+  @override
+  String get authForgotContinue => 'চালিয়ে যান';
+
+  @override
+  String get authForgotQuestionTitle => 'নিরাপত্তা প্রশ্ন';
+
+  @override
+  String get authForgotQuestionSubtitle =>
+      'সাইন আপের সময় আপনি যে নিরাপত্তা প্রশ্নটি সেট করেছিলেন তার উত্তর দিন';
+
+  @override
+  String get authForgotQuestionHint => 'আপনার উত্তর লিখুন';
+
+  @override
+  String get authForgotVerify => 'যাচাই করুন';
+
+  @override
+  String get authForgotEmailNotFound =>
+      'এই ইমেইলে কোনো অ্যাকাউন্ট পাওয়া যায়নি';
+
+  @override
+  String get authForgotWrongAnswer => 'ভুল উত্তর';
+
+  @override
+  String get authForgotNewPasswordTitle => 'নতুন পাসওয়ার্ড সেট করুন';
+
+  @override
+  String get authForgotNewPasswordSubtitle =>
+      'আপনার অ্যাকাউন্টের জন্য একটি নতুন পাসওয়ার্ড চয়ন করুন';
+
+  @override
+  String get authForgotNewPasswordLabel => 'নতুন পাসওয়ার্ড';
+
+  @override
+  String get authForgotNewPasswordHint => 'নতুন পাসওয়ার্ড লিখুন';
+
+  @override
+  String get authForgotConfirmPasswordLabel => 'নতুন পাসওয়ার্ড নিশ্চিত করুন';
+
+  @override
+  String get authForgotConfirmPasswordHint => 'নতুন পাসওয়ার্ড আবার লিখুন';
+
+  @override
+  String get authForgotResetButton => 'পাসওয়ার্ড রিসেট করুন';
+
+  @override
+  String get authForgotResetSuccess =>
+      'পাসওয়ার্ড সফলভাবে পরিবর্তন হয়েছে। অনুগ্রহ করে লগইন করুন।';
+
+  @override
+  String get authForgotBack => 'ফিরে যান';
 
   @override
   String get setAccount => 'অ্যাকাউন্ট';
