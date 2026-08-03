@@ -121,6 +121,7 @@ class TransactionDataSource<T> {
   Future<T> update(int id, Map<String, dynamic> data) async {
     final db = _dbHelper.db;
     data['updated_at'] = DateTime.now().toIso8601String();
+    data['business_id'] = _tenantId;
     await db.update(_config.table, data,
         where: 'id = ? AND business_id = ?', whereArgs: [id, _tenantId]);
     return (await getById(id))!;

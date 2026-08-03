@@ -51,6 +51,7 @@ class TransactionFormFields extends ConsumerStatefulWidget {
   final String completedStatusLabel;
   final bool categoriesLoading;
   final List<CategoryOption> categories;
+  final bool isEditing;
   final Future<int?> Function(String name)? onAddCategory;
   final Future<void> Function(TransactionFormData data) onSubmit;
 
@@ -67,6 +68,7 @@ class TransactionFormFields extends ConsumerStatefulWidget {
     required this.completedStatusLabel,
     required this.categoriesLoading,
     required this.categories,
+    this.isEditing = false,
     this.onAddCategory,
     required this.onSubmit,
   });
@@ -223,7 +225,11 @@ class _TransactionFormFieldsState extends ConsumerState<TransactionFormFields> {
           _buildImagePicker(),
           AppSpacing.boxXXL,
           AppButton.primary(
-            _isSubmitting ? AppStrings.s.commonLoading : AppStrings.s.commonSaveLabel,
+            _isSubmitting
+                ? AppStrings.s.commonLoading
+                : widget.isEditing
+                    ? AppStrings.s.commonUpdateLabel
+                    : AppStrings.s.commonSaveLabel,
             isLoading: _isSubmitting,
             onPressed: _submit,
           ),

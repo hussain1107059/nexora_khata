@@ -44,6 +44,7 @@ class IncomeFormPage extends ConsumerWidget {
             ?.map((c) => CategoryOption(c.id, c.name))
             .toList() ??
             const [],
+        isEditing: income != null,
         onAddCategory: (name) async {
           final now = DateTime.now();
           final cat = IncomeCategory(
