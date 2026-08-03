@@ -865,6 +865,12 @@ class AppLocalizationsBn extends AppLocalizations {
   String get loanAll => 'সব হিসাব';
 
   @override
+  String get loanSearch => 'হিসাব খুঁজুন...';
+
+  @override
+  String get loanSearchEmpty => 'কোনো মিলে যাওয়া হিসাব পাওয়া যায়নি';
+
+  @override
   String get loanEdit => 'সম্পাদনা';
 
   @override

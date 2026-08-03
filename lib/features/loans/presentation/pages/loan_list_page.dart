@@ -9,6 +9,7 @@ import 'package:nexora_khata/core/services/app_strings.dart';
 import 'package:nexora_khata/core/widgets/app_empty_state.dart';
 import 'package:nexora_khata/core/widgets/app_error_widget.dart';
 import 'package:nexora_khata/core/widgets/app_loading.dart';
+import 'package:nexora_khata/core/widgets/app_search_field.dart';
 import 'package:nexora_khata/features/loans/presentation/models/loan_summary.dart';
 import 'package:nexora_khata/features/loans/presentation/providers/loan_provider.dart';
 import 'package:nexora_khata/features/loans/presentation/widgets/loan_contact_card.dart';
@@ -76,24 +77,47 @@ class _LoanContent extends ConsumerWidget {
         children: [
           Padding(
             padding: AppSpacing.paddingHSm,
-            child: Text(
-              AppStrings.s.loanAll,
-              style: AppTypography.subtitle2.copyWith(
-                color: AppColors.textPrimary,
-                fontWeight: FontWeight.w600,
-              ),
+            child: AppSearchField(
+              hintText: AppStrings.s.loanSearch,
+              onChanged: (value) =>
+                  ref.read(loanSearchProvider.notifier).state = value,
             ),
           ),
           AppSpacing.boxHSM,
-          for (final summary in dashboard.contacts)
-            LoanContactCard(
-              summary: summary,
-              onTap: () => context.push(
-                '${RouteNames.loanDetail}/${summary.contact.id}',
-              ),
-            ),
+          ..._buildContactCards(context, ref),
         ],
       ),
     );
+  }
+
+  List<Widget> _buildContactCards(BuildContext context, WidgetRef ref) {
+    final query = ref.watch(loanSearchProvider).trim().toLowerCase();
+    final filtered = query.isEmpty
+        ? dashboard.contacts
+        : dashboard.contacts.where((s) {
+            final name = s.contact.name.toLowerCase();
+            final phone = (s.contact.phone ?? '').toLowerCase();
+            return name.contains(query) || phone.contains(query);
+          }).toList();
+
+    if (filtered.isEmpty) {
+      return [
+        AppSpacing.boxHLG,
+        AppEmptyState(
+          icon: Icons.search_off_rounded,
+          title: AppStrings.s.loanEmpty,
+          subtitle: AppStrings.s.loanSearchEmpty,
+        ),
+      ];
+    }
+
+    return filtered.map((summary) {
+      return LoanContactCard(
+        summary: summary,
+        onTap: () => context.push(
+          '${RouteNames.loanDetail}/${summary.contact.id}',
+        ),
+      );
+    }).toList();
   }
 }

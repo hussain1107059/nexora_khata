@@ -13,6 +13,8 @@ final loanRepositoryProvider = Provider<LoanRepository>((ref) {
 
 final loanRefreshProvider = StateProvider<int>((ref) => 0);
 
+final loanSearchProvider = StateProvider<String>((ref) => '');
+
 final loanContactListProvider = FutureProvider<List<LoanContact>>((ref) async {
   final repo = ref.read(loanRepositoryProvider);
   ref.watch(loanRefreshProvider);

@@ -867,6 +867,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loanAll => 'All Accounts';
 
   @override
+  String get loanSearch => 'Search accounts...';
+
+  @override
+  String get loanSearchEmpty => 'No matching account found';
+
+  @override
   String get loanEdit => 'Edit';
 
   @override

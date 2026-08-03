@@ -293,6 +293,8 @@
   "loanEmpty": "No accounts",
   "loanEmptySubtitle": "Track money borrowed from or lent to friends by adding a new account",
   "loanAll": "All Accounts",
+  "loanSearch": "Search accounts...",
+  "loanSearchEmpty": "No matching account found",
   "loanEdit": "Edit",
   "loanDelete": "Delete",
   "loanSettled": "Settled",

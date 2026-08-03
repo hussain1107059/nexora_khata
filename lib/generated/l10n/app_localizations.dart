@@ -1730,6 +1730,18 @@ abstract class AppLocalizations {
   /// **'All Accounts'**
   String get loanAll;
 
+  /// No description provided for @loanSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'Search accounts...'**
+  String get loanSearch;
+
+  /// No description provided for @loanSearchEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching account found'**
+  String get loanSearchEmpty;
+
   /// No description provided for @loanEdit.
   ///
   /// In en, this message translates to:
