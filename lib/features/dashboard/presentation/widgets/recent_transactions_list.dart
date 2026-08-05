@@ -126,11 +126,16 @@ class _TransactionTile extends StatelessWidget {
     final isLoan = tx.type == 'loan';
     final isRepay = isLoan && tx.loanType == 'repay';
     final isBorrow = isLoan && tx.loanType == 'borrow';
+    final isTransfer = tx.type == 'transfer';
 
     final Color color;
     final IconData icon;
     final String label;
-    if (isLoan) {
+    if (isTransfer) {
+      color = AppColors.primary;
+      icon = Icons.swap_horiz_rounded;
+      label = AppStrings.s.txnTransfer;
+    } else if (isLoan) {
       color = isRepay
           ? AppColors.info
           : (isBorrow ? AppColors.error : AppColors.success);
@@ -167,6 +172,9 @@ class _TransactionTile extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(AppSpacing.radiusMd),
           onTap: () {
+            if (isTransfer) {
+              return;
+            }
             if (isLoan) {
               final contactId = tx.contactId;
               if (contactId != null) {

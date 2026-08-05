@@ -65,7 +65,7 @@ class TransferDataSource {
       '''
       SELECT * FROM transfers
       WHERE business_id = ?
-      ORDER BY transfer_date DESC, id DESC
+      ORDER BY created_at DESC, id DESC
       ''',
       [_tenantId],
     );

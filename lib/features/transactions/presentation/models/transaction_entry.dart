@@ -11,6 +11,11 @@ class TransactionEntry {
   final int? contactId;
   final String? fromType;
   final String? toType;
+  final DateTime createdAt;
+  final DateTime? updatedAt;
+  final String? referenceId;
+  final String? sourceTable;
+  final String? accountName;
 
   const TransactionEntry({
     required this.type,
@@ -25,6 +30,11 @@ class TransactionEntry {
     this.contactId,
     this.fromType,
     this.toType,
+    required this.createdAt,
+    this.updatedAt,
+    this.referenceId,
+    this.sourceTable,
+    this.accountName,
   });
 
   bool get isIncome => type == 'income';
@@ -40,4 +50,16 @@ class TransactionEntry {
   bool get isLoanLend => isLoan && loanType == 'lend';
 
   bool get isLoanRepay => isLoan && loanType == 'repay';
+}
+
+/// Global sort used for every unified transaction timeline.
+///
+/// Ordering is based ONLY on the creation time of the transaction.
+/// If `createdAt` is identical, the record with the higher `id` wins
+/// (created later in the same instant). Transaction type is never
+/// considered.
+int compareTransactionEntries(TransactionEntry a, TransactionEntry b) {
+  final d = b.createdAt.compareTo(a.createdAt);
+  if (d != 0) return d;
+  return b.id.compareTo(a.id);
 }

@@ -160,6 +160,11 @@ final customReportProvider = FutureProvider<CustomReportData>((ref) async {
         date: inc.incomeDate,
         categoryName: inc.catName,
         status: inc.status,
+        createdAt: inc.createdAt,
+        updatedAt: inc.updatedAt,
+        referenceId: inc.reference,
+        sourceTable: 'incomes',
+        accountName: inc.customerName,
       ));
     }
   }
@@ -181,6 +186,11 @@ final customReportProvider = FutureProvider<CustomReportData>((ref) async {
         date: exp.expenseDate,
         categoryName: exp.catName,
         status: exp.status,
+        createdAt: exp.createdAt,
+        updatedAt: exp.updatedAt,
+        referenceId: exp.reference,
+        sourceTable: 'expenses',
+        accountName: exp.supplierName,
       ));
     }
   }
@@ -215,15 +225,15 @@ final customReportProvider = FutureProvider<CustomReportData>((ref) async {
         contactName: contactNames[txn.contactId],
         contactId: txn.contactId,
         loanType: txn.isRepay ? 'repay' : (txn.isBorrow ? 'borrow' : 'lend'),
+        createdAt: txn.createdAt,
+        updatedAt: txn.updatedAt,
+        sourceTable: 'loan_transactions',
+        accountName: contactNames[txn.contactId],
       ));
     }
   }
 
-  entries.sort((a, b) {
-    final d = b.date.compareTo(a.date);
-    if (d != 0) return d;
-    return b.id.compareTo(a.id);
-  });
+  entries.sort(compareTransactionEntries);
 
   final summary = ReportSummary(
     totalIncome: incomeTotal,

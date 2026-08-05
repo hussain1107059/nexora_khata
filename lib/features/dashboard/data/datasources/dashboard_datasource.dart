@@ -172,7 +172,7 @@ class DashboardDataSource {
         SELECT 'income' as type, i.id, i.amount, i.description,
           i.income_date as txn_date, i.category_id, i.customer_id as party_id,
           ic.name as cat_name, c.name as party_name, NULL as loan_type,
-          NULL as contact_id
+          NULL as contact_id, i.created_at
         FROM incomes i
         LEFT JOIN income_categories ic ON ic.id = i.category_id
         LEFT JOIN customers c ON c.id = i.customer_id
@@ -181,7 +181,7 @@ class DashboardDataSource {
         SELECT 'expense' as type, e.id, e.amount, e.description,
           e.expense_date as txn_date, e.category_id, e.supplier_id as party_id,
           ec.name as cat_name, s.name as party_name, NULL as loan_type,
-          NULL as contact_id
+          NULL as contact_id, e.created_at
         FROM expenses e
         LEFT JOIN expense_categories ec ON ec.id = e.category_id
         LEFT JOIN suppliers s ON s.id = e.supplier_id
@@ -190,14 +190,21 @@ class DashboardDataSource {
         SELECT 'loan' as type, lt.id, lt.amount, lt.note,
           lt.date as txn_date, NULL as category_id, lt.contact_id as party_id,
           NULL as cat_name, lc.name as party_name, lt.type as loan_type,
-          lt.contact_id as contact_id
+          lt.contact_id as contact_id, lt.created_at
         FROM loan_transactions lt
         LEFT JOIN loan_contacts lc ON lc.id = lt.contact_id
         WHERE lt.business_id = ?
+        UNION ALL
+        SELECT 'transfer' as type, t.id, t.amount, t.description,
+          t.transfer_date as txn_date, NULL as category_id, NULL as party_id,
+          NULL as cat_name, NULL as party_name, NULL as loan_type,
+          NULL as contact_id, t.created_at
+        FROM transfers t
+        WHERE t.status = 'completed' AND t.business_id = ?
       ) r
-      ORDER BY txn_date DESC, id DESC
+      ORDER BY created_at DESC, id DESC
       LIMIT 10
-    ''', [_tenantId, _tenantId, _tenantId]);
+    ''', [_tenantId, _tenantId, _tenantId, _tenantId]);
 
     return rows.map((r) => RecentTransaction(
       id: r['id'] as int,

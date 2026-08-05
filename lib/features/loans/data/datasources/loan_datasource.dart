@@ -63,7 +63,7 @@ class LoanDataSource {
       '''
       SELECT * FROM loan_transactions
       WHERE contact_id = ? AND business_id = ?
-      ORDER BY date DESC, id DESC
+      ORDER BY created_at DESC, id DESC
       ''',
       [contactId, _tenantId],
     );
@@ -75,7 +75,7 @@ class LoanDataSource {
       '''
       SELECT * FROM loan_transactions
       WHERE business_id = ?
-      ORDER BY date DESC, id DESC
+      ORDER BY created_at DESC, id DESC
       ''',
       [_tenantId],
     );

@@ -89,7 +89,7 @@ class TransactionDataSource<T> {
     final sql = '''
       $_select
       $where
-      ORDER BY ${c.alias}.${c.dateColumn} DESC, ${c.alias}.id DESC
+      ORDER BY ${c.alias}.created_at DESC, ${c.alias}.id DESC
       ${limit != null ? 'LIMIT ?' : ''}
       ${offset != null ? 'OFFSET ?' : ''}
     ''';
@@ -140,7 +140,7 @@ class TransactionDataSource<T> {
       $_select
       WHERE ${c.alias}.${c.dateColumn} >= ? AND ${c.alias}.${c.dateColumn} < ?
         AND ${c.alias}.business_id = ?
-      ORDER BY ${c.alias}.${c.dateColumn} DESC, ${c.alias}.id DESC
+      ORDER BY ${c.alias}.created_at DESC, ${c.alias}.id DESC
     ''', [
       AppDateUtils.monthStart(year, month),
       AppDateUtils.monthEndExclusive(year, month),
@@ -206,7 +206,7 @@ class TransactionDataSource<T> {
       $_select
       WHERE (${c.alias}.description LIKE ? OR ${c.alias}.reference LIKE ?)
         AND ${c.alias}.business_id = ?
-      ORDER BY ${c.alias}.${c.dateColumn} DESC, ${c.alias}.id DESC
+      ORDER BY ${c.alias}.created_at DESC, ${c.alias}.id DESC
     ''', [p, p, _tenantId]);
     return rows.map((r) => c.fromMap(r)).toList();
   }
@@ -217,7 +217,7 @@ class TransactionDataSource<T> {
     final rows = await db.rawQuery('''
       $_select
       WHERE ${c.alias}.${c.dateColumn} = ? AND ${c.alias}.business_id = ?
-      ORDER BY ${c.alias}.id DESC
+      ORDER BY ${c.alias}.created_at DESC, ${c.alias}.id DESC
     ''', [date, _tenantId]);
     return rows.map((r) => c.fromMap(r)).toList();
   }

@@ -38,6 +38,7 @@ void main() {
         date: DateTime(2026, 8, 1),
         categoryName: 'ব্যবসা',
         status: 'completed',
+        createdAt: DateTime(2026, 8, 1, 9),
       ),
       TransactionEntry(
         type: 'expense',
@@ -47,6 +48,7 @@ void main() {
         date: DateTime(2026, 8, 2),
         categoryName: 'খাদ্য',
         status: 'pending',
+        createdAt: DateTime(2026, 8, 2, 10),
       ),
       TransactionEntry(
         type: 'loan',
@@ -57,6 +59,7 @@ void main() {
         categoryName: 'বন্ধু',
         status: 'completed',
         loanType: 'lend',
+        createdAt: DateTime(2026, 8, 3, 11),
       ),
     ];
 
